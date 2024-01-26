@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <div id="loginForm">
+        <form id="login" method="POST" action="/login">
+            Email: <input type="text" name="email" autocomplete="email"><br>
+            Password: <input type="password" name="password">
+            <input type="submit" value="Login">
+        </form>
+    </div>
+    <div id="greeting" style="display: none;">
+        <!-- Greeting message will be displayed here -->
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#login').submit(function(event) {
+                event.preventDefault(); // Prevent form submission
+
+                // Send login request via AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: '/',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        $('#loginForm').hide(); // Hide login form
+                        $('#greeting').html(response).show(); // Show greeting
+                    },
+                    error: function() {
+                        alert('Failed to login');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
