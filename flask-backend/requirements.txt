@@ -6,3 +6,4 @@ flask-sqlalchemy
 flask-bcrypt
 flask-session
 redis
+flask-cors

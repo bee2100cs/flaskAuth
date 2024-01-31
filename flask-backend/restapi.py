@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, session
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 from flask_session import Session
 from models import db, User
 from config import ApplicationConfig
@@ -9,7 +10,8 @@ app = Flask(__name__)
 app.config.from_object(ApplicationConfig)
 
 bcrypt = Bcrypt(app)
-
+# allow react app to interact with backend and send cookies
+CORS(app, supports_credentials=True)
 # Enable secure serverside session
 server_sesion = Session(app)
 db.init_app(app)
@@ -45,6 +47,9 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
 
+    # Create a session id to login user once they register
+    session["user_id"] = new_user.id
+
     return jsonify({
         "id": new_user.id,
         "email": new_user.email
@@ -69,6 +74,10 @@ def login():
         "email": user.email
     })
 
+@app.route("/logout", methods = ["POST"])
+def logout_user():
+    session.pop("user_id")
+    return "200"
 
 if __name__ == "__main__":
     app.run(debug=True)
