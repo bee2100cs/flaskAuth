@@ -13,7 +13,7 @@ bcrypt = Bcrypt(app)
 # allow react app to interact with backend and send cookies
 CORS(app, supports_credentials=True)
 # Enable secure serverside session
-server_sesion = Session(app)
+server_session = Session(app)
 db.init_app(app)
 
 with app.app_context():
