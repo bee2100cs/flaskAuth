@@ -23,7 +23,14 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault(); // Prevent default form submission behavior
             logout(); // Call login function on button click
         });
-}
+    }
+    let resetTrigger = document.getElementById('reset');
+    if (resetTrigger) {
+        resetTrigger.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default form submission behavior
+            reset(); // Call reset function on-click
+        });
+    }
     
 
 });
@@ -89,6 +96,42 @@ function login() {
     } else {
         console.error("Email or password is missing");
     }
+}
+
+function reset() {
+
+    // Create an input field for the email
+    let emailInput = document.createElement('input');
+    emailInput.type = 'email';
+    emailInput.id = 'emailInput';
+    emailInput.placeholder = 'Enter your email';
+
+    // Create a submit button
+    let submitButton = document.createElement('button');
+    submitButton.innerHTML = 'Submit';
+    // Get the resetDiv
+    let resetDiv = document.getElementById('resetDiv');
+    // Append the input field and the button to the div
+    resetDiv.appendChild(emailInput);
+    resetDiv.appendChild(submitButton);
+
+    // // Append the div to the body of the document
+    // document.body.appendChild(resetDiv);
+
+    // Add an event listener to the submit button
+    submitButton.addEventListener('click', function() {
+        const email = emailInput.value;
+        if (email) {
+            // Send a POST request to the backend
+            axios.post('/api/reset', {email: email})
+            .then(function(response) {
+                
+            })
+            .catch(function(error) {
+                console.error("Error resetting password:", error);
+            });
+        }
+    });
 }
 
 function logout ()  {

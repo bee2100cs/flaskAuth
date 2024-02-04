@@ -82,8 +82,17 @@ def login():
         return jsonify({'redirect_url': None, 'message': 'Invalid email or password'}), 400
     except auth.WrongPasswordError:
         return jsonify({'redirect_url': None, 'message': 'Invalid email or password'}), 400
-    
-    #return redirect(url_for('main.index'))
+
+# Reset Password    
+@bp.route('/api/reset', methods=['POST'])
+def reset_pass():
+    email = request.json['email']
+    # Check if the email exists in your firebase user database
+    try:
+        auth.send_password_reset_email(email)
+        return jsonify({"message":'Password reset email sent'})
+    except:
+        return jsonify({"Message":'Invalid Email'}), 400
 
 @bp.route('/api/logout', methods=['GET', 'POST'])
 def logout():
