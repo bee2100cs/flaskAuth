@@ -9,5 +9,12 @@
 <body>
     <h1>Welcome, {{ user_email }}!</h1>
     <!-- Additional welcome message or content here -->
+    <div></div>
+    <div id="logout">
+        <button class="button is-block is-info is-large is-fullwidth">Log Out</button>
+    </div>
+        
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="{{ url_for('static', filename='js/firebase.js') }}"></script>
 </body>
 </html>

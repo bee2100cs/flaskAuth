@@ -2,15 +2,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // fetchTodos();
     
     // // Add event listener to the form submission
-    document.getElementById('signup-form').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent default form submission behavior
-        signup(); // Call signup function when form is submitted
-    });
+    let signupForm = document.getElementById('signup-form');
+    if (signupForm) {
+        signupForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission behavior
+            signup(); // Call signup function when form is submitted
+        });
+    }
 
-    document.getElementById('login-form').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent default form submission behavior
-        login(); // Call login function when form is submitted
-    });
+    let loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission behavior
+            login(); // Call login function when form is submitted
+        });
+    }
+    let logoutTrigger = document.getElementById('logout');
+    if (logoutTrigger) {
+        logoutTrigger.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default form submission behavior
+            logout(); // Call login function on button click
+        });
+}
+    
 
 });
 
@@ -57,9 +71,15 @@ function login() {
                 // Perform the redirect
                 window.location.href = response.data.redirect_url;
                 console.log(response.data.message);
+            //} 
+            // else if (response.data.user_info == null || response.data.user_info === undefined) {
+            //     console.log("Error during login", response.data.message)
+            // } 
+            // else if (response.data.emailVerified !== null && !response.data.emailVerified) {
+            //     console.log("Error during login", response.data.message)
             } else {
                 // Handle the case where there is no redirect URL
-                console.error("Error during signup: ", response.data.message);
+                console.error("Error during login: ", response.data.message);
             }
 
         })
@@ -69,6 +89,16 @@ function login() {
     } else {
         console.error("Email or password is missing");
     }
+}
+
+function logout ()  {
+    axios.get('/logout')
+    .then(function(response) {
+        window.location.href = response.data.redirect_url;
+    })
+    .catch(function(error) {
+        console.error("Error during logout:", error);
+    })
 }
 // function googlePopup() {
 //     signInWithPopup(auth, provider)
