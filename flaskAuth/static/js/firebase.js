@@ -71,10 +71,10 @@ function login() {
                 // Perform the redirect
                 window.location.href = response.data.redirect_url;
                 console.log(response.data.message);
+            } 
+            else if (response.data.email_not_verified) {
+                console.log(response.data.message);
             //} 
-            // else if (response.data.user_info == null || response.data.user_info === undefined) {
-            //     console.log("Error during login", response.data.message)
-            // } 
             // else if (response.data.emailVerified !== null && !response.data.emailVerified) {
             //     console.log("Error during login", response.data.message)
             } else {
@@ -92,7 +92,7 @@ function login() {
 }
 
 function logout ()  {
-    axios.get('/logout')
+    axios.get('/api/logout')
     .then(function(response) {
         window.location.href = response.data.redirect_url;
     })
