@@ -38,11 +38,18 @@ document.addEventListener('DOMContentLoaded', function() {
 function signup() {
     let emailInput = document.getElementById('signup-email');
     let passInput = document.getElementById('signup-password');
+    let emailExists = document.getElementById('emailExists');
+    let messageSpan = document.createElement('span')
 
     const email = emailInput.value;
     const password = passInput.value;
-
-    if (email) {
+    if (password.length < 6) {
+        let flashMessage = 'Password must be at least 6 characters long';
+        messageSpan.textContent = flashMessage;
+        emailExists.appendChild(messageSpan);
+        return;
+    }
+    if (email && password) {
         axios.post('/api/signup', {email: email, password: password})
         .then(function(response) {
            // Check if the response contains a redirect URL
@@ -53,6 +60,8 @@ function signup() {
             } else {
                 // Handle the case where there is no redirect URL
                 console.error("Error during signup: ", response.data.message);
+                messageSpan.textContent = response.data.message;
+                emailExists.appendChild(messageSpan);
             }
 
         })
@@ -67,6 +76,9 @@ function signup() {
 function login() {
     let emailInput = document.getElementById('l-email');
     let passInput = document.getElementById('l-password');
+    let messageDiv = document.getElementById('flashMessage');
+    let span = document.createElement('span');
+
 
     const email = emailInput.value;
     const password = passInput.value;
@@ -81,12 +93,17 @@ function login() {
             } 
             else if (response.data.email_not_verified) {
                 console.log(response.data.message);
+
             //} 
             // else if (response.data.emailVerified !== null && !response.data.emailVerified) {
             //     console.log("Error during login", response.data.message)
-            } else {
+            } 
+            else {
                 // Handle the case where there is no redirect URL
                 console.error("Error during login: ", response.data.message);
+                span.textContent = response.data.message;
+                messageDiv.appendChild(span);
+
             }
 
         })

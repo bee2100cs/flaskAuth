@@ -15,8 +15,12 @@ firebase = pyrebase.initialize_app(config)
 # Set up authentication manager
 auth = firebase.auth()
 
-@bp.route('/api/signup', methods=["POST", "GET"])
+@bp.route('/api/signup')
 def signup():
+    return render_template("signup.html")
+
+@bp.route('/api/signup', methods=["POST", "GET"])
+def signup_callack():
     email = request.json['email']
     password = request.json['password']
 
@@ -51,10 +55,10 @@ def verify():
 
             # Send email verification
             auth.send_email_verification(user_data['idToken'])
-            return jsonify({"message":"Email verification sent!"})
+            return jsonify({'redirect_url': url_for('main.onboarding'), "message":"Email verification sent! Check mail inbox to verify"})
         
-        # If email is already verified, redirect to homepage
-        return jsonify({'redirect_url': url_for('main.welcome'), 'message': 'Signup successful'})
+        # If email is already verified, redirect to onboarding
+        return jsonify({'redirect_url': url_for('main.onboarding'), 'message': 'Email verified'})
     except auth.AuthError as e:
         return jsonify({'error': 'Error retrieving user info: {}'.format(e)}), 500
 
@@ -78,16 +82,14 @@ def login():
         # # Redirect the user to a welcome page or any desired page
         return jsonify({'redirect_url': url_for('main.welcome'), 'message': 'Login successful'})
 
-    except auth.InvalidEmailError:
-        return jsonify({'redirect_url': None, 'message': 'Invalid email or password'}), 400
-    except auth.WrongPasswordError:
-        return jsonify({'redirect_url': None, 'message': 'Invalid email or password'}), 400
+    except:
+        return jsonify({'redirect_url': None, 'message': 'Invalid email or password!!!!'})
 
 # Reset Password    
 @bp.route('/api/reset', methods=['POST'])
 def reset_pass():
     email = request.json['email']
-    # Check if the email exists in your firebase user database
+    # Check if the email exists in your firebase user database and send reset link
     try:
         auth.send_password_reset_email(email)
         return jsonify({"message":'Password reset email sent'})

@@ -6,7 +6,7 @@ bp = Blueprint("main", __name__)
 @bp.route("/")
 def index():
 
-    return render_template('firebase.html')
+    return render_template('login.html')
 
 @bp.route('/welcome')
 def welcome():
@@ -22,3 +22,6 @@ def home():
 
     return "You are all logged in"
 
+@bp.route("/onboarding")
+def onboarding():
+    return render_template("onboarding.html")
