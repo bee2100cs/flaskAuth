@@ -142,7 +142,10 @@ function reset() {
             // Send a POST request to the backend
             axios.post('/api/reset', {email: email})
             .then(function(response) {
-                
+                let resetEmailSent = document.createElement('span');
+                let resetConfirm = document.getElementById('resetConfirm')
+                resetEmailSent.textContent = response.data.message;
+                resetConfirm.appendChild(resetEmailSent).style.backgroundColor = 'lightblue';
             })
             .catch(function(error) {
                 console.error("Error resetting password:", error);
