@@ -58,7 +58,7 @@ def verify():
             return jsonify({'redirect_url': url_for('main.onboarding'), "message":"Email verification sent! Check mail inbox to verify"})
         
         # If email is already verified, redirect to onboarding
-        return jsonify({'redirect_url': url_for('main.onboarding'), 'message': 'Email verified'})
+        return jsonify({'redirect_url': url_for('main.home'), 'message': 'Email verified'})
     except auth.AuthError as e:
         return jsonify({'error': 'Error retrieving user info: {}'.format(e)}), 500
 

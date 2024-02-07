@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, session, render_template, request, redirect, url_for
+from flask import Flask, Blueprint, session, render_template, request, redirect, url_for, jsonify
 import pyrebase
 
 bp = Blueprint("main", __name__)
@@ -8,11 +8,12 @@ def index():
 
     return render_template('login.html')
 
-@bp.route('/welcome')
-def welcome():
+@bp.route('/onboarding')
+def onboarding():
     if 'user' in session:
         user_email = session['user']
-        return render_template('welcome.html', user_email=user_email)
+
+        return render_template('onboarding.html', user_email=user_email)
     else:
         return redirect(url_for('main.index'))  # Redirect to login if not logged in
 
@@ -21,7 +22,3 @@ def welcome():
 def home():
 
     return "You are all logged in"
-
-@bp.route("/onboarding")
-def onboarding():
-    return render_template("onboarding.html")
