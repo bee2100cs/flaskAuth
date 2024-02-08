@@ -6,20 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Firebase Auth Boiler - {% block title %}{% endblock title %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule="" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
 </head>
 <body>
-  {%include navigation %}
-    <section class="hero is-primary is-fullheight">
-      
-        <div class="hero-body">
-          <div class="container has-text-centered">
-            {% block content %}
-            {% endblock content %}
+
+  <div class="container">
+    {% include("_navigation.html") %}
+
+    <!-- Main -->
+    <main id="main" class="flexbox-col">
+      <div class="navbar-end">
+        {% if 'user' in session %}
+        <a href="{{ url_for('main.profile') }}" class="navbar-item">             
+          <div class="profile-container">
+            <p class="desktop-view" style="margin-right: 10px;">Howdy, {{ session['user'].email }}!</p>
+            
+            <p class="mobile-view">Profile</p>
           </div>
-          
-        </div>
-      </section>
+           
+        </a>
+        <a class="button is-light" href="{{ url_for('authentication.logout') }}">
+          Logout
+        </a>
+        {% else %}
+
+        <a class="button is-primary" href="{{ url_for('authentication.signup') }}">
+          <strong>Sign up</strong>
+        </a>
+        <a class="button is-light" href="{{ url_for('authentication.login') }}">
+          Log in
+        </a>
+        {% endif %}
+      </div>
+
+        {% block content %}
+        {% endblock content %}
+
+    </main>
+  </div>
+  <script type="module" src="{{ url_for('static', filename='js/firebase.js') }}"></script>
 </body>
 </html>

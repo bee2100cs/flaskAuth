@@ -1,9 +1,101 @@
 {% extends "base.html" %}
 {% block content %}
-<div id="verificationPending">
+<div id="verificationPending" class="notification is-info">
+    <p>Email verification message goes here</p>
+  </div>
+  
+  <hr>
+  
+  <div class="has-text-centered">
+    <label class="label is-size-3">Create Your Profile</label>
+  </div>
+  
+  <form class="box">
+    <div class="field is-horizontal">
+      <div class="field-label is-medium">
+        <label class="label">Name</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <input class="input" type="text" placeholder="Enter First And Last Name">
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="field is-horizontal">
+      <div class="field-label is-medium">
+        <label class="label">Username</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <input class="input" type="text" placeholder="Select A Username">
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="field is-horizontal">
+      <div class="field-label is-medium">
+        <label class="label">Country</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select>
+                <option selected>Country</option>
+                <option value="AF">Afghanistan</option>
+                <option value="AX">Aland Islands</option>
+                <option value="AL">Kenya</option>
+                <option value="DZ">Algeria</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="field is-horizontal">
+      <div class="field-label is-medium">
+        <label class="label">DOB</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <input class="input" type="date" id="dob" name="Date of Birth" value="2018-07-22" min="1900-01-01" max="2025-12-31" />
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="field is-horizontal">
+      <div class="field-label is-medium">
+        <label class="label">Profile Pic</label>
+      </div>
+      <div class="file has-name">
+        <label class="file-label">
+          <input class="file-input" type="file" name="resume">
+          <span class="file-cta">
+            <span class="file-icon">
+              <i class="fas fa-upload"></i>
+            </span>
+            <span class="file-label">
+              Choose a file…
+            </span>
+          </span>
+          <span class="file-name">
+            .....
+          </span>
+        </label>
+      </div>
+    </div>
 
-</div>
-<h2> Create Your Profile</h2>
+    <button class="button is-primary">Submit</button>
+  </form>
+<a href="{{url_for('main.profile') }}"> Profile</a>
 
 
 {% endblock %}

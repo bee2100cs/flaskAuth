@@ -55,17 +55,21 @@ def verify():
 
             # Send email verification
             auth.send_email_verification(user_data['idToken'])
-            return jsonify({'redirect_url': url_for('main.onboarding'), "message":"Email verification sent! Check mail inbox to verify"})
+            return jsonify({'redirect_url': url_for('main.onboarding'), "message":"SUCCESS! You have been registered. Please verify your email address before logging in."})
         
         # If email is already verified, redirect to onboarding
-        return jsonify({'redirect_url': url_for('main.home'), 'message': 'Email verified'})
+        return jsonify({'redirect_url': url_for('main.index'), 'message': 'Email verified'})
     except auth.AuthError as e:
         return jsonify({'error': 'Error retrieving user info: {}'.format(e)}), 500
 
 
+@bp.route('/api/login')
+def login():
+    return render_template("login.html")
+
 # Sign in user
 @bp.route('/api/login', methods=['POST', 'GET'])
-def login():
+def login_callback():
     if('user' in session):
         return 'Hi, {}'.format(session['user'])
     
@@ -80,7 +84,7 @@ def login():
         user['idToken']
         session["user"] = email
         # # Redirect the user to a welcome page or any desired page
-        return jsonify({'redirect_url': url_for('main.welcome'), 'message': 'Login successful'})
+        return jsonify({'redirect_url': url_for('main.index'), 'message': 'Login successful'})
 
     except:
         return jsonify({'redirect_url': None, 'message': 'Invalid email or password!!!!'})
@@ -100,6 +104,6 @@ def reset_pass():
 def logout():
     if request.method == 'GET':
         session.pop('user')
-        return jsonify({'redirect_url': url_for('main.index'), 'message': 'Logout successful'})
+        return redirect(url_for('main.index'))
     else:
         return jsonify({'error': 'Method not allowed'}), 405  # Return a 405 Method Not Allowed status for other methods
