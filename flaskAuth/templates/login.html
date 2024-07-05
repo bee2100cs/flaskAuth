@@ -8,11 +8,18 @@
                 <img src="../static/images/img-01.png" alt="IMG">
             </div>
             <div>
+                
                 <form class="login100-form validate-form" method="POST" id="login-form">
                     <span class="login100-form-title">
                         Member Login
                     </span>
-
+                    <div class="alert alert-success">
+                        {% with messages = get_flashed_messages(category_filter="success") %}
+                            {% if messages %}
+                                {{ messages[0] }}
+                            {% endif %}
+                        {% endwith %}
+                    </div>
                     <div class="text-center p-t-12" id="resetConfirm"></div>
                     <div class="text-center p-t-12" id="flashMessage" style="justify-content: center; height: 100%; align-items: center; color: red;">
 

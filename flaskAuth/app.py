@@ -2,7 +2,7 @@ from flask import Flask, session, render_template, request, redirect
 import pyrebase
 from dotenv import load_dotenv
 import os
-from . import firebase
+#from . import firebase
 
 load_dotenv()
 

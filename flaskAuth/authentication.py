@@ -1,6 +1,6 @@
-import pyrebase
 from flask import Blueprint, session, jsonify, render_template, request, redirect, url_for, flash
 from .config import ApplicationConfig
+import pyrebase
 from flask_session import Session
 from functools import wraps
 
@@ -29,43 +29,25 @@ def signup_callack():
     try:
         user = auth.create_user_with_email_and_password(email, password)
         
-        # Store user information in session
-        session["user"] = {
-            'email': email,
-            'idToken': user['idToken']
-        }
-        # Redirect user to the verification route
-        return redirect(url_for('authentication.verify'))
+        # # Store user information in session
+        # session["user"] = {
+        #     'email': email,
+        #     'idToken': user['idToken']
+        # }
+        
+        # send email verification
+        auth.send_email_verification(user['idToken'])
+        flash("Congratulations! You've been signed up. Please verify your email address before logging in.", "success")
+        # Redirect to login page
+        return jsonify({'redirect_url': url_for('authentication.login'), 'message': "SUCCESS! You have been registered. Please verify your email address before logging in."})
 
     except:
         return jsonify({'message': "Email already exists!"})
 
-# Verify email
-@bp.route('/verify')
-def verify():
-    # Retrieve user information from session
-    user_data = session.get("user")
-    if user_data is None:
-        return jsonify({'error': 'User data not found in session'}), 400
-    
-
-    user = auth.get_account_info(user_data['idToken'])
-    try:        
-        if not user['users'][0]['emailVerified']:
-
-            # Send email verification
-            auth.send_email_verification(user_data['idToken'])
-            return jsonify({'redirect_url': url_for('main.onboarding'), "message":"SUCCESS! You have been registered. Please verify your email address before logging in."})
-        
-        # If email is already verified, redirect to onboarding
-        return jsonify({'redirect_url': url_for('main.index'), 'message': 'Email verified'})
-    except auth.AuthError as e:
-        return jsonify({'error': 'Error retrieving user info: {}'.format(e)}), 500
-
-
 @bp.route('/api/login')
 def login():
-    return render_template("login.html")
+   
+    return render_template('login.html')
 
 # Sign in user
 @bp.route('/api/login', methods=['POST', 'GET'])
@@ -78,17 +60,32 @@ def login_callback():
     try:
          # Sign in user
         user = auth.sign_in_with_email_and_password(email, password)
+
+
         # before the 1 hour expiry:
         user = auth.refresh(user['refreshToken'])
         # now we have a fresh token
-        user['idToken']
-        session["user"] = email
-        # # Redirect the user to a welcome page or any desired page
-        return jsonify({'redirect_url': url_for('main.index'), 'message': 'Login successful'})
+        id = user['idToken']
+
+        userverify = auth.get_account_info(id)
+        
+        # # Check if the email is verified
+        user_verified = userverify['users'][0]['emailVerified']
+        
+        if user_verified:
+            # Email is verified, proceed to the main.index page
+
+            session["user"] = email
+            # # Redirect the user to a welcome page or any desired page
+            return jsonify({'redirect_url': url_for('main.index'), 'message': 'Login successful'})
+        else:
+            # Email is not verified, notify the user
+            return jsonify({'redirect_url': None, 'message': 'Please verify your email before proceeding.'})
+
 
     except:
         return jsonify({'redirect_url': None, 'message': 'Invalid email or password!!!!'})
-
+        
 # Reset Password    
 @bp.route('/api/reset', methods=['POST'])
 def reset_pass():
