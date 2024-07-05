@@ -77,7 +77,12 @@ def login_callback():
 
             session["user"] = email
             # # Redirect the user to a welcome page or any desired page
-            return jsonify({'redirect_url': url_for('main.index'), 'message': 'Login successful'})
+            if 'first_login' not in session:
+                session['first_login'] = True
+
+                return jsonify({'redirect_url': url_for('main.onboarding'), 'message': 'First login successful'})
+            else:
+                return jsonify({'redirect_url': url_for('main.index'), 'message': 'Login successful'})
         else:
             # Email is not verified, notify the user
             return jsonify({'redirect_url': None, 'message': 'Please verify your email before proceeding.'})
