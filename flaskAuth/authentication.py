@@ -52,7 +52,7 @@ def login():
 # Sign in user
 @bp.route('/api/login', methods=['POST', 'GET'])
 def login_callback():
-    if('user' in session):
+    if'user' in session:
         return 'Hi, {}'.format(session['user'])
     
     email = request.json['email']
@@ -73,15 +73,16 @@ def login_callback():
         user_verified = userverify['users'][0]['emailVerified']
         
         if user_verified:
-            # Email is verified, proceed to the main.index page
+            # successful login
 
             session["user"] = email
-            # # Redirect the user to a welcome page or any desired page
+            # # Redirect the user to onboarding page if first login
             if 'first_login' not in session:
                 session['first_login'] = True
 
                 return jsonify({'redirect_url': url_for('main.onboarding'), 'message': 'First login successful'})
             else:
+                # Redirect user to home page
                 return jsonify({'redirect_url': url_for('main.index'), 'message': 'Login successful'})
         else:
             # Email is not verified, notify the user

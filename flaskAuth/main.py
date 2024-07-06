@@ -8,9 +8,6 @@ def index():
     
     return render_template('home.html')
 
-@bp.route('/verification')
-def verification():
-        return render_template('verification-pending.html')
 @bp.route('/onboarding')
 def onboarding():
     if 'user' in session:
@@ -19,6 +16,10 @@ def onboarding():
         return render_template('onboarding.html', user_email=user_email)
     else:
         return redirect(url_for('main.index'))  # Redirect to login if not logged in
+
+@bp.route("/onboarding", methods=['POST','GET'])
+def onboarding_callback():
+    ...
 
 
 @bp.route("/profile")

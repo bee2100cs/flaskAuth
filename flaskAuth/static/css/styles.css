@@ -257,9 +257,11 @@ select {
     transition: width .35s cubic-bezier(var(--transition-main), 1);
     overflow-y: auto;
     overflow-x: hidden;
+    z-index: 1;
 }
 #navbar:hover {
     width: 16em;
+    z-index: 2;
 }
 #navbar::-webkit-scrollbar-track {
     background-color: hsl(var(--background-secondary));
@@ -342,7 +344,8 @@ select {
 #main {
     margin: 0 0 0 5em;
     min-height: 150vh;
-    background-color: rgb(230, 228, 228)
+    background-color: rgb(230, 228, 228);
+    z-index: 1;
 }
 #main > h2 {
     width: 80%;
@@ -450,3 +453,21 @@ select {
 
   /* DOB */
   
+
+
+  /* Top nav */
+  #notifyHeader {
+    color: #007bff;
+    font-size: 18px;
+    text-align: center;
+  }
+  
+  #notifyContent {
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .navbar {
+    width: 100%;
+    z-index: 1;
+  }

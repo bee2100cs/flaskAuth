@@ -77,7 +77,13 @@ function login() {
     let emailInput = document.getElementById('l-email');
     let passInput = document.getElementById('l-password');
     let messageDiv = document.getElementById('flashMessage');
+    // Remove existing child (if any)
+    while (messageDiv.firstChild) {
+        messageDiv.removeChild(messageDiv.firstChild);
+    }
+
     let span = document.createElement('span');
+
 
 
     const email = emailInput.value;
@@ -91,13 +97,6 @@ function login() {
                 window.location.href = response.data.redirect_url;
                 console.log(response.data.message);
             } 
-            // else if (response.data.email_not_verified) {
-            //     console.log(response.data.message);
-
-            // //} 
-            // // else if (response.data.emailVerified !== null && !response.data.emailVerified) {
-            // //     console.log("Error during login", response.data.message)
-            // } 
             else {
                 // Handle the case where there is no redirect URL
                 console.error("Error during login: ", response.data.message);
