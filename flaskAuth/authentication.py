@@ -2,7 +2,7 @@ from flask import Blueprint, session, jsonify, render_template, request, redirec
 from .config import ApplicationConfig
 import pyrebase
 from flask_session import Session
-from functools import wraps
+
 
 bp = Blueprint("authentication", __name__)
 

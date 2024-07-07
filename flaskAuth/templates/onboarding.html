@@ -1,10 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- <div id="verificationPending" class="notification is-info">
-    <p>Howdy! Please Verify Email Before Proceeding</p>
-  </div> -->
   
-  <hr>
+  <!-- <hr>
   
   <div class="has-text-centered">
     <label class="label is-size-3">Create Your Profile</label>
@@ -96,6 +93,308 @@
     <button class="button is-primary">Submit</button>
   </form>
 <a href="{{url_for('main.profile') }}"> Profile</a>
+
+ 
+   -->
+  
+<div id="content-dashboard" class="ga-block ga-p-spacious ga-text-center">
+  <img src="https://www.dropbox.com/s/j3kbb8apuw3jqfp/lms_dashboard.png?raw=1" alt="">
+</div>
+
+<div id="content-thanks" class="ga-block ga-p-spacious">
+  <div class="ga-row">
+    <div class="ga-col ga-col-md-7 ga-col-md-centered ga-text-center">
+      <div class="ga-m-bottom-md"><span class="ga-icon ga-icon-ga-logo-color ga-icon-xl" aria-hidden></span></div>
+      <h1 class="ga-type-display">Thanks!</h1>
+    </div>
+  </div>
+</div>
+
+<div id="content" class="ga-block ga-p-regular">
+  <div class="ga-row">
+    <div class="ga-col ga-col-md-8 ga-col-md-centered">
+      <header class="ga-m-spacious ga-m-top-none">
+        <div class="ga-m-bottom-md ga-text-center"><span class="ga-icon ga-icon-ga-logo-color ga-icon-lg" aria-hidden></span></div>
+        <h1 class="ga-type-display ga-m-bottom-md ga-text-center">Welcome</h1>
+        <p class="ga-type-body ga-m-bottom-sm ga-text-center">Complete these steps to get started.</p>
+      </header>
+		
+		
+
+      <div class="ga-row">
+      <form class="">
+        <div class="ga-col ga-col-md-10 ga-col-md-centered">
+          <div class="ga-row ga-m-bottom-x-lg wrap">
+            <div class="ga-col ga-col-md-2"><div class="state-icon">1</div></div>
+            <div class="ga-col ga-col-md-10 wrap__inner">
+              <h2 class="ga-type-paragraph-header ga-m-bottom-lg">Terms of Service</h2>
+              <div class="ga-form-group">
+                <label class="ga-label">Country of Residence</label>
+                <select class="ga-select select-country select2-selects">
+                  <option disabled selected>Select one</option>
+                  <option>United States</option>
+                  <option>Afghanistan</option>
+                  <option>Aland Islands</option>
+                  <option>Albania</option>
+                  <option>Algeria</option>
+                  <option>Belarus</option>
+                  <option>Belgium</option>
+                  <option>Zambia</option>
+                  <option>Zimbabwe</option>
+                </select>
+              </div>
+              <div class="ga-form-group">
+                <label class="ga-label ga-label-normal">
+                  <input class="ga-checkbox" type="checkbox" />I agree to the <a class="ga-link" href="#">Terms of Service</a> and <a class="ga-link" href="#">Privacy Policy</a>
+                </label>
+              </div>
+              <div class="ga-form-group ga-m-top-lg">
+                <div class="click">
+                  <button type="button" name="button" class="ga-btn ga-btn-secondary ga-btn-xs btn-first" disabled>Continue</button>
+                </div>
+              </div>
+            </div>
+          </div>
+		  
+		  
+		  
+		  
+		  <!-- /end 1 -->
+
+
+
+          <div class="ga-row wrap">
+            <div class="ga-col ga-col-md-2"><div class="state-icon">3</div></div>
+            <div class="ga-col ga-col-md-10 wrap__inner">
+              <h2 class="ga-type-paragraph-header ga-m-bottom-lg">Personal Info</h2>
+              <p class="subtitle">Help us to understand our user base.<br><br>This information is strictly confidential and never shared. 
+                  You may add or remove it from your profile at any time.</p>
+          <div class="ga-row">
+				<div class="ga-col ga-col-md-8">
+						<div class="ga-form-group">
+						  
+							<label class="ga-label">Name</label>
+						  
+						
+								<input class="ga-input" type="text" placeholder="Enter First And Last Name">
+						
+						</div>
+          </div>
+          <div class="ga-col ga-col-md-8">
+						<div class="ga-form-group">
+						  
+							<label class="ga-label">Username</label>
+						  
+						  
+								<input class="ga-input" type="text" placeholder="Select A Username">
+							  
+						</div>
+            </div>
+						
+            <div class="ga-col ga-col-md-8">
+              <div class="ga-form-group">
+                
+                <label class="ga-label">DOB</label>
+                  <input class="ga-input" type="date" id="dob" name="Date of Birth" value="2018-07-22" min="1900-01-01" max="2025-12-31" />
+                  
+              </div>
+            </div>
+            <div class="ga-col ga-col-md-6">
+              <div class="ga-form-group">
+                <label class="ga-label">Gender</label>
+                <select class="ga-select">
+                  <option disabled selected>Select one</option>
+                  <option>Prefer not to say</option>
+                  <option>Female</option>
+                  <option>Male</option>
+                  <option>Trans* / non-binary</option>
+                </select>
+              </div>
+            </div>
+					  <div class="ga-col ga-col-md-8">
+              <div class="ga-form-group">
+                
+                <label class="ga-label">Profile Pic</label>
+                
+                <div class="file has-name">
+                <label class="file-label">
+                  <input class="file-input" type="file" name="resume">
+                  <span class="file-cta">
+                  <span class="file-icon">
+                    <i class="fas fa-upload"></i>
+                  </span>
+                  <span class="file-label">
+                    Choose a file…
+                  </span>
+                  </span>
+                  <span class="file-name">
+                  .....
+                  </span>
+                </label>
+                </div>
+              </div>
+            </div>
+            </div>
+              
+              <div class="ga-row">
+                <div class="ga-col ga-col-md-12">
+                  <div class="ga-form-group">
+                    <label class="ga-label">Ethnicity (select all that apply)</label>
+                  </div>
+                </div>
+                <div class="ga-col ga-col-md-6">
+                  <div class="ga-form-group">
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Prefer not to say</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Aborigine / Torres Straight Islander</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />African American / Black</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />East Asian</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Latin American</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Middle Eastern</label>
+                  </div>
+                </div>
+                <div class="ga-col ga-col-md-6">
+                  <div class="ga-form-group">
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Native American</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Pacific Islander</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />South Asian</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Southeast Asian</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />White</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Other</label>
+                  </div>
+                </div>
+              </div>
+              <div class="ga-form-group ga-m-top-lg">
+<!--                <p class="ga-m-bottom-sm legal">All answers are confidential and only used in aggregate.</p>
+-->
+                <div class="click">
+                  <button type="button" name="button" class="ga-btn ga-btn-secondary ga-btn-xs">Done</button>
+                </div>
+              </div>
+            </div>
+          </div> 		  
+		  <!-- /end 2 -->
+
+          <div class="ga-row ga-m-bottom-x-lg wrap">
+            <div class="ga-col ga-col-md-2"><div class="state-icon">2</div></div>
+            <div class="ga-col ga-col-md-10 wrap__inner">
+              <h2 class="ga-type-paragraph-header ga-m-bottom-lg">Professional Info</h2>
+              <p class="subtitle">This information helps us make recommendations based on what people like you have enjoyed.</p>
+
+              <div class="ga-row">
+                <div class="ga-col ga-col-md-6">
+                  <div class="ga-form-group">
+                    <label class="ga-label">Job Industry</label>
+                    <select class="ga-select select2-selects">
+                      <option disabled selected>Select one</option>
+
+<option>Prefer not to say</option>
+                      <option>Accounting</option>
+                      <option>Airlines/Aviation</option>
+                      <option>Alternative Dispute Resolution</option>
+                      <option>Alternative Medicine</option>
+                      <option>Apparel & Fashion</option>
+                      <option>Architecture & Planning</option>
+                      <option>Arts and Crafts</option>
+                      <option>Automotive</option>
+                      <option>Aviation & Aerospace</option>
+                      <option>Banking</option>
+                      <option>Biotechnology</option>
+                      
+                    </select>
+                  </div>
+                </div>
+                <div class="ga-col ga-col-md-6">
+                  <div class="ga-form-group">
+                    <label class="ga-label">Job Function</label>
+                    <select class="ga-select select2-selects">
+                      <option disabled selected>Select one</option>
+                      <option>Prefer not to say</option>
+                      <option>None</option>
+                      <option>Accounting</option>
+                      <option>Administrative</option>
+                      <option>Analysis and Research</option>
+                      <option>Arts and Design</option>
+                      
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="ga-row">
+                <div class="ga-col ga-col-md-6">
+                  <div class="ga-form-group">
+                    <label class="ga-label">Job Seniority</label>
+                    <select class="ga-select">
+                      <option disabled selected>Select one</option>
+                      <option>Prefer not to say</option>
+                      <option>Unpaid</option>
+                      <option>Training</option>
+                      <option>Entry-level</option>
+                      <option>Senior</option>
+                      <option>Manager</option>
+                      <option>Director</option>
+                      <option>Vice President (VP)</option>
+                      <option>Chief X Officer (CxO)</option>
+                      <option>Partner</option>
+                      <option>Owner</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="ga-col ga-col-md-6">
+                  <div class="ga-form-group">
+                    <label class="ga-label">Salary Range</label>
+                    <select class="ga-select">
+                      <option disabled selected>Select one</option>
+                      <option>Prefer not to say</option>
+                      <option>Under $20,000</option>
+                      <option>$20,000 - $30,000</option>
+                      <option>$40,000 - $50,000</option>
+                      <option>$50,000 - $75,000</option>
+                      <option>$75,000 - $100,000</option>
+                      <option>$100,000 - $150,000</option>
+                      <option>$150,000 - $200,000</option>
+                      <option>$20,000 - $250,000</option>
+                      <option>$250,000 or more</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="ga-row">
+                <div class="ga-col ga-col-md-6">
+                  <div class="ga-form-group">
+                    <label class="ga-label">Education Level</label>
+                    <select class="ga-select">
+                      <option disabled selected>Select one</option>
+                      <option>Prefer not to say</option>
+                      <option>Less than High School</option>
+                      <option>High School or equivalent</option>
+                      <option>Some College</option>
+                      <option>Associate degree</option>
+                      <option>Bachelor’s Degree</option>
+                      <option>Master’s Degree</option>
+                      <option>Professional Degree</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="ga-form-group ga-m-top-lg">
+<!--                <p class="ga-m-bottom-sm legal">All answers are confidential and only used in aggregate.</p>
+-->
+                <div class="click">
+                  <button type="button" name="button" class="ga-btn ga-btn-secondary ga-btn-xs">Continue</button> <span class="btn-skip">Skip</span>
+                </div>
+              </div>
+            </div>
+          </div> 
+		  
+		  <!-- /end 3 -->
+
+        </div>
+      </form>
+      </div> <!-- /main row -->
+    </div>
+  </div>
+</div>
+  
 
 
 {% endblock %}
