@@ -15,6 +15,10 @@ firebase = pyrebase.initialize_app(config)
 # Set up authentication manager
 auth = firebase.auth()
 
+# Set up database
+db = firebase.database()
+
+
 @bp.route('/api/signup')
 def signup():
     return render_template("signup.html")
@@ -29,12 +33,12 @@ def signup_callack():
     try:
         user = auth.create_user_with_email_and_password(email, password)
         
-        # # Store user information in session
-        # session["user"] = {
-        #     'email': email,
-        #     'idToken': user['idToken']
-        # }
-        
+        # Add user ID to the Firebase Realtime Database
+        user_id = user["localId"]
+        db.child("users").child(user_id).set({
+            "email":email,
+            "first_login":False
+            })
         # send email verification
         auth.send_email_verification(user['idToken'])
         flash("Congratulations! You've been signed up. Please verify your email address before logging in.", "success")
@@ -57,37 +61,43 @@ def login_callback():
     
     email = request.json['email']
     password = request.json['password']
+    
     try:
          # Sign in user
         user = auth.sign_in_with_email_and_password(email, password)
-
 
         # before the 1 hour expiry:
         user = auth.refresh(user['refreshToken'])
         # now we have a fresh token
         id = user['idToken']
-
+        #user_id = user['localId']
+        user_id = user['userId']
+        
         userverify = auth.get_account_info(id)
         
+        # Get user data in firebase realtime database
+        user_data = db.child('users').child(user_id).get().val()
+        print ("user_data", user_data)
+
         # # Check if the email is verified
         user_verified = userverify['users'][0]['emailVerified']
         
         if user_verified:
+            
             # successful login
-
             session["user"] = email
-            # # Redirect the user to onboarding page if first login
-            if 'first_login' not in session:
-                session['first_login'] = True
 
-                return jsonify({'redirect_url': url_for('main.onboarding'), 'message': 'First login successful'})
+            # # Redirect the user to onboarding page if first login
+            if user_data['first_login'] == False:
+                # Redirect user to onboarding page
+                return jsonify({'redirect_url': url_for('main.onboarding'), 'message': 'First login: Go to Onboarding'})
             else:
+                
                 # Redirect user to home page
                 return jsonify({'redirect_url': url_for('main.index'), 'message': 'Login successful'})
         else:
             # Email is not verified, notify the user
             return jsonify({'redirect_url': None, 'message': 'Please verify your email before proceeding.'})
-
 
     except:
         return jsonify({'redirect_url': None, 'message': 'Invalid email or password!!!!'})
