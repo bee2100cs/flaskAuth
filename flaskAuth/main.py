@@ -33,6 +33,27 @@ def onboarding():
     else:
         return redirect(url_for('authentication.login'))  # Redirect to login if not logged in
 
+@bp.route("/validate_username", methods=["POST"])
+def validate_username():
+    if 'user' in session and 'user_id' in session:
+        user_id = session["user_id"]
+        username = request.json["username"].lower()
+        # Check if username already exists
+        # Note: define the index for username in the database rules for this to work
+        existing_username = db.child('users').order_by_child('username').equal_to(username).get().val()
+        if not existing_username:
+            return jsonify({"exists": False}), 200
+        else:
+            for key, value in existing_username.items():
+                #Ensure that it's not the same user
+                if key != user_id: 
+                    return jsonify({"exists": True}), 200
+                else:
+                    return jsonify({"exists": False}), 200
+        
+            
+
+
 @bp.route("/onboarding", methods=['POST','GET'])
 def onboarding_callback():
     
@@ -40,12 +61,26 @@ def onboarding_callback():
         user_id = session['user_id']
 
         # User data from Onboarding form
-        username = request.json['username']
+        username = request.json['username'].lower()
         name = request.json['name']
         country = request.json['country']
-       # dob = request.json['dob']
+        dob = request.json['dob']
         gender = request.json['gender']
+        ethnicity = request.json['ethnicity']
+        industry = request.json["industry"]
+        jobFunction = request.json["jobFunction"]
+        seniority = request.json["seniority"]
+        salary = request.json["salary"]
+        education = request.json["education"]
         
+        # dictionary for professional info:
+        professional_info = {
+        "industry": industry,
+        "jobFunction": jobFunction,
+        "seniority": seniority,
+        "salary": salary,
+        "education": education
+        }
 
         print(f'Username: {username}')
         print(f'Name: {name}')
@@ -64,8 +99,10 @@ def onboarding_callback():
             "username": username,
             'name': name,
             'country':country,
-            #'dob':dob, 
+            'dob':dob, 
             'gender':gender,
+            'ethnicity':ethnicity,
+            "professional_info":professional_info,
             'first_login': True
             })
 
@@ -86,4 +123,3 @@ def profile():
 def search():
 
     return render_template('search.html')
-

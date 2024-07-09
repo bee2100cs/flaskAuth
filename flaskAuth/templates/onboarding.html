@@ -1,114 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-  
-  <!-- <hr>
-  
-  <div class="has-text-centered">
-    <label class="label is-size-3">Create Your Profile</label>
-  </div>
-  
-  <form class="box">
-    <div class="field is-horizontal">
-      <div class="field-label is-medium">
-        <label class="label">Name</label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control">
-            <input class="input" type="text" placeholder="Enter First And Last Name">
-          </div>
-        </div>
-      </div>
-    </div>
-  
-    <div class="field is-horizontal">
-      <div class="field-label is-medium">
-        <label class="label">Username</label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control">
-            <input class="input" type="text" placeholder="Select A Username">
-          </div>
-        </div>
-      </div>
-    </div>
-  
-    <div class="field is-horizontal">
-      <div class="field-label is-medium">
-        <label class="label">Country</label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control">
-            <div class="select is-fullwidth">
-              <select>
-                <option selected>Country</option>
-                <option value="AF">Afghanistan</option>
-                <option value="AX">Aland Islands</option>
-                <option value="AL">Kenya</option>
-                <option value="DZ">Algeria</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  
-    <div class="field is-horizontal">
-      <div class="field-label is-medium">
-        <label class="label">DOB</label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control">
-            <input class="input" type="date" id="dob" name="Date of Birth" value="2018-07-22" min="1900-01-01" max="2025-12-31" />
-          </div>
-        </div>
-      </div>
-    </div>
-  
-    <div class="field is-horizontal">
-      <div class="field-label is-medium">
-        <label class="label">Profile Pic</label>
-      </div>
-      <div class="file has-name">
-        <label class="file-label">
-          <input class="file-input" type="file" name="resume">
-          <span class="file-cta">
-            <span class="file-icon">
-              <i class="fas fa-upload"></i>
-            </span>
-            <span class="file-label">
-              Choose a file…
-            </span>
-          </span>
-          <span class="file-name">
-            .....
-          </span>
-        </label>
-      </div>
-    </div>
 
-    <button class="button is-primary">Submit</button>
-  </form>
-<a href="{{url_for('main.profile') }}"> Profile</a>
-
- 
-   -->
   
 <div id="content-dashboard" class="ga-block ga-p-spacious ga-text-center">
   <img src="https://www.dropbox.com/s/j3kbb8apuw3jqfp/lms_dashboard.png?raw=1" alt="">
 </div>
 
-<div id="content-thanks" class="ga-block ga-p-spacious">
-  <div class="ga-row">
-    <div class="ga-col ga-col-md-7 ga-col-md-centered ga-text-center">
-      <div class="ga-m-bottom-md"><span class="ga-icon ga-icon-ga-logo-color ga-icon-xl" aria-hidden></span></div>
-      <h1 class="ga-type-display">Thanks!</h1>
-    </div>
-  </div>
-</div>
 
 <div id="content" class="ga-block ga-p-regular">
   <div class="ga-row">
@@ -122,7 +19,7 @@
 		
 
       <div class="ga-row">
-      <form class="">
+      <form class="onboarding-form" method="POST" id="onboarding" enctype="multipart/form-data">
         <div class="ga-col ga-col-md-10 ga-col-md-centered">
           <div class="ga-row ga-m-bottom-x-lg wrap">
             <div class="ga-col ga-col-md-2"><div class="state-icon">1</div></div>
@@ -130,7 +27,7 @@
               <h2 class="ga-type-paragraph-header ga-m-bottom-lg">Terms of Service</h2>
               <div class="ga-form-group">
                 <label class="ga-label">Country of Residence</label>
-                <select class="ga-select select-country select2-selects">
+                <select class="ga-select select-country select2-selects" id="countrySelect">
                   <option disabled selected>Select one</option>
                   <option>United States</option>
                   <option>Afghanistan</option>
@@ -163,8 +60,8 @@
 
 
 
-          <div class="ga-row wrap">
-            <div class="ga-col ga-col-md-2"><div class="state-icon">3</div></div>
+          <div class="ga-row wrap" id="unhidePersonal">
+            <div class="ga-col ga-col-md-2"><div class="state-icon">2</div></div>
             <div class="ga-col ga-col-md-10 wrap__inner">
               <h2 class="ga-type-paragraph-header ga-m-bottom-lg">Personal Info</h2>
               <p class="subtitle">Help us to understand our user base.<br><br>This information is strictly confidential and never shared. 
@@ -176,7 +73,7 @@
 							<label class="ga-label">Name</label>
 						  
 						
-								<input class="ga-input" type="text" placeholder="Enter First And Last Name">
+								<input class="ga-input" type="text" id="name" placeholder="Enter First And Last Name" required>
 						
 						</div>
           </div>
@@ -185,8 +82,8 @@
 						  
 							<label class="ga-label">Username</label>
 						  
-						  
-								<input class="ga-input" type="text" placeholder="Select A Username">
+						  <div class="text-center p-t-12" id="usernameExists"> </div>
+								<input class="ga-input" id="username" type="text" placeholder="Select A Username" required>
 							  
 						</div>
             </div>
@@ -202,7 +99,7 @@
             <div class="ga-col ga-col-md-6">
               <div class="ga-form-group">
                 <label class="ga-label">Gender</label>
-                <select class="ga-select">
+                <select class="ga-select" id="gender">
                   <option disabled selected>Select one</option>
                   <option>Prefer not to say</option>
                   <option>Female</option>
@@ -218,7 +115,7 @@
                 
                 <div class="file has-name">
                 <label class="file-label">
-                  <input class="file-input" type="file" name="resume">
+                  <input class="file-input" type="file" name="profilePic" id="profilePic">
                   <span class="file-cta">
                   <span class="file-icon">
                     <i class="fas fa-upload"></i>
@@ -244,22 +141,22 @@
                 </div>
                 <div class="ga-col ga-col-md-6">
                   <div class="ga-form-group">
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Prefer not to say</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Aborigine / Torres Straight Islander</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />African American / Black</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />East Asian</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Latin American</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Middle Eastern</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Prefer not to say" />Prefer not to say</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Aborigine / Torres Straight Islander" />Aborigine / Torres Straight Islander</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="African American / Black" />African American / Black</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="East Asian" />East Asian</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Latin American" />Latin American</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Middle Eastern" />Middle Eastern</label>
                   </div>
                 </div>
                 <div class="ga-col ga-col-md-6">
                   <div class="ga-form-group">
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Native American</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Pacific Islander</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />South Asian</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Southeast Asian</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />White</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" />Other</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Native American" />Native American</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Pacific Islander" />Pacific Islander</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="South Asian" />South Asian</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Southeast Asian" />Southeast Asian</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="White" />White</label>
+                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Other" />Other</label>
                   </div>
                 </div>
               </div>
@@ -267,7 +164,7 @@
 <!--                <p class="ga-m-bottom-sm legal">All answers are confidential and only used in aggregate.</p>
 -->
                 <div class="click">
-                  <button type="button" name="button" class="ga-btn ga-btn-secondary ga-btn-xs">Done</button>
+                  <button type="button" name="button" class="ga-btn ga-btn-secondary ga-btn-xs" id="doneButton" disabled>Done</button>
                 </div>
               </div>
             </div>
@@ -275,7 +172,7 @@
 		  <!-- /end 2 -->
 
           <div class="ga-row ga-m-bottom-x-lg wrap">
-            <div class="ga-col ga-col-md-2"><div class="state-icon">2</div></div>
+            <div class="ga-col ga-col-md-2"><div class="state-icon">3</div></div>
             <div class="ga-col ga-col-md-10 wrap__inner">
               <h2 class="ga-type-paragraph-header ga-m-bottom-lg">Professional Info</h2>
               <p class="subtitle">This information helps us make recommendations based on what people like you have enjoyed.</p>
@@ -284,7 +181,7 @@
                 <div class="ga-col ga-col-md-6">
                   <div class="ga-form-group">
                     <label class="ga-label">Job Industry</label>
-                    <select class="ga-select select2-selects">
+                    <select class="ga-select select2-selects" id="industry">
                       <option disabled selected>Select one</option>
 
 <option>Prefer not to say</option>
@@ -306,7 +203,7 @@
                 <div class="ga-col ga-col-md-6">
                   <div class="ga-form-group">
                     <label class="ga-label">Job Function</label>
-                    <select class="ga-select select2-selects">
+                    <select class="ga-select select2-selects" id="jobFunction">
                       <option disabled selected>Select one</option>
                       <option>Prefer not to say</option>
                       <option>None</option>
@@ -323,7 +220,7 @@
                 <div class="ga-col ga-col-md-6">
                   <div class="ga-form-group">
                     <label class="ga-label">Job Seniority</label>
-                    <select class="ga-select">
+                    <select class="ga-select" id="seniority">
                       <option disabled selected>Select one</option>
                       <option>Prefer not to say</option>
                       <option>Unpaid</option>
@@ -342,7 +239,7 @@
                 <div class="ga-col ga-col-md-6">
                   <div class="ga-form-group">
                     <label class="ga-label">Salary Range</label>
-                    <select class="ga-select">
+                    <select class="ga-select" id="salary">
                       <option disabled selected>Select one</option>
                       <option>Prefer not to say</option>
                       <option>Under $20,000</option>
@@ -362,7 +259,7 @@
                 <div class="ga-col ga-col-md-6">
                   <div class="ga-form-group">
                     <label class="ga-label">Education Level</label>
-                    <select class="ga-select">
+                    <select class="ga-select" id="education">
                       <option disabled selected>Select one</option>
                       <option>Prefer not to say</option>
                       <option>Less than High School</option>
@@ -380,7 +277,7 @@
 <!--                <p class="ga-m-bottom-sm legal">All answers are confidential and only used in aggregate.</p>
 -->
                 <div class="click">
-                  <button type="button" name="button" class="ga-btn ga-btn-secondary ga-btn-xs">Continue</button> <span class="btn-skip">Skip</span>
+                  <button type="submit" name="button" class="ga-btn ga-btn-secondary ga-btn-xs">Continue</button>
                 </div>
               </div>
             </div>
