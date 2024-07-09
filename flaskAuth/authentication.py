@@ -32,13 +32,17 @@ def signup_callack():
        return jsonify({'redirect_url': None, 'message': 'Password must be at least six characters long'}), 400
     try:
         user = auth.create_user_with_email_and_password(email, password)
-        
+
         # Add user ID to the Firebase Realtime Database
         user_id = user["localId"]
+        if not user_id:
+            raise ValueError("localId not found in user data")
+            
         db.child("users").child(user_id).set({
             "email":email,
             "first_login":False
             })
+        print("user details:", user_id)
         # send email verification
         auth.send_email_verification(user['idToken'])
         flash("Congratulations! You've been signed up. Please verify your email address before logging in.", "success")

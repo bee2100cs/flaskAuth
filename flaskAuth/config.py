@@ -24,7 +24,7 @@ class ApplicationConfig:
         'messagingSenderId': os.environ.get("messagingSenderId"),
         'appId': os.environ.get("appId"),
         'measurementId': os.environ.get("measurementId"),
-        'databaseURL': ""
+        'databaseURL': os.environ.get("database_url")
     }
 
     SESSION_TYPE = "redis"

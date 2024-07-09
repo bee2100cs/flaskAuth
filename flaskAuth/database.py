@@ -16,7 +16,7 @@ config = {
     'messagingSenderId': os.environ.get("messagingSenderId"),
     'appId': os.environ.get("appId"),
     'measurementId': os.environ.get("measurementId"),
-    'databaseURL': "https://flask-authority-default-rtdb.europe-west1.firebasedatabase.app/"
+    'databaseURL': "database_url"
 }
 firebase = pyrebase.initialize_app(config)
 
@@ -28,3 +28,7 @@ data={'age':32, 'address':"Texas", 'employed':True, 'name':'Eddy Mwalimu'}
 
 #update
 db.child("users").child("user").update({'name':'Job'})
+
+
+
+
