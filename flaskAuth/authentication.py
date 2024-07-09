@@ -42,7 +42,6 @@ def signup_callack():
             "email":email,
             "first_login":False
             })
-        print("user details:", user_id)
         # send email verification
         auth.send_email_verification(user['idToken'])
         flash("Congratulations! You've been signed up. Please verify your email address before logging in.", "success")
@@ -81,7 +80,6 @@ def login_callback():
         
         # Get user data in firebase realtime database
         user_data = db.child('users').child(user_id).get().val()
-        print ("user_data", user_data)
 
         # # Check if the email is verified
         user_verified = userverify['users'][0]['emailVerified']
@@ -90,6 +88,7 @@ def login_callback():
             
             # successful login
             session["user"] = email
+            session["user_id"] = user_id
 
             # # Redirect the user to onboarding page if first login
             if user_data['first_login'] == False:
