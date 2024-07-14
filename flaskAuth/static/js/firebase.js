@@ -162,6 +162,38 @@ function logout ()  {
         console.error("Error during logout:", error);
     })
 }
+
+// Delete user
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteBtn = document.getElementById('delete-user-btn');
+
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            let passwordInput= document.getElementById("delete-password-input");
+            const password = passwordInput.value;
+
+            if (password) {
+                axios.post('/api/delete_user', { password: password })
+                    .then(function(response) {
+                        if (response.data.success) {
+                            alert(response.data.message);
+                            // Redirect to the home page or login page after deletion
+                            window.location.href = '/';
+                        } else {
+                            alert(response.data.message);
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error("Error during user deletion", error);
+                        alert("Error during user deletion: " + error.response.data.message);
+                    });
+            }
+        });
+    }
+});
+
+
 // function googlePopup() {
 //     signInWithPopup(auth, provider)
 //         .then((result) => {

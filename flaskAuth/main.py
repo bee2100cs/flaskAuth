@@ -226,7 +226,6 @@ def edit_profile_callback():
         return jsonify({'error': str(e)}), 500
 
 
-
 @bp.route('/upload', methods=['POST'])
 @login_required
 def upload_file():

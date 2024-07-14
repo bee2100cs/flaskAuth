@@ -148,24 +148,7 @@
               </form>
               
               <hr>
-              <!-- <form>
-                <div class="row">
-                  <div class="col-sm-3">
-                    <p class="mb-0">Email</p>
-                  </div>
-                  <div class="col-sm-6">
-                    <input type="text" class="form-control" id="emailInput" disabled placeholder="{{ user.email }}">
-                  </div>
-                  <div class="col-sm-3">
-                    <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="email">Edit</button>
-                        <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="email">Save</button>
-                </div>
-                </div>
-                
-              </form> -->
-              <!-- <hr>
-              
-              <hr> -->
+
               <form class="form-container">
                 <div class="row">
                   <div class="col-sm-3">
@@ -205,6 +188,10 @@
                 </div>
                 </div>
               </form>
+              <hr>
+              <div>
+                <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href="{{ url_for('main.profile') }}">Go Back To Profile</a>
+              </div>
               <hr>
             </div>
           </div>
@@ -327,6 +314,7 @@
              
             </form>
             <hr>
+            <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href="{{ url_for('main.profile') }}">Go Back To Profile</a>
           </div>
         </div>
       </div>

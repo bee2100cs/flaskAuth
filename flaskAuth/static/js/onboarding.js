@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Function to validate username
-  function validateUsername(username, callback) {
+  function validateUsername_update(username, callback) {
     // const username = usernameInput.value.trim().toLowerCase();
     if (username !== '') {
       axios.post('/validate_username', {username: username})
@@ -134,7 +134,47 @@ document.addEventListener('DOMContentLoaded', function() {
       callback(false);
     }
   }
+ // Function to validate username
+ function validateUsername() {
+  const username = usernameInput.value.trim().toLowerCase();
+  if (username !== '') {
+    axios.post('/validate_username', {username:username})
+    .then(function (response) {
+      if (response.data.exists) {
 
+        // Username already exists
+        usernameExists.textContent = "Username already exists.";
+        usernameExists.classList.remove('hidden');
+
+        // format message
+        usernameExists.style.color = 'red'; 
+        usernameExists.style.fontWeight = 'bold'; 
+        usernameExists.style.fontSize = '1.2em'; 
+
+        doneButton.disabled = true;
+      } else {
+        // Username is available
+        usernameExists.textContent = "";
+        usernameExists.classList.add('hidden');
+        // Recheck if done button should be enabled
+        checkInput();
+      }
+    })
+    .catch(function (error) {
+      // Handle specific username validation errors
+      console.error("Error during username validation", error);
+
+      // Clear any previous sucess messages and hide them
+      usernameExists.textContent = "";
+      usernameExists.classList.add('hidden');
+    });
+  } else {
+    // Handle cases where username is empty
+    usernameExists.textContent = "";
+    usernameExists.classList.add("hidden");
+    doneButton.disabled = true;
+  }
+}
 
   // Validate form and call onboarding function
   if (onboardingForm) {
@@ -300,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
           if (inputElement) {
             if (field === 'username') {
-              validateUsername(inputElement.value, function (isValid) {
+              validateUsername_update(inputElement.value, function (isValid) {
                 if (isValid) {
                   updateProfile(field, inputElement.value, inputElement, saveButton, editButton, cancelButton);
                 }

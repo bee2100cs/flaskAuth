@@ -88,11 +88,11 @@ def login_callback():
         # before the 1 hour expiry:
         user = auth.refresh(user['refreshToken'])
         # now we have a fresh token
-        id = user['idToken']
+        id_token = user['idToken']
         #user_id = user['localId']
         user_id = user['userId']
         
-        userverify = auth.get_account_info(id)
+        userverify = auth.get_account_info(id_token)
         
         # Get user data in firebase realtime database
         user_data = db.child('users').child(user_id).get().val()
@@ -105,7 +105,7 @@ def login_callback():
             # successful login
             session["user"] = email
             session["user_id"] = user_id
-            
+            session["id_token"] = id_token
             # # Redirect the user to onboarding page if first login
             if user_data['first_login_done'] == False:
                 # Redirect user to onboarding page
@@ -146,3 +146,32 @@ def logout():
         return redirect(url_for('main.index'))
     else:
         return jsonify({'error': 'Method not allowed'}), 405  # Return a 405 Method Not Allowed status for other methods
+
+# Route to delete user
+@bp.route('/api/delete_user', methods=['POST'])
+@login_required
+def delete_user():
+    try:
+        user_id = session['user_id']
+        id_token = session["id_token"]
+        password = request.json['password']
+        print(password)
+
+        # Reauthenticate user with password
+        user = auth.sign_in_with_email_and_password(session['user'], password)
+        auth.refresh(user['refreshToken'])
+
+        # Delete user from Firebase Realtime Database
+        db.child('users').child(user_id).remove()
+
+        # Delete user from Firebase Authentication
+        auth.delete_user_account(id_token)
+
+        # Clear session after deleting user
+        session.clear()
+
+        return jsonify({"sucess": True, "message": "User deleted sucessfully", "redirect_url": url_for('main.index')}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
