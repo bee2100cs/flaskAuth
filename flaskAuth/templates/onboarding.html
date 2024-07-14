@@ -29,15 +29,9 @@
                 <label class="ga-label">Country of Residence</label>
                 <select class="ga-select select-country select2-selects" id="countrySelect">
                   <option disabled selected>Select one</option>
-                  <option>United States</option>
-                  <option>Afghanistan</option>
-                  <option>Aland Islands</option>
-                  <option>Albania</option>
-                  <option>Algeria</option>
-                  <option>Belarus</option>
-                  <option>Belgium</option>
-                  <option>Zambia</option>
-                  <option>Zimbabwe</option>
+                  {% for country in countries %}
+                    <option> {{ country }}</option>
+                  {% endfor %}
                 </select>
               </div>
               <div class="ga-form-group">
@@ -108,29 +102,6 @@
                 </select>
               </div>
             </div>
-					  <div class="ga-col ga-col-md-8">
-              <div class="ga-form-group">
-                
-                <label class="ga-label">Profile Pic</label>
-                
-                <div class="file has-name">
-                <label class="file-label">
-                  <input class="file-input" type="file" name="profilePic" id="profilePic">
-                  <span class="file-cta">
-                  <span class="file-icon">
-                    <i class="fas fa-upload"></i>
-                  </span>
-                  <span class="file-label">
-                    Choose a file…
-                  </span>
-                  </span>
-                  <span class="file-name">
-                  .....
-                  </span>
-                </label>
-                </div>
-              </div>
-            </div>
             </div>
               
               <div class="ga-row">
@@ -183,35 +154,20 @@
                     <label class="ga-label">Job Industry</label>
                     <select class="ga-select select2-selects" id="industry">
                       <option disabled selected>Select one</option>
-
-<option>Prefer not to say</option>
-                      <option>Accounting</option>
-                      <option>Airlines/Aviation</option>
-                      <option>Alternative Dispute Resolution</option>
-                      <option>Alternative Medicine</option>
-                      <option>Apparel & Fashion</option>
-                      <option>Architecture & Planning</option>
-                      <option>Arts and Crafts</option>
-                      <option>Automotive</option>
-                      <option>Aviation & Aerospace</option>
-                      <option>Banking</option>
-                      <option>Biotechnology</option>
-                      
+                      {% for industry in industry%}
+                        <option>{{ industry }}</option>
+                      {% endfor %}
                     </select>
                   </div>
                 </div>
                 <div class="ga-col ga-col-md-6">
                   <div class="ga-form-group">
-                    <label class="ga-label">Job Function</label>
-                    <select class="ga-select select2-selects" id="jobFunction">
+                    <label class="ga-label">Profession</label>
+                    <select class="ga-select select2-selects" id="profession">
                       <option disabled selected>Select one</option>
-                      <option>Prefer not to say</option>
-                      <option>None</option>
-                      <option>Accounting</option>
-                      <option>Administrative</option>
-                      <option>Analysis and Research</option>
-                      <option>Arts and Design</option>
-                      
+                      {% for profession in professions %}
+                        <option>{{ profession }}</option>
+                      {% endfor %}
                     </select>
                   </div>
                 </div>
@@ -222,17 +178,9 @@
                     <label class="ga-label">Job Seniority</label>
                     <select class="ga-select" id="seniority">
                       <option disabled selected>Select one</option>
-                      <option>Prefer not to say</option>
-                      <option>Unpaid</option>
-                      <option>Training</option>
-                      <option>Entry-level</option>
-                      <option>Senior</option>
-                      <option>Manager</option>
-                      <option>Director</option>
-                      <option>Vice President (VP)</option>
-                      <option>Chief X Officer (CxO)</option>
-                      <option>Partner</option>
-                      <option>Owner</option>
+                      {% for seniority in seniority %}
+                        <option>{{ seniority }}</option>
+                      {% endfor %}
                     </select>
                   </div>
                 </div>
@@ -241,16 +189,9 @@
                     <label class="ga-label">Salary Range</label>
                     <select class="ga-select" id="salary">
                       <option disabled selected>Select one</option>
-                      <option>Prefer not to say</option>
-                      <option>Under $20,000</option>
-                      <option>$20,000 - $30,000</option>
-                      <option>$40,000 - $50,000</option>
-                      <option>$50,000 - $75,000</option>
-                      <option>$75,000 - $100,000</option>
-                      <option>$100,000 - $150,000</option>
-                      <option>$150,000 - $200,000</option>
-                      <option>$20,000 - $250,000</option>
-                      <option>$250,000 or more</option>
+                      {% for salary in salary %}
+                        <option>{{ salary }}</option>
+                      {% endfor %}
                     </select>
                   </div>
                 </div>
@@ -261,14 +202,9 @@
                     <label class="ga-label">Education Level</label>
                     <select class="ga-select" id="education">
                       <option disabled selected>Select one</option>
-                      <option>Prefer not to say</option>
-                      <option>Less than High School</option>
-                      <option>High School or equivalent</option>
-                      <option>Some College</option>
-                      <option>Associate degree</option>
-                      <option>Bachelor’s Degree</option>
-                      <option>Master’s Degree</option>
-                      <option>Professional Degree</option>
+                      {% for education in education %}
+                      <option>{{ education }}</option>
+                      {% endfor %}
                     </select>
                   </div>
                 </div>

@@ -33,9 +33,9 @@ storage = firebase.storage()
 # storage.child(cloudfilename).download("","downloaded.txt")
 
 # Reading file
-cloudfilename=input("enter the file on the cloud: ")
-url = storage.child(cloudfilename).get_url(None)
+#cloudfilename=input("enter the file on the cloud: ")
+url = storage.child(f'profile_pics/logo').get_url(None)
 
 f=urllib.request.urlopen(url).read()
-print(f)
+print("image Url", f)
 

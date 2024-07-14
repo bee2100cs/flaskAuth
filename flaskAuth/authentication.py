@@ -1,8 +1,7 @@
 from flask import Blueprint, session, jsonify, render_template, request, redirect, url_for, flash
 from .config import ApplicationConfig
 import pyrebase
-from flask_session import Session
-
+from functools import wraps
 
 bp = Blueprint("authentication", __name__)
 
@@ -18,6 +17,23 @@ auth = firebase.auth()
 # Set up database
 db = firebase.database()
 
+
+# Function to check if user is logged in
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user' not in session or 'user_id' not in session:
+            # Redirect to login route
+            session['next_url'] = request.url
+            # redirect to login route
+            return redirect(url_for('authentication.login'))
+        else:
+            # Clear 'next_url' from session if user is logged in
+            session.pop('next_url', None)
+
+        return f(*args, ** kwargs)
+    
+    return decorated_function
 
 @bp.route('/api/signup')
 def signup():
@@ -40,7 +56,7 @@ def signup_callack():
             
         db.child("users").child(user_id).set({
             "email":email,
-            "first_login":False
+            "first_login_done":False
             })
         # send email verification
         auth.send_email_verification(user['idToken'])
@@ -89,17 +105,24 @@ def login_callback():
             # successful login
             session["user"] = email
             session["user_id"] = user_id
-
+            
             # # Redirect the user to onboarding page if first login
-            if user_data['first_login'] == False:
+            if user_data['first_login_done'] == False:
                 # Redirect user to onboarding page
                 return jsonify({'redirect_url': url_for('main.onboarding'), 'message': 'First login: Go to Onboarding'})
-            else:
+            
+            # Check for next_url cookie in the case of use of login_required 
+            if 'next_url' in session:
                 
-                # Redirect user to home page
+                next_url = session.pop('next_url')
+                
+                return jsonify({'redirect_url': next_url, 'message': "Login successful"})
+            # Default Redirect to home page
+            else:
                 return jsonify({'redirect_url': url_for('main.index'), 'message': 'Login successful'})
         else:
             # Email is not verified, notify the user
+           
             return jsonify({'redirect_url': None, 'message': 'Please verify your email before proceeding.'})
 
     except:

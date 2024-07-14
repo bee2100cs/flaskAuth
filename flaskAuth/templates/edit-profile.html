@@ -1,0 +1,336 @@
+{% extends "base.html" %}
+{% block content %}
+<section style="background-color: #eee;">
+    <div class="container-fluid py-5">
+      <div class="row">
+        <div class="col">
+          <nav aria-label="breadcrumb" class="bg-body-tertiary rounded-3 p-3 mb-4">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item"><a href="#">User</a></li>
+              <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+
+      <!-- upload profile image -->
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="card mb-4">
+            <div class="card-body">
+              <label class="from-label" for="customFile">Upload Profile Image</label>
+              <form id="uploadForm" enctype="multipart/form-data">
+              <div class="row">
+                
+                <div class="col-sm-9">
+                    
+                    <input type="file" class="form-control" name="profilePic" id="profilePic" />
+                    
+                </div>
+                <div class="col-sm-3">
+                  <button type="submit" class="btn btn-primary" id="uploadButton">Upload</button>
+                </div>
+                <div id="uploadError" class="error-message" style="color: red; font-weight: bold;"></div>
+              </div>
+              </form>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- edit personal info -->
+      <div class="row">
+        <div class="col-lg-12">
+          
+          <div class="card mb-4">
+            <div class="card-body">
+              <form id="nameForm">
+                <div class="align-text-center h3">Personal Information</div>
+                <div class="row">
+                  
+                  <div class="col-sm-3">
+                    <p class="mb-0">Full Name</p>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="text-center p-t-12" id="nameError"> </div>
+                    <input type="text" class="form-control" id="nameInput" disabled required placeholder="{{ user.name }}">
+                  </div>
+                  <div class="col-sm-3 d-flex align-items-center">
+                    <button class="btn btn-primary btn-sm me-2 edit-btn" id="" type="button" data-field="name">Edit</button>
+                    <button class="btn btn-success btn-sm me-2 d-none save-btn" id="" type="submit" data-field="name">Save</button>
+                    <button class="btn btn-secondary btn-sm d-none cancel-btn" id="" type="button" data-field="name">Cancel</button>
+                </div>
+                </div>
+              </form>
+              
+              <hr>
+             
+              <form id="usernameForm">
+                <div class="row">
+                  <div class="col-sm-3">
+                    <p class="mb-0">Username</p>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="text-center p-t-12" id="usernameExists" style="display: none"> </div>
+                    <div class="text-center p-t-12" id="usernameError" style="display: none"> </div>
+                    <input type="text" class="form-control" id="usernameInput" disabled placeholder="{{ user.username }}">
+                  </div>
+                  <div class="col-sm-3 d-flex align-items-center">
+                    <button class="btn btn-primary btn-sm me-2 edit-btn" type="button" data-field="username">Edit</button>
+                    <button class="btn btn-success btn-sm me-2 d-none save-btn" type="submit" data-field="username">Save</button>
+                    <button class="btn btn-secondary btn-sm d-none cancel-btn" type="button" data-field="username">Cancel</button>
+                </div>
+                </div>
+              </form>
+              
+              <hr>
+              
+              <form id="genderForm">
+                <div class="row">
+                  <div class="col-sm-3">
+                    <p class="mb-0">Gender</p>
+                  </div>
+                  <div class="col-sm-6">
+                    <input type="text" class="form-control" id="genderInput" disabled placeholder="{{ user.gender }}">
+                  </div>
+                  <div class="col-sm-3 d-flex align-items-center">
+                    <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="gender">Edit</button>
+                    <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="gender">Save</button>
+                    <button class="btn btn-secondary btn-sm d-none cancel-btn" id="" type="button" data-field="gender">Cancel</button>
+                </div>
+                </div>
+               
+              </form>
+              <hr>
+              <form id="ethnicityForm">
+                <div class="row">
+                  <div class="col-sm-3">
+                    <p class="mb-0">Ethnicity</p>
+                  </div>
+                  <div class="col-sm-6">
+                    <input type="text" class="form-control" id="ethnicityInput" disabled placeholder="{{ user.ethnicity }}">
+                    <div class="ga-row" id="ethnicity-options" style="display: none">
+                      <div class="ga-col ga-col-md-12">
+                        <div class="ga-form-group">
+                          <label class="ga-label">Ethnicity (select all that apply)</label>
+                        </div>
+                      </div>
+                      <div class="ga-col ga-col-md-6">
+                        <div class="ga-form-group">
+                          <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Prefer not to say" />Prefer not to say</label>
+                          <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Aborigine / Torres Straight Islander" />Aborigine / Torres Straight Islander</label>
+                          <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="African American / Black" />African American / Black</label>
+                          <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="East Asian" />East Asian</label>
+                          <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Latin American" />Latin American</label>
+                          <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Middle Eastern" />Middle Eastern</label>
+                        </div>
+                      </div>
+                      <div class="ga-col ga-col-md-6">
+                        <div class="ga-form-group">
+                          <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Native American" />Native American</label>
+                          <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Pacific Islander" />Pacific Islander</label>
+                          <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="South Asian" />South Asian</label>
+                          <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Southeast Asian" />Southeast Asian</label>
+                          <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="White" />White</label>
+                          <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Other" />Other</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-3 d-flex align-items-center">
+                    <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="ethnicity">Edit</button>
+                      <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="ethnicity">Save</button>
+                      <button class="btn btn-secondary btn-sm d-none cancel-btn" id="" type="button" data-field="ethnicity">Cancel</button>
+                </div>
+                </div>
+              </form>
+              
+              <hr>
+              <!-- <form>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <p class="mb-0">Email</p>
+                  </div>
+                  <div class="col-sm-6">
+                    <input type="text" class="form-control" id="emailInput" disabled placeholder="{{ user.email }}">
+                  </div>
+                  <div class="col-sm-3">
+                    <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="email">Edit</button>
+                        <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="email">Save</button>
+                </div>
+                </div>
+                
+              </form> -->
+              <!-- <hr>
+              
+              <hr> -->
+              <form class="form-container">
+                <div class="row">
+                  <div class="col-sm-3">
+                    <p class="mb-0">Country</p>
+                  </div>
+                  <div class="col-sm-6">
+                    
+                    <select class="ga-select select2-selects" id="countrySelection" disabled>
+                      <option disabled selected>{{ user.country }}</option>
+                      {% for country in countries %}
+                        <option>{{ country }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-sm-3 d-flex align-items-center">
+                    <button class="btn btn-primary btn-sm me-1 edit-selection" type="button" data-field="country">Edit</button>
+                    <button class="btn btn-success btn-sm d-none update-selection" type="submit" data-field="country">Save</button>
+                    <button class="btn btn-secondary btn-sm d-none cancel-selection"  type="button" data-field="country">Cancel</button>
+                </div>
+                </div>
+              </form>
+              
+              <hr>
+              
+              <form>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <p class="mb-0">Address</p>
+                  </div>
+                  <div class="col-sm-6">
+                    <input type="text" class="form-control" id="addressInput" disabled placeholder="{{ user.address }}">
+                  </div>
+                  <div class="col-sm-3 d-flex align-items-center">
+                    <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="address">Edit</button>
+                        <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="address">Save</button>
+                    <button class="btn btn-secondary btn-sm d-none cancel-btn" id="" type="button" data-field="address">Cancel</button>
+                </div>
+                </div>
+              </form>
+              <hr>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- edit professional info -->
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="align-text-center h3">Professional Information</div>
+            <form id="industryForm">
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Industry</p>
+                </div>
+                <div class="col-sm-6">
+                <select class="ga-select select2-selects" id="industrySelection" disabled>
+                      <option disabled selected>{{ professional_info.industry }}</option>
+                      {% for industry in industries %}
+                        <option>{{ industry }}</option>
+                      {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-3 d-flex align-items-center">
+                  <button class="btn btn-primary btn-sm me-1 edit-selection" type="button" data-field="industry">Edit</button>
+                  <button class="btn btn-success btn-sm d-none update-selection" type="submit" data-field="industry">Save</button>
+                  <button class="btn btn-secondary btn-sm d-none cancel-selection" type="button" data-field="industry">Cancel</button>
+              </div>
+              </div>
+             
+            </form>
+            <hr>
+            <form id="professionForm">
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Profession</p>
+                </div>
+                <div class="col-sm-6">
+                <select class="ga-select select2-selects" id="professionSelection" disabled>
+                      <option disabled selected>{{ professional_info.profession }}</option>
+                      {% for profession in professions %}
+                        <option>{{ profession }}</option>
+                      {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-3 d-flex align-items-center">
+                  <button class="btn btn-primary btn-sm me-1 edit-selection" type="button" data-field="profession">Edit</button>
+                  <button class="btn btn-success btn-sm d-none update-selection" type="submit" data-field="profession">Save</button>
+                  <button class="btn btn-secondary btn-sm d-none cancel-selection" type="button" data-field="profession">Cancel</button>
+              </div>
+              </div>
+             
+            </form>
+            <hr>
+            <form id="seniorityForm">
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Seniority</p>
+                </div>
+                <div class="col-sm-6">
+                <select class="ga-select select2-selects" id="senioritySelection" disabled>
+                      <option disabled selected>{{ professional_info.seniority }}</option>
+                      {% for seniority in seniority%}
+                        <option>{{ seniority }}</option>
+                      {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-3 d-flex align-items-center">
+                  <button class="btn btn-primary btn-sm me-1 edit-selection" type="button" data-field="seniority">Edit</button>
+                  <button class="btn btn-success btn-sm d-none update-selection" type="submit" data-field="seniority">Save</button>
+                  <button class="btn btn-secondary btn-sm d-none cancel-selection" type="button" data-field="seniority">Cancel</button>
+              </div>
+              </div>
+             
+            </form>
+            <hr>
+            <form id="educationForm">
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">education</p>
+                </div>
+                <div class="col-sm-6">
+                <select class="ga-select select2-selects" id="educationSelection" disabled>
+                      <option disabled selected>{{ professional_info.education }}</option>
+                      {% for education in education%}
+                        <option>{{ education }}</option>
+                      {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-3 d-flex align-items-center">
+                  <button class="btn btn-primary btn-sm me-1 edit-selection" type="button" data-field="education">Edit</button>
+                  <button class="btn btn-success btn-sm d-none update-selection" type="submit" data-field="education">Save</button>
+                  <button class="btn btn-secondary btn-sm d-none cancel-selection" type="button" data-field="education">Cancel</button>
+              </div>
+              </div>
+             
+            </form>
+            <hr>
+            <form id="salaryForm">
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">salary</p>
+                </div>
+                <div class="col-sm-6">
+                <select class="ga-select select2-selects" id="salarySelection" disabled>
+                      <option disabled selected>{{ professional_info.salary }}</option>
+                      {% for salary in salary%}
+                        <option>{{ salary }}</option>
+                      {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-3 d-flex align-items-center">
+                  <button class="btn btn-primary btn-sm me-1 edit-selection" type="button" data-field="salary">Edit</button>
+                  <button class="btn btn-success btn-sm d-none update-selection" type="submit" data-field="salary">Save</button>
+                  <button class="btn btn-secondary btn-sm d-none cancel-selection" type="button" data-field="salary">Cancel</button>
+              </div>
+              </div>
+             
+            </form>
+            <hr>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% endblock %}

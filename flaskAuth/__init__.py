@@ -1,6 +1,9 @@
 from flask import Flask
 from .config import ApplicationConfig
 from flask_session import Session
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
@@ -10,6 +13,9 @@ def create_app():
 
     # Enable secure serverside session
     server_session = Session(app)
+
+    # Initialize extensions
+    db.init_app(app)
     # Blueprint for auth routes
     from .authentication import bp as auth_bp
     app.register_blueprint(auth_bp)
