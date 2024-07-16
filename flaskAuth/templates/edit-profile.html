@@ -1,25 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-<section style="background-color: #eee;">
-    <div class="container-fluid py-5">
-      <div class="row">
-        <div class="col">
-          <nav aria-label="breadcrumb" class="bg-body-tertiary rounded-3 p-3 mb-4">
-            <ol class="breadcrumb mb-0">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item"><a href="#">User</a></li>
-              <li class="breadcrumb-item active" aria-current="page">User Profile</li>
-            </ol>
-          </nav>
-        </div>
-      </div>
+<div class="container">
+  <section style="background-color: #eee;">
+    <div class="col-lg-8 mx-auto py-5">
 
       <!-- upload profile image -->
       <div class="row">
         <div class="col-lg-12">
           <div class="card mb-4">
             <div class="card-body">
-              <label class="from-label" for="customFile">Upload Profile Image</label>
+              <label class="from-label align-text-center h3" for="customFile">Upload Profile Image</label>
               <form id="uploadForm" enctype="multipart/form-data">
               <div class="row">
                 
@@ -34,8 +24,12 @@
                 <div id="uploadError" class="error-message" style="color: red; font-weight: bold;"></div>
               </div>
               </form>
-              
+              <hr>
+              <div class="d-flex justify-content-center">
+                <a class="text-center btn btn-outline-primary " role="button" aria-disabled="true" href="{{ url_for('main.profile') }}">Go Back To Profile</a>
+              </div>
             </div>
+              
           </div>
         </div>
       </div>
@@ -189,7 +183,109 @@
                 </div>
               </form>
               <hr>
-              <div>
+              <form>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <i class="fas fa-globe fa-lg text-warning"></i>
+                  </div>
+                  <div class="col-sm-6">
+                    {% if user.socials.website %}
+                      <input type="text" class="form-control" id="websiteInput" disabled placeholder="{{ socials.website }}">
+                    {% else %}
+                      <!-- Optionally, you can provide a placeholder or default input if user.socials.website doesn't exist -->
+                      <input type="text" class="form-control" id="websiteInput" disabled placeholder="Website">
+                    {% endif %}
+                  </div>
+                  <div class="col-sm-3 d-flex align-items-center">
+                    <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="website">Edit</button>
+                        <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="website">Save</button>
+                    <button class="btn btn-secondary btn-sm d-none cancel-btn" id="" type="button" data-field="website">Cancel</button>
+                </div>
+                </div>
+              </form>
+              <hr>
+              <form>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <i class="fab fa-github fa-lg text-body"></i>
+                  </div>
+                  <div class="col-sm-6">
+                    {% if user.socials.github %}
+                      <input type="text" class="form-control" id="githubInput" disabled placeholder="{{ socials.github }}">
+                    {% else %}
+                      <input type="text" class="form-control" id="githubInput" disabled placeholder="github">
+                    {% endif %}
+                  </div>
+                  <div class="col-sm-3 d-flex align-items-center">
+                    <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="github">Edit</button>
+                        <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="github">Save</button>
+                    <button class="btn btn-secondary btn-sm d-none cancel-btn" id="" type="button" data-field="github">Cancel</button>
+                </div>
+                </div>
+              </form>
+              <hr>
+              <form>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
+                  </div>
+                  <div class="col-sm-6">
+                    {% if user.socials.twitter %}
+                      <input type="text" class="form-control" id="twitterInput" disabled placeholder="{{ socials.twitter }}">
+                    {% else %}
+                      <input type="text" class="form-control" id="twitterInput" disabled placeholder="X.com">
+                    {% endif %}
+                  </div>
+                  <div class="col-sm-3 d-flex align-items-center">
+                    <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="twitter">Edit</button>
+                        <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="twitter">Save</button>
+                    <button class="btn btn-secondary btn-sm d-none cancel-btn" id="" type="button" data-field="twitter">Cancel</button>
+                </div>
+                </div>
+              </form>
+              <hr>
+              <form>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
+                  </div>
+                  <div class="col-sm-6">
+                    {% if user.socials.instagram %}
+                      <input type="text" class="form-control" id="instagramInput" disabled placeholder="{{ socials.instagram }}">
+                    {% else %}
+                      <input type="text" class="form-control" id="instagramInput" disabled placeholder="instagram">
+                    {% endif %}
+                  </div>
+                  <div class="col-sm-3 d-flex align-items-center">
+                    <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="instagram">Edit</button>
+                        <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="instagram">Save</button>
+                    <button class="btn btn-secondary btn-sm d-none cancel-btn" id="" type="button" data-field="instagram">Cancel</button>
+                </div>
+                </div>
+              </form>
+              <hr>
+              <form>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
+                  </div>
+                  <div class="col-sm-6">
+                    {% if user.socials.facebook %}
+                      <input type="text" class="form-control" id="facebookInput" disabled placeholder="{{ socials.facebook }}">
+                    {% else %}
+                      <!-- Optionally, you can provide a placeholder or default input if user.socials.website doesn't exist -->
+                      <input type="text" class="form-control" id="facebookInput" disabled placeholder="facebook">
+                    {% endif %}
+                  </div>
+                  <div class="col-sm-3 d-flex align-items-center">
+                    <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="facebook">Edit</button>
+                        <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="facebook">Save</button>
+                    <button class="btn btn-secondary btn-sm d-none cancel-btn" id="" type="button" data-field="facebook">Cancel</button>
+                </div>
+                </div>
+              </form>
+              <hr>
+              <div class="d-flex justify-content-center">
                 <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href="{{ url_for('main.profile') }}">Go Back To Profile</a>
               </div>
               <hr>
@@ -197,8 +293,8 @@
           </div>
         </div>
       </div>
-    </div>
-    <!-- edit professional info -->
+
+      <!-- edit professional info -->
     <div class="row">
       <div class="col-lg-12">
         <div class="card mb-4">
@@ -314,11 +410,18 @@
              
             </form>
             <hr>
-            <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href="{{ url_for('main.profile') }}">Go Back To Profile</a>
+            <div class="d-flex justify-content-center">
+              <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href="{{ url_for('main.profile') }}">Go Back To Profile</a>
+            </div>
+            
           </div>
         </div>
       </div>
     </div>
+
+    </div>
+    
   </section>
 
+</div>
   {% endblock %}

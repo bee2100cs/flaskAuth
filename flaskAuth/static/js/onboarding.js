@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Function to validate username
+  // Function to validate username for update form
   function validateUsername_update(username, callback) {
     // const username = usernameInput.value.trim().toLowerCase();
     if (username !== '') {
@@ -86,8 +86,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (response.data.exists) {
           
           // Username already exists
-          usernameExists.textContent = "Username already exists.";
-          usernameExists.classList.remove('hidden');
+          usernameExists.textContent = "Username exists.";
+          usernameExists.classList.remove('d-none');
           usernameExists.style.display =  'block';
           
           // format message
@@ -103,8 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
           // Username is available
           usernameExists.textContent = "";
-          usernameExists.classList.add('hidden');
-          usernameExists.style.display =  'none';
+          usernameExists.classList.add('d-none');
           callback(true); // Username is valid, submit data
 
           // Recheck if done button should be enabled
@@ -120,20 +119,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Clear any previous sucess messages and hide them
         usernameExists.textContent = "";
-        usernameExists.classList.add('hidden');
-        usernameExists.style.display =  'none';
+        usernameExists.classList.add('d-none');
       });
     } else {
       // Handle cases where username is empty
       usernameExists.textContent = "";
-      usernameExists.classList.add("hidden");
-      usernameExists.style.display =  'none';
+      usernameExists.classList.add("d-none");
       if (doneButton) {
         doneButton.disabled = true;
       }
       callback(false);
     }
   }
+  
  // Function to validate username
  function validateUsername() {
   const username = usernameInput.value.trim().toLowerCase();
@@ -143,8 +141,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if (response.data.exists) {
 
         // Username already exists
-        usernameExists.textContent = "Username already exists.";
-        usernameExists.classList.remove('hidden');
+        usernameExists.textContent = "Username exists.";
+        usernameExists.classList.remove('d-none');
 
         // format message
         usernameExists.style.color = 'red'; 
@@ -155,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         // Username is available
         usernameExists.textContent = "";
-        usernameExists.classList.add('hidden');
+        usernameExists.classList.add('d-none');
         // Recheck if done button should be enabled
         checkInput();
       }
@@ -166,12 +164,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Clear any previous sucess messages and hide them
       usernameExists.textContent = "";
-      usernameExists.classList.add('hidden');
+      usernameExists.classList.add('d-none');
     });
   } else {
     // Handle cases where username is empty
     usernameExists.textContent = "";
-    usernameExists.classList.add("hidden");
+    usernameExists.classList.add("d-none");
     doneButton.disabled = true;
   }
 }
@@ -223,6 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const validImageType = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!validImageType.includes(file.type)) {
           uploadResponse.textContent = "Invalid file type. Please select an image file(jpeg, png, gif)."
+          uploadResponse.style.color = 'red';
           console.error('Invalid file type. Please select an image file(jpeg, png, gif).');
           return;
         }

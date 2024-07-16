@@ -1,11 +1,9 @@
-from flask import Flask, Blueprint, session, render_template, request, redirect, url_for, jsonify
+from flask import Blueprint, session, render_template, request, redirect, url_for, jsonify
 from .config import ApplicationConfig
 import pyrebase
 from .authentication import login_required
-from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 import os
-import urllib
 
 
 bp = Blueprint("main", __name__)
@@ -73,10 +71,12 @@ def validate_username():
         else:
             for key, value in existing_username.items():
                 #Ensure that it's not the same user
-                if key != user_id: 
-                    return jsonify({"exists": True}), 200
+                if key != user_id:
+                    print("Username exists")
+                    return jsonify({"message": "Username Exists", "exists": True}), 200
                 else:
-                    return jsonify({"exists": False}), 200
+                    print("username is available")
+                    return jsonify({"message": "username is available", "exists": False}), 200
         
             
 
@@ -135,6 +135,7 @@ def profile():
     if user_data:
         # Safe access to 'professional_info dictionary
         professional_info = user_data.get('professional_info', {})
+        socials_data = user_data.get('socials', {})
         personal_info_fields = [
             ('Full name', user_data.get('name')),
             ('Email', user_data.get('email')),
@@ -153,12 +154,22 @@ def profile():
             ('Salary', professional_info.get('salary')),
             ('Education', professional_info.get('education'))
         ]
+        socials = [
+            ('website', socials_data.get('website')),
+            ('github', socials_data.get('github')),
+            ('facebook', socials_data.get('facebook')),
+            ('twitter', socials_data.get('twitter')),
+            ('instagram', socials_data.get('instagram'))
+        ]
 
         # Filter out fields with None values
         personal_info_fields = [field for field in personal_info_fields if field[1] is not None]
         job_info_fields = [field for field in job_info_fields if field[1] is not None]
 
-        return render_template('profile.html', user=user_data, personal_info_fields=personal_info_fields, job_info_fields = job_info_fields)
+        return render_template('profile.html', user=user_data, 
+                               personal_info_fields=personal_info_fields, 
+                               job_info_fields = job_info_fields,
+                               socials = socials)
     else:
         # Handle case where user data is not found
         return "User data not found", 404
@@ -185,6 +196,7 @@ def edit_profile():
     countries = dict(sorted(countries_raw.items(), key=lambda item: item[1]))
     countries = sorted(countries.values())
     professional_info = user_data.get('professional_info', {})
+    socials = user_data.get('socials', {})
     professions = db.child("data").child("profession_data").child("professions").get().val()
     industries = db.child("data").child("profession_data").child("industries").get().val()
     education = db.child("data").child("profession_data").child("education").get().val()
@@ -194,6 +206,7 @@ def edit_profile():
                            user= user_data, 
                            countries=countries, 
                            professional_info=professional_info,
+                           socials = socials,
                            professions=professions,
                            education=education,
                            industries=industries,
@@ -212,11 +225,18 @@ def edit_profile_callback():
         print(data)
 
         professional_info_fields = {'industry', 'profession', 'seniority', 'education', 'salary'}
-
+        social_fields = {'website', 'twitter', 'github', 'instagram', 'facebook'}
         for key, value in data.items():
             if key != 'user_id':
                 if key in professional_info_fields:
                     db.child('users').child(user_id).child("professional_info").update({key: value})
+                # If socials, update to socials
+                elif key in social_fields:
+                    db.child('users').child(user_id).child('socials').update({key: value})
+                # If password, change to lowercase
+                elif key == "username":
+                    username = value.lower()
+                    db.child('users').child(user_id).update({"username": username})
                 else:
                     db.child('users').child(user_id).update({key: value})
         
@@ -247,7 +267,7 @@ def upload_file():
         # Save the download URL in the realtime Database
         user_id = session['user_id']
         db.child('users').child(user_id).update({'profile_pic_url': url})
-        return jsonify({'message': 'File uploaded successfuly', 'redirect_url': url} )
+        return jsonify({'message': 'Profile photo uploaded successfuly', 'redirect_url': url} )
     return jsonify({'message': 'File upload falied'}), 500
 
 @bp.route("/search")

@@ -61,7 +61,7 @@
               <p class="subtitle">Help us to understand our user base.<br><br>This information is strictly confidential and never shared. 
                   You may add or remove it from your profile at any time.</p>
           <div class="ga-row">
-				<div class="ga-col ga-col-md-8">
+				<div class="ga-col ga-col-md-6">
 						<div class="ga-form-group">
 						  
 							<label class="ga-label">Name</label>
@@ -71,18 +71,18 @@
 						
 						</div>
           </div>
-          <div class="ga-col ga-col-md-8">
+          <div class="ga-col ga-col-md-6">
 						<div class="ga-form-group">
 						  
 							<label class="ga-label">Username</label>
 						  
-						  <div class="text-center p-t-12" id="usernameExists"> </div>
+						  <div class="text-center p-t-12 d-none" id="usernameExists"> </div>
 								<input class="ga-input" id="username" type="text" placeholder="Select A Username" required>
 							  
 						</div>
             </div>
 						
-            <div class="ga-col ga-col-md-8">
+            <div class="ga-col ga-col-md-6">
               <div class="ga-form-group">
                 
                 <label class="ga-label">DOB</label>
@@ -94,7 +94,7 @@
               <div class="ga-form-group">
                 <label class="ga-label">Gender</label>
                 <select class="ga-select" id="gender">
-                  <option disabled selected>Select one</option>
+                  <option disabled selected></option>
                   <option>Prefer not to say</option>
                   <option>Female</option>
                   <option>Male</option>
@@ -103,7 +103,7 @@
               </div>
             </div>
             </div>
-              
+              <hr>
               <div class="ga-row">
                 <div class="ga-col ga-col-md-12">
                   <div class="ga-form-group">
@@ -152,8 +152,8 @@
                 <div class="ga-col ga-col-md-6">
                   <div class="ga-form-group">
                     <label class="ga-label">Job Industry</label>
-                    <select class="ga-select select2-selects" id="industry">
-                      <option disabled selected>Select one</option>
+                    <select class="ga-select select2-selects" id="industry" >
+                      <option disabled selected></option>
                       {% for industry in industry%}
                         <option>{{ industry }}</option>
                       {% endfor %}
@@ -164,7 +164,7 @@
                   <div class="ga-form-group">
                     <label class="ga-label">Profession</label>
                     <select class="ga-select select2-selects" id="profession">
-                      <option disabled selected>Select one</option>
+                      <option disabled selected></option>
                       {% for profession in professions %}
                         <option>{{ profession }}</option>
                       {% endfor %}
@@ -176,8 +176,8 @@
                 <div class="ga-col ga-col-md-6">
                   <div class="ga-form-group">
                     <label class="ga-label">Job Seniority</label>
-                    <select class="ga-select" id="seniority">
-                      <option disabled selected>Select one</option>
+                    <select class="ga-select" id="seniority" >
+                      <option disabled selected></option>
                       {% for seniority in seniority %}
                         <option>{{ seniority }}</option>
                       {% endfor %}
@@ -187,8 +187,8 @@
                 <div class="ga-col ga-col-md-6">
                   <div class="ga-form-group">
                     <label class="ga-label">Salary Range</label>
-                    <select class="ga-select" id="salary">
-                      <option disabled selected>Select one</option>
+                    <select class="ga-select" id="salary" >
+                      <option disabled selected></option>
                       {% for salary in salary %}
                         <option>{{ salary }}</option>
                       {% endfor %}
@@ -200,8 +200,8 @@
                 <div class="ga-col ga-col-md-6">
                   <div class="ga-form-group">
                     <label class="ga-label">Education Level</label>
-                    <select class="ga-select" id="education">
-                      <option disabled selected>Select one</option>
+                    <select class="ga-select" id="education" >
+                      <option disabled selected></option>
                       {% for education in education %}
                       <option>{{ education }}</option>
                       {% endfor %}

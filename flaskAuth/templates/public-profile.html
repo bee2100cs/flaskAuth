@@ -1,9 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="container">
   <section style="background-color: #eee;">
-    <div class=" col-lg-8 mx-auto">
+    <div class="container py-5">
+      <!-- <div class="row">
+        <div class="col">
+          <nav aria-label="breadcrumb" class="bg-body-tertiary rounded-3 p-3 mb-4">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item"><a href="#">User</a></li>
+              <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+            </ol>
+          </nav>
+        </div>
+      </div> -->
   
       <div class="row">
         <div class="col-lg-4">
@@ -20,7 +30,7 @@
                 <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary ms-1">Message</button>
               </div>
               <hr>
-              <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href= "{{ url_for('main.edit_profile') }}">Edit Profile</a><hr>
+              <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href= "{{ url_for('main.edit_profile') }}">Edit Profile</a>
               <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal">Delete Profile</button>
               <!-- Modal -->
               <div id="confirmDeleteModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -62,31 +72,31 @@
               <ul class="list-group list-group-flush rounded-3">
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fas fa-globe fa-lg text-warning"></i>
-                  <a class="mb-0" href="{{ socials.website }}">{{ socials.website }}</a>
+                  <p class="mb-0">https://mdbootstrap.com</p>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fab fa-github fa-lg text-body"></i>
-                  <p class="mb-0">{{ socials.github }}</p>
+                  <p class="mb-0">mdbootstrap</p>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
-                  <p class="mb-0">{{ socials.twitter}}</p>
+                  <p class="mb-0">@mdbootstrap</p>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
-                  <p class="mb-0">{{ socials.instagram }}</p>
+                  <p class="mb-0">mdbootstrap</p>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
-                  <p class="mb-0">{{ socials.facebook }}</p>
+                  <p class="mb-0">mdbootstrap</p>
                 </li>
               </ul>
             </div>
           </div>
         </div>
-        <div class="col-lg-8">
+        <div class="col-lg-8 accordion">
           {% if personal_info_fields %}
-                <div class="card mb-4  accordion">
+                <div class="card mb-4">
                     <div class="card-header" id="personalInfoId">
                         <a class="btn btn-link" data-toggle="collapse" data-target="#personalInfo"  href="#personalInfo" role="button" aria-expanded="false" aria-controls="personalInfo">
                             Personal Information
@@ -114,7 +124,7 @@
                 {% endif %}
 
                 {% if job_info_fields %}
-                <div class="card mb-4  accordion">
+                <div class="card mb-4">
                     <div class="card-header" id="jobInfoId">
                         <a class="btn btn-link" data-toggle="collapse" data-target="#jobInfo" href="#jobInfo" role="button" aria-expanded="false" aria-controls="jobInfo">
                             Job Information
@@ -142,7 +152,7 @@
                 {% endif %}
 
                 {% if job_info_fields %}
-                <div class="card mb-4  accordion">
+                <div class="card mb-4">
                     <div class="card-header" id="bookmarkId">
                         <a class="btn btn-link" data-toggle="collapse" data-target="#bookmarks" href="#bookmarks" role="button" aria-expanded="false" aria-controls="bookmarks">
                             Bookmarks
@@ -169,26 +179,105 @@
                 {% endif %}
 
                 {% if job_info_fields %}
-                <div class="card mb-4  accordion">
+                <div class="card mb-4">
                     <div class="card-header" id="projectsId">
                         <a class="btn btn-link" data-toggle="collapse" data-target="#projectsInfo" href="#projectsInfo" role="button" aria-expanded="false" aria-controls="projectsInfo">
                             Projects
                         </a>
                     </div>
-                    
+                    <div id="projectsInfo" class="collapse show" aria-labelledby="projectsInfo" data-parent="#accordion">
+                        <div class="card-body">
+                            {% for label, value in job_info_fields %}
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <p class="mb-0">{{ label }}</p>
+                                </div>
+                                <div class="col-sm-9">
+                                    <p class="text-muted mb-0">{{ value }}</p>
+                                </div>
+                            </div>
+                            <hr>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
                 {% else %}
                 <p>No projects available.</p>
                 {% endif %}
 
 
-          
+          <div class="row">
+            <div class="col-md-6">
+              <div class="card mb-4 mb-md-0">
+                <div class="card-body">
+                  <p class="mb-4"><span class="text-primary font-italic me-1">assigment</span> Project Status
+                  </p>
+                  <p class="mb-1" style="font-size: .77rem;">Web Design</p>
+                  <div class="progress rounded" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
+                      aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <p class="mt-4 mb-1" style="font-size: .77rem;">Website Markup</p>
+                  <div class="progress rounded" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
+                      aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <p class="mt-4 mb-1" style="font-size: .77rem;">One Page</p>
+                  <div class="progress rounded" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
+                      aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <p class="mt-4 mb-1" style="font-size: .77rem;">Mobile Template</p>
+                  <div class="progress rounded" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55"
+                      aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <p class="mt-4 mb-1" style="font-size: .77rem;">Backend API</p>
+                  <div class="progress rounded mb-2" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66"
+                      aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card mb-4 mb-md-0">
+                <div class="card-body">
+                  <p class="mb-4"><span class="text-primary font-italic me-1">assigment</span> Project Status
+                  </p>
+                  <p class="mb-1" style="font-size: .77rem;">Web Design</p>
+                  <div class="progress rounded" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
+                      aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <p class="mt-4 mb-1" style="font-size: .77rem;">Website Markup</p>
+                  <div class="progress rounded" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
+                      aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <p class="mt-4 mb-1" style="font-size: .77rem;">One Page</p>
+                  <div class="progress rounded" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
+                      aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <p class="mt-4 mb-1" style="font-size: .77rem;">Mobile Template</p>
+                  <div class="progress rounded" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55"
+                      aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <p class="mt-4 mb-1" style="font-size: .77rem;">Backend API</p>
+                  <div class="progress rounded mb-2" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66"
+                      aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
-</div>
-  
 
 
 {% endblock %}

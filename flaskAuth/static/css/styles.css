@@ -473,12 +473,6 @@ select {
   }
 
 /*   Onboarding form   */
-@charset "UTF-8";
-#content-thanks,
-#content-dashboard {
-  display: none;
-}
-
 .form-group a {
   display: inline;
 }

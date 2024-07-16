@@ -164,36 +164,75 @@ function logout ()  {
 }
 
 // Delete user
+// document.addEventListener('DOMContentLoaded', function() {
+//     const deleteBtn = document.getElementById('delete-user-btn');
+
+//     if (deleteBtn) {
+//         deleteBtn.addEventListener('click', function(event) {
+//             event.preventDefault();
+//             let passwordInput= document.getElementById("delete-password-input");
+//             const deletepassword = passwordInput.value;
+
+//             if (password) {
+//                 axios.post('/api/delete_user', { password: deletepassword })
+//                     .then(function(response) {
+//                         if (response.data.success) {
+//                             alert(response.data.message);
+//                             // Redirect to the home page or login page after deletion
+//                             window.location.href = '/';
+//                         } else {
+//                             alert(response.data.message);
+//                         }
+//                     })
+//                     .catch(function(error) {
+//                         console.error("Error during user deletion", error);
+//                         alert("Error during user deletion: " + error.response.data.message);
+//                     });
+//             }
+//         });
+//     }
+// });
+
+// Activate delete account
 document.addEventListener('DOMContentLoaded', function() {
     const deleteBtn = document.getElementById('delete-user-btn');
+    const confirmDeleteCheckbox = document.getElementById('confirm-delete-checkbox');
+    const passwordInput = document.getElementById('delete-password-input');
+    const feedbackDiv = document.getElementById('delete-feedback');
+
+    if (confirmDeleteCheckbox) {
+      confirmDeleteCheckbox.addEventListener('change', function() {
+        deleteBtn.disabled = !this.checked;
+      });
+    }
 
     if (deleteBtn) {
-        deleteBtn.addEventListener('click', function(event) {
-            event.preventDefault();
-            let passwordInput= document.getElementById("delete-password-input");
-            const password = passwordInput.value;
+      deleteBtn.addEventListener('click', function(event) {
+        event.preventDefault();
+        const password = passwordInput.value;
 
-            if (password) {
-                axios.post('/api/delete_user', { password: password })
-                    .then(function(response) {
-                        if (response.data.success) {
-                            alert(response.data.message);
-                            // Redirect to the home page or login page after deletion
-                            window.location.href = '/';
-                        } else {
-                            alert(response.data.message);
-                        }
-                    })
-                    .catch(function(error) {
-                        console.error("Error during user deletion", error);
-                        alert("Error during user deletion: " + error.response.data.message);
-                    });
-            }
-        });
+        if (password) {
+          axios.post('/api/delete_user', { password: password })
+            .then(function(response) {
+              if (response.data.success) {
+                feedbackDiv.innerHTML = '<div class="alert alert-success">' + response.data.message + '</div>';
+                setTimeout(function() {
+                  window.location.href = response.data.redirect_url;
+                }, 2000);
+              } else {
+                feedbackDiv.innerHTML = '<div class="alert alert-warning">' + response.data.message + '</div>';
+              }
+            })
+            .catch(function(error) {
+              console.error("Error while deleting user data", error);
+              feedbackDiv.innerHTML = '<div class="alert alert-danger">' + error.response.data.message + '</div>';
+            });
+        } else {
+          feedbackDiv.innerHTML = '<div class="alert alert-warning">Password is required.</div>';
+        }
+      });
     }
-});
-
-
+  });
 // function googlePopup() {
 //     signInWithPopup(auth, provider)
 //         .then((result) => {

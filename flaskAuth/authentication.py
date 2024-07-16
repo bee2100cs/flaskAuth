@@ -147,7 +147,7 @@ def logout():
     else:
         return jsonify({'error': 'Method not allowed'}), 405  # Return a 405 Method Not Allowed status for other methods
 
-# Route to delete user
+# Delete user
 @bp.route('/api/delete_user', methods=['POST'])
 @login_required
 def delete_user():
@@ -155,23 +155,28 @@ def delete_user():
         user_id = session['user_id']
         id_token = session["id_token"]
         password = request.json['password']
-        print(password)
 
-        # Reauthenticate user with password
-        user = auth.sign_in_with_email_and_password(session['user'], password)
-        auth.refresh(user['refreshToken'])
+        try:
 
-        # Delete user from Firebase Realtime Database
-        db.child('users').child(user_id).remove()
+            # Reauthenticate user with password
+            user = auth.sign_in_with_email_and_password(session['user'], password)
+            auth.refresh(user['refreshToken'])
 
-        # Delete user from Firebase Authentication
-        auth.delete_user_account(id_token)
+            # Delete user from Firebase Realtime Database
+            db.child('users').child(user_id).remove()
 
-        # Clear session after deleting user
-        session.clear()
+            # Delete user from Firebase Authentication
+            auth.delete_user_account(id_token)
 
-        return jsonify({"sucess": True, "message": "User deleted sucessfully", "redirect_url": url_for('main.index')}), 200
+            # Clear session after deleting user
+            session.pop("user")
 
+            return jsonify({"success": True, "message": "User profile deleted successfully.  We are sorry to see you go", "redirect_url": url_for('main.index')}), 200
+
+        except Exception as e:
+            return jsonify({"message": "Invalid password. Please try again."}), 400
+
+        
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"error":"An error occurred while trying to delete your account. Please try again."}), 400
 
