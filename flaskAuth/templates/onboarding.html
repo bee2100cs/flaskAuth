@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "auth-base.html" %}
 {% block content %}
 
   
@@ -152,7 +152,7 @@
                 <div class="ga-col ga-col-md-6">
                   <div class="ga-form-group">
                     <label class="ga-label">Job Industry</label>
-                    <select class="ga-select select2-selects" id="industry" >
+                    <select class="ga-select" id="industry" >
                       <option disabled selected></option>
                       {% for industry in industry%}
                         <option>{{ industry }}</option>
@@ -163,7 +163,7 @@
                 <div class="ga-col ga-col-md-6">
                   <div class="ga-form-group">
                     <label class="ga-label">Profession</label>
-                    <select class="ga-select select2-selects" id="profession">
+                    <select class="ga-select" id="profession">
                       <option disabled selected></option>
                       {% for profession in professions %}
                         <option>{{ profession }}</option>

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "auth-base.html" %}
 {% block content %}
 <div class="container">
   <section style="background-color: #eee;">
@@ -183,19 +183,26 @@
                 </div>
               </form>
               <hr>
+              
               <form>
                 <div class="row">
                   <div class="col-sm-3">
                     <i class="fas fa-globe fa-lg text-warning"></i>
                   </div>
-                  <div class="col-sm-6">
-                    {% if user.socials.website %}
-                      <input type="text" class="form-control" id="websiteInput" disabled placeholder="{{ socials.website }}">
-                    {% else %}
-                      <!-- Optionally, you can provide a placeholder or default input if user.socials.website doesn't exist -->
-                      <input type="text" class="form-control" id="websiteInput" disabled placeholder="Website">
-                    {% endif %}
-                  </div>
+                  <div class="col-sm-6 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <p class="mb-0">https://</p>
+                        </div>
+                        <div class="flex-grow-1 ms-2">
+                          {% if socials.website %}
+                            <input type="text" class="form-control" id="websiteInput" disabled placeholder="{{ user.socials.website }}">
+                            {% else %}
+                            <input type="text" class="form-control" id="websiteInput" disabled placeholder="website">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
                   <div class="col-sm-3 d-flex align-items-center">
                     <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="website">Edit</button>
                         <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="website">Save</button>
@@ -209,13 +216,20 @@
                   <div class="col-sm-3">
                     <i class="fab fa-github fa-lg text-body"></i>
                   </div>
-                  <div class="col-sm-6">
-                    {% if user.socials.github %}
-                      <input type="text" class="form-control" id="githubInput" disabled placeholder="{{ socials.github }}">
-                    {% else %}
-                      <input type="text" class="form-control" id="githubInput" disabled placeholder="github">
-                    {% endif %}
-                  </div>
+                  <div class="col-sm-6 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <p class="mb-0">https://github.com/</p>
+                        </div>
+                        <div class="flex-grow-1 ms-2">
+                            {% if socials.github %}
+                            <input type="text" class="form-control" id="githubInput" disabled placeholder="{{ user.socials.github }}">
+                            {% else %}
+                            <input type="text" class="form-control" id="githubInput" disabled placeholder="github">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
                   <div class="col-sm-3 d-flex align-items-center">
                     <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="github">Edit</button>
                         <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="github">Save</button>
@@ -229,13 +243,20 @@
                   <div class="col-sm-3">
                     <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
                   </div>
-                  <div class="col-sm-6">
-                    {% if user.socials.twitter %}
-                      <input type="text" class="form-control" id="twitterInput" disabled placeholder="{{ socials.twitter }}">
-                    {% else %}
-                      <input type="text" class="form-control" id="twitterInput" disabled placeholder="X.com">
-                    {% endif %}
-                  </div>
+                  <div class="col-sm-6 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <p class="mb-0">https://x.com/</p>
+                        </div>
+                        <div class="flex-grow-1 ms-2">
+                            {% if socials.twitter %}
+                            <input type="text" class="form-control" id="twitterInput" disabled placeholder="{{ user.socials.x }}">
+                            {% else %}
+                            <input type="text" class="form-control" id="twitterInput" disabled placeholder="x">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
                   <div class="col-sm-3 d-flex align-items-center">
                     <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="twitter">Edit</button>
                         <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="twitter">Save</button>
@@ -249,13 +270,20 @@
                   <div class="col-sm-3">
                     <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
                   </div>
-                  <div class="col-sm-6">
-                    {% if user.socials.instagram %}
-                      <input type="text" class="form-control" id="instagramInput" disabled placeholder="{{ socials.instagram }}">
-                    {% else %}
-                      <input type="text" class="form-control" id="instagramInput" disabled placeholder="instagram">
-                    {% endif %}
-                  </div>
+                  <div class="col-sm-6 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <p class="mb-0">https://instagram.com/</p>
+                        </div>
+                        <div class="flex-grow-1 ms-2">
+                            {% if socials.instagram %}
+                            <input type="text" class="form-control" id="instagramInput" disabled placeholder="{{ user.socials.instagram }}">
+                            {% else %}
+                            <input type="text" class="form-control" id="instagramInput" disabled placeholder="instagram">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
                   <div class="col-sm-3 d-flex align-items-center">
                     <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="instagram">Edit</button>
                         <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="instagram">Save</button>
@@ -270,13 +298,19 @@
                     <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
                   </div>
                   <div class="col-sm-6">
-                    {% if user.socials.facebook %}
-                      <input type="text" class="form-control" id="facebookInput" disabled placeholder="{{ socials.facebook }}">
-                    {% else %}
-                      <!-- Optionally, you can provide a placeholder or default input if user.socials.website doesn't exist -->
-                      <input type="text" class="form-control" id="facebookInput" disabled placeholder="facebook">
-                    {% endif %}
-                  </div>
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <p class="mb-0">https://facebook.com/</p>
+                        </div>
+                        <div class="flex-grow-1 ms-2">
+                            {% if socials.facebook %}
+                            <input type="text" class="form-control" id="facebookInput" disabled placeholder="{{ socials.facebook }}">
+                            {% else %}
+                            <input type="text" class="form-control" id="facebookInput" disabled placeholder="facebook">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
                   <div class="col-sm-3 d-flex align-items-center">
                     <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="facebook">Edit</button>
                         <button class="btn btn-success btn-sm d-none save-btn" type="submit" data-field="facebook">Save</button>

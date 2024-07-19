@@ -39,12 +39,24 @@ function signup() {
     let emailInput = document.getElementById('signup-email');
     let passInput = document.getElementById('signup-password');
     let emailExists = document.getElementById('emailExists');
-    let messageSpan = document.createElement('span')
+    let messageSpan = document.createElement('span');
+    let passInputRepeat = document.getElementById('signup-password-repeat')
 
+    while (emailExists.firstChild) {
+        emailExists.removeChild(emailExists.firstChild);
+    }
     const email = emailInput.value;
     const password = passInput.value;
+    const passwordRepet = passInputRepeat.value;
+
     if (password.length < 6) {
         let flashMessage = 'Password must be at least 6 characters long';
+        messageSpan.textContent = flashMessage;
+        emailExists.appendChild(messageSpan);
+        return;
+    } 
+    if (password != passwordRepet) {
+        let flashMessage = 'Passwords Do not match';
         messageSpan.textContent = flashMessage;
         emailExists.appendChild(messageSpan);
         return;
@@ -115,43 +127,45 @@ function login() {
 }
 
 function reset() {
+    let submitButton = document.getElementById('submit-button');
+    let emailInput = document.getElementById('emailInput-reset');
 
-    // Create an input field for the email
-    let emailInput = document.createElement('input');
-    emailInput.type = 'email';
-    emailInput.id = 'emailInput';
-    emailInput.placeholder = 'Enter your email';
+    // Ensure that the event listener is not added multiple times
+    submitButton.removeEventListener('click', handleReset);
 
-    // Create a submit button
-    let submitButton = document.createElement('button');
-    submitButton.innerHTML = 'Submit';
-    // Get the resetDiv
-    let resetDiv = document.getElementById('resetDiv');
-    // Append the input field and the button to the div
-    resetDiv.appendChild(emailInput);
-    resetDiv.appendChild(submitButton);
+    submitButton.addEventListener('click', handleReset);
 
-    // // Append the div to the body of the document
-    // document.body.appendChild(resetDiv);
-
-    // Add an event listener to the submit button
-    submitButton.addEventListener('click', function() {
+    function handleReset() {
         const email = emailInput.value;
         if (email) {
+            console.log(email);
             // Send a POST request to the backend
             axios.post('/api/reset', {email: email})
-            .then(function(response) {
-                let resetEmailSent = document.createElement('span');
-                let resetConfirm = document.getElementById('resetConfirm')
-                resetEmailSent.textContent = response.data.message;
-                resetConfirm.appendChild(resetEmailSent).style.backgroundColor = 'lightblue';
-            })
-            .catch(function(error) {
-                console.error("Error resetting password:", error);
-            });
+                .then(function(response) {
+                    let resetEmailSent = document.createElement('span');
+                    let resetConfirm = document.getElementById('resetConfirm');
+                    resetEmailSent.textContent = response.data.message;
+                    resetConfirm.innerHTML = ''; // Clear previous messages
+                    resetConfirm.appendChild(resetEmailSent);
+                    resetConfirm.style.fontSize = '1.2em'; 
+                    resetConfirm.style.fontWeight = 'bold'; 
+                    resetConfirm.style.color = 'blue'; 
+                })
+                .catch(function(error) {
+                    let resetConfirm = document.getElementById('resetConfirm');
+                    let errorMessage = document.createElement('span');
+                    errorMessage.textContent = error.response.data.Message || 'An error occurred while resetting the password';
+                    resetConfirm.innerHTML = ''; // Clear previous messages
+                    resetConfirm.appendChild(errorMessage);
+                    resetConfirm.style.fontSize = '1.2em'; 
+                    resetConfirm.style.fontWeight = 'bold'; 
+                    resetConfirm.style.color = 'red'; 
+                    console.error("Error resetting password:", error);
+                });
         }
-    });
+    }
 }
+
 
 function logout ()  {
     axios.get('/api/logout')

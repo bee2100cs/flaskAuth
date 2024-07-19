@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "auth-base.html" %}
 {% block content %}
 
 <div class="container">
@@ -11,78 +11,53 @@
             <div class="card-body text-center">
               <img src="{{ user.profile_pic_url }}" alt="avatar"
                 class="rounded-circle img-fluid" style="width: 150px; height: 150px;">
-              <h5 class="my-3">{{ user.username }}</h5>
+
+
+              <a class="my-3 py-2" href="{{ url_for('main.public_profile', username=user.username) }}"><h5>{{ user.username }}</h5></a>
               <p class="text-muted mb-1">{{ user.professional_info.profession }} </p>
               <p class="text-muted mb-4">{{ user.address }} </p>
+
               <hr>
+              {% if session_user_id != user.user_id %}
               <div class="d-flex justify-content-center mb-2">
                 <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary">Follow</button>
                 <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary ms-1">Message</button>
               </div>
+              {% endif %}
               <hr>
+              {% if session_user_id == user.user_id %}
               <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href= "{{ url_for('main.edit_profile') }}">Edit Profile</a><hr>
-              <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal">Delete Profile</button>
-              <!-- Modal -->
-              <div id="confirmDeleteModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLongTitle">Delete My Profile</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body">
-                      <p>Enter your password to confirm account deletion:</p>
-                      <input type="password" id="delete-password-input" class="form-control">
-                      <div class="form-check mt-3">
-                        <input type="checkbox" class="form-check-input" id="confirm-delete-checkbox">
-                        <label class="form-check-label" for="confirm-delete-checkbox">I confirm that I want to delete my account</label>
-                      </div>
-                      <div id="delete-feedback" class="mt-3"></div>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-danger" disabled id="delete-user-btn">Confirm Deletion</button>
-                    </div>
-                  </div>
-                </div>
-                <!-- <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <p>Enter your password to confirm account deletion:</p>
-                    <input type="password" id="password-input">
-                    <button id="confirm-delete-btn">Confirm</button>
-                    <button id="cancel-delete-btn">Cancel</button>
-                </div> -->
-              </div>
+              {% endif %}
             </div>
           </div>
+          {% if socials %}
           <div class="card mb-4 mb-lg-0">
             <div class="card-body p-0">
               <ul class="list-group list-group-flush rounded-3">
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fas fa-globe fa-lg text-warning"></i>
-                  <a class="mb-0" href="{{ socials.website }}">{{ socials.website }}</a>
+                  <a class="mb-0" href="http://{{ user.socials.website }}" target="_blank">{{ user.socials.website }}</a>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fab fa-github fa-lg text-body"></i>
-                  <p class="mb-0">{{ socials.github }}</p>
+                  <a class="mb-0" href="https://github.com/{{ user.socials.github }}" target="_blank">{{ user.socials.github }}</a>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
-                  <p class="mb-0">{{ socials.twitter}}</p>
+                  <a class="mb-0"href="https:///x.com/{{ user.socials.twitter}}" target="_blank">{{ user.socials.twitter}}</a>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
-                  <p class="mb-0">{{ socials.instagram }}</p>
+                  <a class="mb-0" href="https://instagram.com/{{ user.socials.instagram }}" target="_blank">{{ user.socials.instagram }}</a>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                   <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
-                  <p class="mb-0">{{ socials.facebook }}</p>
+                  <a class="mb-0" href="https://facebook.com/{{ user.socials.facebook }}" target="_blank">{{ user.socials.facebook }}</a>
                 </li>
               </ul>
             </div>
           </div>
+          {% endif %}
         </div>
         <div class="col-lg-8">
           {% if personal_info_fields %}
@@ -95,6 +70,7 @@
                     <div id="personalInfo" class="collapse" aria-labelledby="personalInfo" data-parent="#accordion">
                         <div class="card-body">
                             {% for label, value in personal_info_fields %}
+                            {% if value %}
                             <div class="row">
                                 <div class="col-sm-3">
                                     <p class="mb-0">{{ label }}</p>
@@ -104,9 +80,11 @@
                                 </div>
                             </div>
                             <hr>
+                            {% endif %}
                             {% endfor %}
                         </div>
-                        <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href="{{ url_for('main.edit_profile') }}">Edit Profile</a>
+                       
+                        
                     </div>
                 </div>
                 {% else %}
@@ -123,6 +101,7 @@
                     <div id="jobInfo" class="collapse" aria-labelledby="jobInfo" data-parent="#accordion">
                         <div class="card-body">
                             {% for label, value in job_info_fields %}
+                            {% if value %}
                             <div class="row">
                                 <div class="col-sm-3">
                                     <p class="mb-0">{{ label }}</p>
@@ -132,9 +111,9 @@
                                 </div>
                             </div>
                             <hr>
+                            {% endif %}
                             {% endfor %}
                         </div>
-                        <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href="{{ url_for('main.edit_profile') }}">Edit Profile</a>
                     </div>
                 </div>
                 {% else %}
@@ -150,7 +129,8 @@
                     </div>
                     <div id="bookmarks" class="collapse" aria-labelledby="bookmarks" data-parent="#accordion">
                         <div class="card-body">
-                            {% for label, value in job_info_fieldss %}
+                            {% for label, value in job_info_fields %}
+                            {% if value and value.strip() != '' %}
                             <div class="row">
                                 <div class="col-sm-3">
                                     <p class="mb-0">{{ label }}</p>
@@ -159,6 +139,7 @@
                                     <p class="text-muted mb-0">{{ value }}</p>
                                 </div>
                             </div>
+                            {% endif %}
                             <hr>
                             {% endfor %}
                         </div>

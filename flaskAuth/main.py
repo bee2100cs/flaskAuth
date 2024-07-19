@@ -23,15 +23,18 @@ storage = firebase.storage()
 
 @bp.route("/")
 def index():
-    
+    if 'user' in session and 'user_id' in session:
+        user_id = session['user_id']
+        user_data = db.child('users').child(user_id).get().val()
+        return render_template('home.html', user=user_data)
     return render_template('home.html')
 
 @bp.route('/onboarding')
 @login_required
 def onboarding():
 
-    user_email = session['user']
     user_id = session['user_id']
+    user_data = db.child('users').child(user_id).get().val()
 
     # Fetch user data from Firebase
     user_data = db.child('users').child(user_id).get().val()
@@ -45,7 +48,7 @@ def onboarding():
     countries = sorted(countries.values())
 
     return render_template('onboarding.html', 
-                           user_email=user_email,
+                           user=user_data,
                            user_id=user_id,
                            user_data=user_data,
                            countries=countries,
@@ -154,19 +157,21 @@ def profile():
             ('Salary', professional_info.get('salary')),
             ('Education', professional_info.get('education'))
         ]
-        socials = [
-            ('website', socials_data.get('website')),
-            ('github', socials_data.get('github')),
-            ('facebook', socials_data.get('facebook')),
-            ('twitter', socials_data.get('twitter')),
-            ('instagram', socials_data.get('instagram'))
-        ]
+        socials = []
+        if socials_data:
+            socials = [
+                ('website', socials_data.get('website')),
+                ('github', socials_data.get('github')),
+                ('facebook', socials_data.get('facebook')),
+                ('twitter', socials_data.get('twitter')),
+                ('instagram', socials_data.get('instagram'))
+            ]
 
         # Filter out fields with None values
         personal_info_fields = [field for field in personal_info_fields if field[1] is not None]
         job_info_fields = [field for field in job_info_fields if field[1] is not None]
 
-        return render_template('profile.html', user=user_data, 
+        return render_template('profile.html', user=user_data, user_id= user_id,
                                personal_info_fields=personal_info_fields, 
                                job_info_fields = job_info_fields,
                                socials = socials)
@@ -174,18 +179,67 @@ def profile():
         # Handle case where user data is not found
         return "User data not found", 404
 
-@bp.route("/profile/<username>")
+@bp.route("/<username>")
 def public_profile(username):
+    # Fetch user data from Firebase using the username
+    user_data = db.child("users").order_by_child("username").equal_to(username).get().val()
+    
+    if user_data:
+        # Extract the first user from the result
+        user_data = list(user_data.values())[0]
+        # Process user_data and render the profile page
+        professional_info = user_data.get('professional_info', {})
+        socials_data = user_data.get('socials', {})
         
-        # Fetch user data from Firebase realtime database
-        user_data = db.child('users').order_by_child("username").equal_to(username).get()
-        if user_data.each():
-            user = list(user_data.each())[0].val()
-            return render_template('profile.html', user=user)
-        else:
-            return "User not found", 404
+        personal_info_fields = [
+            ('Full name', user_data.get('name')),
+            ('Email', user_data.get('email')),
+            ('Phone', user_data.get('phone')),
+            ('Gender', user_data.get('gender')),
+            ('Ethnicity', ', '.join(user_data['ethnicity']) if isinstance(user_data.get('ethnicity'), list) else user_data.get('ethnicity')),
+            ('dob', user_data.get('dob')),
+            ('Address', user_data.get('address')),
+            ('Country', user_data.get('country'))
+        ]
         
+        job_info_fields = [
+            ('Industry', professional_info.get('industry')),
+            ('Profession', professional_info.get('profession')),
+            ('Seniority', professional_info.get('seniority')),
+            ('Salary', professional_info.get('salary')),
+            ('Education', professional_info.get('education'))
+        ]
+        socials = []
+        if socials_data:
+        
+            socials = [
+                ('website', socials_data.get('website')),
+                ('github', socials_data.get('github')),
+                ('facebook', socials_data.get('facebook')),
+                ('twitter', socials_data.get('twitter')),
+                ('instagram', socials_data.get('instagram'))
+            ]
 
+        # Filter out fields with None values
+        personal_info_fields = [field for field in personal_info_fields if field[1] is not None]
+        job_info_fields = [field for field in job_info_fields if field[1] is not None]
+
+        return render_template('profile.html', user=user_data, 
+                                personal_info_fields=personal_info_fields, 
+                                job_info_fields=job_info_fields,
+                                socials=socials,
+                                session_user_id=session.get('user_id'))
+    else:
+        # Handle case where user data is not found
+        return render_template("user_not_found.html"), 400
+        
+@bp.route("/settings")
+@login_required
+def settings():
+    user_id= session['user_id']
+    user_data = db.child("users").child(user_id).get().val()
+    
+    return render_template('settings.html', user=user_data)
 
 @bp.route("/edit_profile")
 @login_required
@@ -196,7 +250,9 @@ def edit_profile():
     countries = dict(sorted(countries_raw.items(), key=lambda item: item[1]))
     countries = sorted(countries.values())
     professional_info = user_data.get('professional_info', {})
-    socials = user_data.get('socials', {})
+    socials = []
+    if user_data.get('socials', {}):
+        socials = user_data.get('socials', {})
     professions = db.child("data").child("profession_data").child("professions").get().val()
     industries = db.child("data").child("profession_data").child("industries").get().val()
     education = db.child("data").child("profession_data").child("education").get().val()
