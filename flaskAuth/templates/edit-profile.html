@@ -26,7 +26,7 @@
               </form>
               <hr>
               <div class="d-flex justify-content-center">
-                <a class="text-center btn btn-outline-primary " role="button" aria-disabled="true" href="{{ url_for('main.profile', username=user.username) }}">Go Back To Profile</a>
+                <a class="text-center btn btn-outline-primary " role="button" aria-disabled="true" href="{{ url_for('main.profile', username=session_user_data.username) }}">Go Back To Profile</a>
               </div>
             </div>
               
@@ -49,7 +49,7 @@
                   </div>
                   <div class="col-sm-6">
                     <div class="text-center p-t-12" id="nameError"> </div>
-                    <input type="text" class="form-control" id="nameInput" disabled required placeholder="{{ user.name }}">
+                    <input type="text" class="form-control" id="nameInput" disabled required placeholder="{{ session_user_data.name }}">
                   </div>
                   <div class="col-sm-3 d-flex align-items-center">
                     <button class="btn btn-primary btn-sm me-2 edit-btn" id="" type="button" data-field="name">Edit</button>
@@ -69,7 +69,7 @@
                   <div class="col-sm-6">
                     <div class="text-center p-t-12" id="usernameExists" style="display: none"> </div>
                     <div class="text-center p-t-12" id="usernameError" style="display: none"> </div>
-                    <input type="text" class="form-control" id="usernameInput" disabled placeholder="{{ user.username }}">
+                    <input type="text" class="form-control" id="usernameInput" disabled placeholder="{{ session_user_data.username }}">
                   </div>
                   <div class="col-sm-3 d-flex align-items-center">
                     <button class="btn btn-primary btn-sm me-2 edit-btn" type="button" data-field="username">Edit</button>
@@ -87,7 +87,7 @@
                     <p class="mb-0">Gender</p>
                   </div>
                   <div class="col-sm-6">
-                    <input type="text" class="form-control" id="genderInput" disabled placeholder="{{ user.gender }}">
+                    <input type="text" class="form-control" id="genderInput" disabled placeholder="{{ session_user_data.gender }}">
                   </div>
                   <div class="col-sm-3 d-flex align-items-center">
                     <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="gender">Edit</button>
@@ -104,7 +104,7 @@
                     <p class="mb-0">Ethnicity</p>
                   </div>
                   <div class="col-sm-6">
-                    <input type="text" class="form-control" id="ethnicityInput" disabled placeholder="{{ user.ethnicity }}">
+                    <input type="text" class="form-control" id="ethnicityInput" disabled placeholder="{{ session_user_data.ethnicity }}">
                     <div class="ga-row" id="ethnicity-options" style="display: none">
                       <div class="ga-col ga-col-md-12">
                         <div class="ga-form-group">
@@ -151,7 +151,7 @@
                   <div class="col-sm-6">
                     
                     <select class="ga-select select2-selects" id="countrySelection" disabled>
-                      <option disabled selected>{{ user.country }}</option>
+                      <option disabled selected>{{ session_user_data.country }}</option>
                       {% for country in countries %}
                         <option>{{ country }}</option>
                       {% endfor %}
@@ -173,7 +173,7 @@
                     <p class="mb-0">Address</p>
                   </div>
                   <div class="col-sm-6">
-                    <input type="text" class="form-control" id="addressInput" disabled placeholder="{{ user.address }}">
+                    <input type="text" class="form-control" id="addressInput" disabled placeholder="{{ session_user_data.address }}">
                   </div>
                   <div class="col-sm-3 d-flex align-items-center">
                     <button class="btn btn-primary btn-sm me-1 edit-btn" type="button" data-field="address">Edit</button>
@@ -196,7 +196,7 @@
                         </div>
                         <div class="flex-grow-1 ms-2">
                           {% if socials.website %}
-                            <input type="text" class="form-control" id="websiteInput" disabled placeholder="{{ user.socials.website }}">
+                            <input type="text" class="form-control" id="websiteInput" disabled placeholder="{{ session_user_data.socials.website }}">
                             {% else %}
                             <input type="text" class="form-control" id="websiteInput" disabled placeholder="website">
                             {% endif %}
@@ -223,7 +223,7 @@
                         </div>
                         <div class="flex-grow-1 ms-2">
                             {% if socials.github %}
-                            <input type="text" class="form-control" id="githubInput" disabled placeholder="{{ user.socials.github }}">
+                            <input type="text" class="form-control" id="githubInput" disabled placeholder="{{ session_user_data.socials.github }}">
                             {% else %}
                             <input type="text" class="form-control" id="githubInput" disabled placeholder="github">
                             {% endif %}
@@ -250,7 +250,7 @@
                         </div>
                         <div class="flex-grow-1 ms-2">
                             {% if socials.twitter %}
-                            <input type="text" class="form-control" id="twitterInput" disabled placeholder="{{ user.socials.x }}">
+                            <input type="text" class="form-control" id="twitterInput" disabled placeholder="{{ session_user_data.socials.twitter }}">
                             {% else %}
                             <input type="text" class="form-control" id="twitterInput" disabled placeholder="x">
                             {% endif %}
@@ -277,7 +277,7 @@
                         </div>
                         <div class="flex-grow-1 ms-2">
                             {% if socials.instagram %}
-                            <input type="text" class="form-control" id="instagramInput" disabled placeholder="{{ user.socials.instagram }}">
+                            <input type="text" class="form-control" id="instagramInput" disabled placeholder="{{ session_user_data.socials.instagram }}">
                             {% else %}
                             <input type="text" class="form-control" id="instagramInput" disabled placeholder="instagram">
                             {% endif %}
@@ -320,7 +320,7 @@
               </form>
               <hr>
               <div class="d-flex justify-content-center">
-                <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href="{{ url_for('main.profile', username=user.username) }}">Go Back To Profile</a>
+                <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href="{{ url_for('main.profile', username=session_user_data.username) }}">Go Back To Profile</a>
               </div>
               <hr>
             </div>
@@ -445,7 +445,7 @@
             </form>
             <hr>
             <div class="d-flex justify-content-center">
-              <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href="{{ url_for('main.profile', username=user.username) }}">Go Back To Profile</a>
+              <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href="{{ url_for('main.profile', username=session_user_data.username) }}">Go Back To Profile</a>
             </div>
             
           </div>

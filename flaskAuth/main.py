@@ -48,7 +48,7 @@ def onboarding():
     countries = sorted(countries.values())
 
     return render_template('onboarding.html', 
-                           user=user_data,
+                           session_user_data=user_data,
                            user_id=user_id,
                            user_data=user_data,
                            countries=countries,
@@ -192,59 +192,6 @@ def profile(username):
                             job_info_fields = job_info_fields,
                             socials = socials)
 
-# @bp.route("/<username>")
-# def public_profile(username):
-#     # Fetch user data from Firebase using the username
-#     user_data = db.child("users").order_by_child("username").equal_to(username).get().val()
-    
-#     if user_data:
-#         # Extract the first user from the result
-#         user_data = list(user_data.values())[0]
-#         # Process user_data and render the profile page
-#         professional_info = user_data.get('professional_info', {})
-#         socials_data = user_data.get('socials', {})
-        
-#         personal_info_fields = [
-#             ('Full name', user_data.get('name')),
-#             ('Email', user_data.get('email')),
-#             ('Phone', user_data.get('phone')),
-#             ('Gender', user_data.get('gender')),
-#             ('Ethnicity', ', '.join(user_data['ethnicity']) if isinstance(user_data.get('ethnicity'), list) else user_data.get('ethnicity')),
-#             ('dob', user_data.get('dob')),
-#             ('Address', user_data.get('address')),
-#             ('Country', user_data.get('country'))
-#         ]
-        
-#         job_info_fields = [
-#             ('Industry', professional_info.get('industry')),
-#             ('Profession', professional_info.get('profession')),
-#             ('Seniority', professional_info.get('seniority')),
-#             ('Salary', professional_info.get('salary')),
-#             ('Education', professional_info.get('education'))
-#         ]
-#         socials = []
-#         if socials_data:
-        
-#             socials = [
-#                 ('website', socials_data.get('website')),
-#                 ('github', socials_data.get('github')),
-#                 ('facebook', socials_data.get('facebook')),
-#                 ('twitter', socials_data.get('twitter')),
-#                 ('instagram', socials_data.get('instagram'))
-#             ]
-
-#         # Filter out fields with None values
-#         personal_info_fields = [field for field in personal_info_fields if field[1] is not None]
-#         job_info_fields = [field for field in job_info_fields if field[1] is not None]
-
-#         return render_template('profile.html', user=user_data, 
-#                                 personal_info_fields=personal_info_fields, 
-#                                 job_info_fields=job_info_fields,
-#                                 socials=socials,
-#                                 session_user_id=session.get('user_id'))
-#     else:
-#         # Handle case where user data is not found
-#         return render_template("user_not_found.html"), 400
         
 @bp.route("/settings")
 @login_required
@@ -252,7 +199,7 @@ def settings():
     user_id= session['user_id']
     user_data = db.child("users").child(user_id).get().val()
     
-    return render_template('settings.html', user=user_data)
+    return render_template('settings.html', session_user_data=user_data)
 
 @bp.route("/edit_profile")
 @login_required
@@ -272,7 +219,7 @@ def edit_profile():
     seniority = db.child("data").child("profession_data").child("seniority").get().val()
     salary = db.child("data").child("profession_data").child("salary range").get().val()
     return render_template('edit-profile.html', 
-                           user= user_data, 
+                           session_user_data= user_data, 
                            countries=countries, 
                            professional_info=professional_info,
                            socials = socials,
