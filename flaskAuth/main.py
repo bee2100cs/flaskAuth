@@ -26,7 +26,7 @@ def index():
     if 'user' in session and 'user_id' in session:
         user_id = session['user_id']
         user_data = db.child('users').child(user_id).get().val()
-        return render_template('home.html', user=user_data)
+        return render_template('home.html', session_user_data=user_data)
     return render_template('home.html')
 
 @bp.route('/onboarding')
@@ -129,109 +129,122 @@ def onboarding_callback():
         return redirect(url_for('authentication.login')) 
     
 
-@bp.route("/profile")
-@login_required
-def profile():
-    user_id = session['user_id']
-    user_data = db.child("users").child(user_id).get().val()
-    #user_data = db.child("users").order_by_child("username").equal_to(username).get().val()
-    if user_data:
-        # Safe access to 'professional_info dictionary
-        professional_info = user_data.get('professional_info', {})
-        socials_data = user_data.get('socials', {})
-        personal_info_fields = [
-            ('Full name', user_data.get('name')),
-            ('Email', user_data.get('email')),
-            ('Phone', user_data.get('phone')),
-            ('Gender', user_data.get('gender')),
-            # Convert enthinicity list to a comma-separated string
-            ('Ethnicity', ', '.join(user_data['ethnicity']) if isinstance(user_data.get('ethnicity'), list) else user_data.get('ethnicity')),
-            ('dob', user_data.get('dob')),
-            ('Address', user_data.get('address')),
-            ('Country', user_data.get('country'))
-        ]
-        job_info_fields = [
-            ('Industry', professional_info.get('industry')),
-            ('Profession', professional_info.get('profession')),
-            ('Seniority', professional_info.get('seniority')),
-            ('Salary', professional_info.get('salary')),
-            ('Education', professional_info.get('education'))
-        ]
-        socials = []
-        if socials_data:
-            socials = [
-                ('website', socials_data.get('website')),
-                ('github', socials_data.get('github')),
-                ('facebook', socials_data.get('facebook')),
-                ('twitter', socials_data.get('twitter')),
-                ('instagram', socials_data.get('instagram'))
-            ]
-
-        # Filter out fields with None values
-        personal_info_fields = [field for field in personal_info_fields if field[1] is not None]
-        job_info_fields = [field for field in job_info_fields if field[1] is not None]
-
-        return render_template('profile.html', user=user_data, user_id= user_id,
-                               personal_info_fields=personal_info_fields, 
-                               job_info_fields = job_info_fields,
-                               socials = socials)
-    else:
-        # Handle case where user data is not found
-        return "User data not found", 404
-
 @bp.route("/<username>")
-def public_profile(username):
+def profile(username):
+    session_user_data = None
+    username_data = None
+
+    if 'user' in session and 'user_id' in session:
+
+        user_id = session['user_id']
+        session_user_data = db.child("users").child(user_id).get().val()
+        print(session_user_data.get('username'))
+
     # Fetch user data from Firebase using the username
-    user_data = db.child("users").order_by_child("username").equal_to(username).get().val()
+    username_data = db.child('users').order_by_child('username').equal_to(username).get().val()
+    if username_data:
+            username_data = list(username_data.values())[0]
+
+    # If no user data is found, return a 404 error
+    if not username_data:
+        return "User not found", 404
     
-    if user_data:
-        # Extract the first user from the result
-        user_data = list(user_data.values())[0]
-        # Process user_data and render the profile page
-        professional_info = user_data.get('professional_info', {})
-        socials_data = user_data.get('socials', {})
-        
-        personal_info_fields = [
-            ('Full name', user_data.get('name')),
-            ('Email', user_data.get('email')),
-            ('Phone', user_data.get('phone')),
-            ('Gender', user_data.get('gender')),
-            ('Ethnicity', ', '.join(user_data['ethnicity']) if isinstance(user_data.get('ethnicity'), list) else user_data.get('ethnicity')),
-            ('dob', user_data.get('dob')),
-            ('Address', user_data.get('address')),
-            ('Country', user_data.get('country'))
-        ]
-        
-        job_info_fields = [
-            ('Industry', professional_info.get('industry')),
-            ('Profession', professional_info.get('profession')),
-            ('Seniority', professional_info.get('seniority')),
-            ('Salary', professional_info.get('salary')),
-            ('Education', professional_info.get('education'))
-        ]
-        socials = []
-        if socials_data:
-        
-            socials = [
-                ('website', socials_data.get('website')),
-                ('github', socials_data.get('github')),
-                ('facebook', socials_data.get('facebook')),
-                ('twitter', socials_data.get('twitter')),
-                ('instagram', socials_data.get('instagram'))
+    
+    # Safe access to 'professional_info dictionary
+    professional_info = username_data.get('professional_info', {})
+    socials_data = username_data.get('socials', {})
+    personal_info_fields = [
+        ('Full name', username_data.get('name')),
+                ('Email', username_data.get('email')),
+                ('Phone', username_data.get('phone')),
+                ('Gender', username_data.get('gender')),
+                # Convert enthinicity list to a comma-separated string
+                ('Ethnicity', ', '.join(username_data['ethnicity']) if isinstance(username_data.get('ethnicity'), list) else username_data.get('ethnicity')),
+                ('dob', username_data.get('dob')),
+                ('Address', username_data.get('address')),
+                ('Country', username_data.get('country'))
             ]
+    job_info_fields = [
+        ('Industry', professional_info.get('industry')),
+        ('Profession', professional_info.get('profession')),
+        ('Seniority', professional_info.get('seniority')),
+        ('Salary', professional_info.get('salary')),
+        ('Education', professional_info.get('education'))
+    ]
+    socials = []
+    if socials_data:
+        socials = [
+            ('website', socials_data.get('website')),
+            ('github', socials_data.get('github')),
+            ('facebook', socials_data.get('facebook')),
+            ('twitter', socials_data.get('twitter')),
+            ('instagram', socials_data.get('instagram'))
+        ]
 
-        # Filter out fields with None values
-        personal_info_fields = [field for field in personal_info_fields if field[1] is not None]
-        job_info_fields = [field for field in job_info_fields if field[1] is not None]
+            # Filter out fields with None values
+    personal_info_fields = [field for field in personal_info_fields if field[1] is not None]
+    job_info_fields = [field for field in job_info_fields if field[1] is not None]
 
-        return render_template('profile.html', user=user_data, 
-                                personal_info_fields=personal_info_fields, 
-                                job_info_fields=job_info_fields,
-                                socials=socials,
-                                session_user_id=session.get('user_id'))
-    else:
-        # Handle case where user data is not found
-        return render_template("user_not_found.html"), 400
+    return render_template('profile.html', 
+                            session_user_data=session_user_data, 
+                            user = username_data,
+                            personal_info_fields=personal_info_fields, 
+                            job_info_fields = job_info_fields,
+                            socials = socials)
+
+# @bp.route("/<username>")
+# def public_profile(username):
+#     # Fetch user data from Firebase using the username
+#     user_data = db.child("users").order_by_child("username").equal_to(username).get().val()
+    
+#     if user_data:
+#         # Extract the first user from the result
+#         user_data = list(user_data.values())[0]
+#         # Process user_data and render the profile page
+#         professional_info = user_data.get('professional_info', {})
+#         socials_data = user_data.get('socials', {})
+        
+#         personal_info_fields = [
+#             ('Full name', user_data.get('name')),
+#             ('Email', user_data.get('email')),
+#             ('Phone', user_data.get('phone')),
+#             ('Gender', user_data.get('gender')),
+#             ('Ethnicity', ', '.join(user_data['ethnicity']) if isinstance(user_data.get('ethnicity'), list) else user_data.get('ethnicity')),
+#             ('dob', user_data.get('dob')),
+#             ('Address', user_data.get('address')),
+#             ('Country', user_data.get('country'))
+#         ]
+        
+#         job_info_fields = [
+#             ('Industry', professional_info.get('industry')),
+#             ('Profession', professional_info.get('profession')),
+#             ('Seniority', professional_info.get('seniority')),
+#             ('Salary', professional_info.get('salary')),
+#             ('Education', professional_info.get('education'))
+#         ]
+#         socials = []
+#         if socials_data:
+        
+#             socials = [
+#                 ('website', socials_data.get('website')),
+#                 ('github', socials_data.get('github')),
+#                 ('facebook', socials_data.get('facebook')),
+#                 ('twitter', socials_data.get('twitter')),
+#                 ('instagram', socials_data.get('instagram'))
+#             ]
+
+#         # Filter out fields with None values
+#         personal_info_fields = [field for field in personal_info_fields if field[1] is not None]
+#         job_info_fields = [field for field in job_info_fields if field[1] is not None]
+
+#         return render_template('profile.html', user=user_data, 
+#                                 personal_info_fields=personal_info_fields, 
+#                                 job_info_fields=job_info_fields,
+#                                 socials=socials,
+#                                 session_user_id=session.get('user_id'))
+#     else:
+#         # Handle case where user data is not found
+#         return render_template("user_not_found.html"), 400
         
 @bp.route("/settings")
 @login_required
