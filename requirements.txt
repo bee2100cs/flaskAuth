@@ -1,2 +1,7 @@
-flask
-python-dotenv
+flask==3.0.3
+pyrebase4==4.8.0
+python-dotenv==1.0.1
+flask-bcrypt==1.0.1
+flask-session==0.8.0
+redis==5.0.7
+setuptools==71.1.0
