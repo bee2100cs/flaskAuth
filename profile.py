@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 import os
 
 
-bp = Blueprint("main", __name__)
+bp = Blueprint("profile", __name__)
 
 #firebase config
 config = ApplicationConfig.FIREBASE_CONFIG
@@ -123,7 +123,7 @@ def onboarding_callback():
             'first_login_done': True
             })
 
-        return jsonify({'message': 'Onboarding completed', 'redirect_url':url_for('main.profile')})
+        return jsonify({'message': 'Onboarding completed', 'redirect_url':url_for('profile.profile')})
     else:
         # Redirect to login if not logged in
         return redirect(url_for('authentication.login')) 
@@ -286,7 +286,3 @@ def upload_file():
         return jsonify({'message': 'Profile photo uploaded successfuly', 'redirect_url': url} )
     return jsonify({'message': 'File upload falied'}), 500
 
-@bp.route("/search")
-def search():
-
-    return render_template('search.html')

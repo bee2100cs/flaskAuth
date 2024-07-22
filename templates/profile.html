@@ -13,7 +13,7 @@
                 class="rounded-circle img-fluid" style="width: 150px; height: 150px;">
 
 
-              <a class="my-3 py-2" href="{{ url_for('main.profile', username=user.username) }}"><h5>{{ user.username }}</h5></a>
+              <a class="my-3 py-2" href="{{ url_for('profile.profile', username=user.username) }}"><h5>{{ user.username }}</h5></a>
               <p class="text-muted mb-1">{{ user.professional_info.profession }} </p>
               <p class="text-muted mb-4">{{ user.address }} </p>
 
@@ -26,7 +26,7 @@
               {% endif %}
               <hr>
               {% if user.username == session_user_data.username %}
-              <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href= "{{ url_for('main.edit_profile') }}">Edit Profile</a><hr>
+              <a class="text-center btn btn-outline-primary" role="button" aria-disabled="true" href= "{{ url_for('profile.edit_profile') }}">Edit Profile</a><hr>
               {% endif %}
             </div>
           </div>

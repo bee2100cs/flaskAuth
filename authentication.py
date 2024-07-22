@@ -3,7 +3,7 @@ from .config import ApplicationConfig
 import pyrebase
 from functools import wraps
 
-bp = Blueprint("authentication", __name__)
+bp = Blueprint("authentication", __name__, template_folder='templates')
 
 # firebase config
 config = ApplicationConfig.FIREBASE_CONFIG
@@ -106,10 +106,14 @@ def login_callback():
             session["user"] = email
             session["user_id"] = user_id
             session["id_token"] = id_token
+            session["session_user_data"] = {
+                "username": user_data.get("username", ""),
+                "profile_pic_url": user_data.get("profile_pic_url", "")
+            }
             # # Redirect the user to onboarding page if first login
             if user_data['first_login_done'] == False:
                 # Redirect user to onboarding page
-                return jsonify({'redirect_url': url_for('main.onboarding'), 'message': 'First login: Go to Onboarding'})
+                return jsonify({'redirect_url': url_for('profile.onboarding'), 'message': 'First login: Go to Onboarding'})
             
             # Check for next_url cookie in the case of use of login_required 
             if 'next_url' in session:
@@ -119,7 +123,7 @@ def login_callback():
                 return jsonify({'redirect_url': next_url, 'message': "Login successful"})
             # Default Redirect to home page
             else:
-                return jsonify({'redirect_url': url_for('main.index'), 'message': 'Login successful'})
+                return jsonify({'redirect_url': url_for('profile.index'), 'message': 'Login successful'})
         else:
             # Email is not verified, notify the user
            
@@ -143,7 +147,7 @@ def reset_pass():
 def logout():
     if request.method == 'GET':
         session.pop('user')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('profile.index'))
     else:
         return jsonify({'error': 'Method not allowed'}), 405  # Return a 405 Method Not Allowed status for other methods
 
@@ -171,7 +175,7 @@ def delete_user():
             # Clear session after deleting user
             session.pop("user")
 
-            return jsonify({"success": True, "message": "User profile deleted successfully.  We are sorry to see you go", "redirect_url": url_for('main.index')}), 200
+            return jsonify({"success": True, "message": "User profile deleted successfully.  We are sorry to see you go", "redirect_url": url_for('profile.index')}), 200
 
         except Exception as e:
             return jsonify({"message": "Invalid password. Please try again."}), 400
@@ -179,4 +183,3 @@ def delete_user():
         
     except Exception as e:
         return jsonify({"error":"An error occurred while trying to delete your account. Please try again."}), 400
-

@@ -3,20 +3,20 @@ from .config import ApplicationConfig
 from flask_session import Session
 
 def create_app():
-    app = Flask(__name__)
+    auth = Flask(__name__, template_folder='templates')
 
-    app.secret_key = ApplicationConfig.SECRET_KEY
-    app.config.from_object(ApplicationConfig)
+    auth.secret_key = ApplicationConfig.SECRET_KEY
+    auth.config.from_object(ApplicationConfig)
 
     # Enable secure serverside session
-    server_session = Session(app)
+    #server_session = Session(auth)
 
     # Blueprint for auth routes
     from .authentication import bp as auth_bp
-    app.register_blueprint(auth_bp)
+    auth.register_blueprint(auth_bp)
 
-    # Blueprint for non-auth parts of the app
-    from .main import bp as main_bp
-    app.register_blueprint(main_bp)
+    # Blueprint for non-auth parts of the auth
+    from .profile import bp as profile_bp
+    auth.register_blueprint(profile_bp)
 
-    return app
+    return auth
