@@ -62,7 +62,7 @@ function signup() {
         return;
     }
     if (email && password) {
-        axios.post('/auth/api/signup', {email: email, password: password})
+        axios.post('/api/signup', {email: email, password: password})
         .then(function(response) {
            // Check if the response contains a redirect URL
            if (response.data.redirect_url) {
@@ -102,7 +102,7 @@ function login() {
     const password = passInput.value;
 
     if (email && password) {
-        axios.post('/auth/api/login', {email: email, password: password})
+        axios.post('/api/login', {email: email, password: password})
         .then(function(response) {
             if (response.data.redirect_url) {
                 // Perform the redirect
@@ -140,7 +140,7 @@ function reset() {
         if (email) {
             console.log(email);
             // Send a POST request to the backend
-            axios.post('/auth/api/reset', {email: email})
+            axios.post('/api/reset', {email: email})
                 .then(function(response) {
                     let resetEmailSent = document.createElement('span');
                     let resetConfirm = document.getElementById('resetConfirm');
@@ -168,7 +168,7 @@ function reset() {
 
 
 function logout ()  {
-    axios.get('/auth/api/logout')
+    axios.get('/api/logout')
     .then(function(response) {
         window.location.href = response.data.redirect_url;
     })
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const password = passwordInput.value;
 
         if (password) {
-          axios.post('/auth/api/delete_user', { password: password })
+          axios.post('/api/delete_user', { password: password })
             .then(function(response) {
               if (response.data.success) {
                 feedbackDiv.innerHTML = '<div class="alert alert-success">' + response.data.message + '</div>';

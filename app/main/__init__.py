@@ -1,4 +1,4 @@
-from flask import Blueprint, session
+from flask import Blueprint, session, g
 from ..config import ApplicationConfig
 import pyrebase
 
@@ -14,11 +14,13 @@ db = firebase.database()
 
 @main.before_app_request
 def load_user():
-    # Store user data in session for easy access
+    #  Store user data in Flask's global `g` object
     if 'user' in session and 'user_id' in session:
         user_id = session['user_id']
         user_data = db.child('users').child(user_id).get().val()
-        session['user_data'] = user_data  
+        g.user_data = user_data
+    else:
+        g.user_data = None
 
 
 # Import the routes to register them with the blueprint

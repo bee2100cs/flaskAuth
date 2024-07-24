@@ -19,9 +19,6 @@ def create_app():
     # Intialie the auth app and register blueprint
     auth_app = create_auth_app()
     for blueprint in auth_app.blueprints.values():
-        if blueprint.name == "authentication":
-            app.register_blueprint(blueprint, url_prefix='/auth')
-        else:
-            app.register_blueprint(blueprint)
+        app.register_blueprint(blueprint)
 
     return app

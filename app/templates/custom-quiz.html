@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card-body p-5">
+    <div class=""></div>
+    <div class="px-lg-5">
+        <hr>
+        <div class="">
+            <h5 class="mb-0 ">Create a custom quiz by selecting the category, 
+            </h5>
+        </div>
+        <hr>
+        <div>
+            <form class="form" method="post" id="custom-quiz">
+                <div class="row p-1">
+                    <div class="col-sm">
+                        <p class="text-start">Category</p>
+                    </div>
+                    <div class="col-sm">
+                        <select class="form-select" aria-label="Default select example" id="category">
+                            <option selected>Category</option>
+                            <option value="10">Science</option>
+                            <option value="20">Entertainment</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                            <option value="50">50</option>
+                          </select>
+        
+                    </div>
+                </div>
+                <div class="row p-1">
+                    <div class="col-sm">
+                        <p class="text-start">Difficulty Level</p>
+                    </div>
+                    <div class="col-sm">
+                        <select class="form-select" aria-label="Default select example" id="difficulty">
+                            <option selected>Difficulty</option>
+                            <option value="">Any</option>
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                          </select>
+        
+                    </div>
+                </div>
+                <div class="row p-1">
+                    <div class="col-sm">
+                        <p class="text-start">Type</p>
+                    </div>
+                    <div class="col-sm">
+                        <select class="form-select" aria-label="Default select example" id="quiz-type">
+                            <option selected value="">Type</option>
+                            <option value="multiple">multiple</option>
+                            <option value="boolean">True/False</option>
+                          </select>
+        
+                    </div>
+                </div>
+                <div class="row p-1">
+                    <div class="col-sm">
+                        <p class="text-start">Number of Questions</p>
+                    </div>
+                    <div class="col-sm">
+                        <select class="form-select" aria-label="Default select example" id="question-count">
+                            <option selected>Number of Questions</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                            <option value="50">50</option>
+                          </select>
+        
+                    </div>
+                </div>
+                
+                <button type="submit" id="start-quiz-btn" class="btn btn-primary mt-4">Start Quiz</button>
+            </form>
+        </div>
+        
+        
+        
+    </div>
+    
+    </div>
+
+{% endblock %}
