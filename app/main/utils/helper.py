@@ -1,5 +1,8 @@
 import hashlib
 import requests
+from .. import db
+import uuid
+from flask import jsonify
 
 
 # Generate session token from Trivia API
@@ -40,4 +43,119 @@ def generate_question_id(question_text):
     return hashlib.sha256(question_text.encode('utf-8')).hexdigest()
 
 
+# Add generated questions to our db
+def add_question_to_db(question):
+    if not isinstance(question, dict):
+        raise ValueError("Expected 'question' to be a dictionary")
+    question_id = question['id']
+
+    # Check if question ID already exists in the db
+    existing_question = db.child("quiz").child("questions").child(question_id).get().val()
+
+    if existing_question:
+        print(f"Question with ID{question_id} already exists.")
+        return False
+    else:
+        # Add the question to db
+        db.child("quiz").child("questions").child(question_id).set(question)
+        print(f"Question added sucessfully.")
+        return True
+
+# Add all quiz questions to db
+def add_questions_to_db(questions):
+    for question in questions:
+        add_question_to_db(question)
+
+
+# Create anonymous user
+def generate_user_id(username):
+    return hashlib.sha256(username.encode('utf-8')).hexdigest()
+
+def get_or_create_anonymous_user():
+    anonymous_username = 'anonymous'
+    anonymous_user_id = generate_user_id(anonymous_username)
+    # Check if anonymous user exists
+    existing_user = db.child("users").child(anonymous_user_id).get().val()
+    if not existing_user:
+        db.child('users').child(anonymous_user_id).set({"username": anonymous_username})
+    return anonymous_user_id
+
+
+# Save quiz to db
+def save_quiz_to_db(session, quiz_questions):
+    
+    # Check if there's quiz data in session
+    if not quiz_questions:
+        print("No quiz data to save")
+        return
+    # Check if user is logged in or is anonymous
+    try:
+        if 'user_id' in session:
+            user_id = session['user_id']
+            print(f"Logged in user ID: {user_id}")
+        else:
+            user_id = get_or_create_anonymous_user()
+            print(f"Anonymous user ID: {user_id}")
+        
+        try:
+            # Generate a unique quiz ID
+            quiz_id = str(uuid.uuid4())
+            print(f"Generated unique quiz_id {quiz_id}")
+        except Exception as e:
+            print("error generating quiz_id")
+            jsonify({"error": " an error occured when creating quiz_id"})
+
+        # Extract question IDs
+        question_ids = [question['id'] for question in quiz_questions]
+        number_of_questions = len(question_ids)
+
+        # Get other quiz parameters
+        # use sets to avoid data duplication
+        difficulties = set()
+        categories = set()
+        types = set()
+        
+        for question in quiz_questions:
+            # Get question types, categories, and difficulties
+            difficulties.add(question.get('difficulty'))
+            categories.add(question.get('category'))
+            types.add(question.get('type'))
+
+        def determine_value(values_set):
+            if len(values_set) == 1:
+                return next(iter(values_set))
+            elif len (values_set) > 1:
+                return 'random'
+            else:
+                return None
+            
+        quiz_category = determine_value(categories)
+        quiz_difficulty = determine_value(difficulties)
+        quiz_type = determine_value(types)
+
+        print(f"Quiz category: {quiz_category}, quiz difficulty: {quiz_difficulty}, quiz type: {quiz_type}")
+
+        # prepare quiz data
+        quiz_data = {
+            "user_id": user_id,
+            'quiz_category': quiz_category,
+            'quiz_type' : quiz_type,
+            'quiz_difficulty': quiz_difficulty,
+            'question_count': number_of_questions,
+            "questions": question_ids
+        }
+        print(quiz_data)
+        # Save quiz to db
+        try:
+            db.child("quiz").child("saved_quizzes").child(quiz_id).set(quiz_data)
+            print(f"Quiz saved with ID {quiz_id} fo user {user_id}")
+        except Exception as e:
+            print(f"Error saving quiz: {e}")
+
+        return quiz_id
+    
+            
+    except Exception as e:
+        print("error handling user_id")
+        return jsonify({"error": "An error occured during handling user_id "})
 

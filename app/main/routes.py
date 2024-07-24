@@ -5,7 +5,15 @@ from ..config import ApplicationConfig
 from ..auth.authentication import login_required
 from werkzeug.utils import secure_filename
 from . import db
-from utils.helper import generate_question_id, fetch_data_from_api, fetch_session_token, get_key_by_value
+import random
+import threading
+from .utils.helper import (generate_question_id, 
+                           fetch_data_from_api, 
+                           fetch_session_token, 
+                           get_key_by_value, 
+                           add_question_to_db,
+                           add_questions_to_db,
+                           save_quiz_to_db)
 
 # Global variables
 session_token = None
@@ -63,8 +71,6 @@ def create_quiz():
     if quiz_type in ['multipe', 'boolean']:
         api_url += f'&type={quiz_type}'
 
-    print(api_url)
-
     try:
         quiz_data = fetch_data_from_api(api_url)
         response_code = quiz_data.get("response_code")
@@ -102,13 +108,10 @@ def create_quiz():
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
-
-
 @main.route("/quiz")
 def quiz():
     if 'quiz_questions' in session:
         quiz_questions = session['quiz_questions']
-        print ("Here are questions served from current session")
 
         # Add unique ID to questions
         questions_only = []
@@ -123,8 +126,11 @@ def quiz():
                 'difficulty': question['difficulty'],
                 'category': question['category'],
                 'question': question['question'],
-                'answers': question['incorrect_answers'] + [question['correct_answer']]
+                'incorrect_answers': question['incorrect_answers'],
+                  'correct_answer': question['correct_answer']
             })
+           
+
             # Data to send to front-end
             answers = question['incorrect_answers'] + [question['correct_answer']]
 
@@ -137,12 +143,16 @@ def quiz():
             })
 
         # Shuffle the answers for each question
-        import random 
         for q in questions_only:
             random.shuffle(q['answers'])
 
         # Store questions with ids in session for answer validation and sending to db
         session["quiz_questions"] = questions_with_id
+        quiz_questions = session['quiz_questions']
+
+        # Cread and start a thread to handle the slow database operation asynchronously
+        db_thread = threading.Thread(target=add_questions_to_db, args=(quiz_questions,))
+        db_thread.start()
 
         # Render quiz page with questions
         return render_template("quiz.html", session_user_data=g.user_data, quiz_data=questions_only)
@@ -152,19 +162,21 @@ def quiz():
 
 @main.route("/quiz", methods=["POST", "GET"])
 def quiz_callback():
-    #process quiz answers
-    user_answers= request.json.get('answers')
-    quiz_questions = session.get('quiz_questions')
-
-    if not quiz_questions:
+    
+    if 'quiz_questions' in session:
+        quiz_questions = session.get('quiz_questions')
+    else:
         return({"messsage": "No questions found in session"})
     
+    #process quiz answers
+    user_answers= request.json.get('answers')
+
     score = 0
     total_questions = len(quiz_questions)
     for question in quiz_questions:
         q_text = question['question']
         correct_answer = question['correct_answer']
-        user_answer = user_answer.get(q_text)
+        user_answer = user_answers.get(q_text)
 
         if user_answer == correct_answer:
             score += 1
@@ -173,3 +185,25 @@ def quiz_callback():
     percentage_score = (score / total_questions) * 100
     
     return jsonify({"message": "quiz completed", 'score': score, 'percentage_score': percentage_score})
+
+@main.route('/save-quiz', methods=['POST','GET'])
+def save_quiz():
+    #save_quiz = request.json.get("save_quiz_prompt")
+    save_quiz = True
+    # get session data
+    if 'quiz_questions' in session:
+        quiz_questions = session['quiz_questions']
+
+        # Save quiz
+        if save_quiz:
+            try:
+                save_quiz_to_db(session, quiz_questions)
+                return jsonify({'message': "quiz saved successfully"})
+            except Exception as e:
+                return jsonify({'error': f"Error saving quiz: {str(e)}"})
+        else:
+            jsonify({'error': "saving quiz is disabled."})
+    else:
+        return jsonify({'error': "No quiz questions found in session."})
+
+
