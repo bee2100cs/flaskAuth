@@ -26,8 +26,8 @@ def index():
     if 'user' in session and 'user_id' in session:
         user_id = session['user_id']
         user_data = db.child('users').child(user_id).get().val()
-        return render_template('home.html', session_user_data=user_data)
-    return render_template('home.html')
+        return render_template('index.html', session_user_data=user_data)
+    return render_template('index.html')
 
 @bp.route('/onboarding')
 @login_required
