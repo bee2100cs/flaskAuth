@@ -37,3 +37,62 @@ body {
 .card-body {
     text-align: center;
 }
+.stepper-block { display: none; }
+.stepper-block.active { display: block; }
+  
+  .stepped-content {
+    flex: 1;
+  }
+  .stepped-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ensure the parent div takes up the full height */
+  }
+  #quiz-form {
+    display: flex;
+    flex-direction: column;
+    min-height: 600px; /* Adjust this value based on your content */
+  }
+  
+  .nav-div {
+    margin-top: auto; /* Pushes the nav-div to the bottom */
+  }
+
+  /* SVG for curcular score */
+  .circular-progress {
+    --size: 120px;
+    --half-size: calc(var(--size) / 2);
+    --stroke-width: 10px;
+    --radius: calc((var(--size) - var(--stroke-width)) / 2);
+    --circumference: calc(var(--radius) * 3.14159 * 2);
+    --dash: calc((var(--progress) * var(--circumference)) / 100);
+  }
+  
+  .circular-progress circle {
+    cx: var(--half-size);
+    cy: var(--half-size);
+    r: var(--radius);
+    stroke-width: var(--stroke-width);
+    fill: none;
+    stroke-linecap: round;
+  }
+  
+  .circular-progress circle.bg {
+    stroke: #ddd;
+  }
+  
+  .circular-progress circle.fg {
+    transform: rotate(-90deg);
+    transform-origin: var(--half-size) var(--half-size);
+    stroke-dasharray: var(--dash) calc(var(--circumference) - var(--dash));
+    transition: stroke-dasharray 0.3s linear 0s;
+    stroke: #5394fd;
+  }
+  
+  .circular-progress text {
+    font-size: 2em;
+    fill: #000;
+    text-anchor: middle;
+    dominant-baseline: middle;
+  }
+  

@@ -3,6 +3,7 @@ import requests
 from .. import db
 import uuid
 from flask import jsonify
+from datetime import datetime, timezone
 
 
 # Generate session token from Trivia API
@@ -144,18 +145,64 @@ def save_quiz_to_db(session, quiz_questions):
             'question_count': number_of_questions,
             "questions": question_ids
         }
-        print(quiz_data)
         # Save quiz to db
         try:
             db.child("quiz").child("saved_quizzes").child(quiz_id).set(quiz_data)
+
             print(f"Quiz saved with ID {quiz_id} fo user {user_id}")
         except Exception as e:
             print(f"Error saving quiz: {e}")
+            return jsonify({"error": "An error occured while saving the quiz"})
+        
+        # Append quiz ID to list of quizzes by user on db
+        try:
+            user_quizzes = db.child("users").child(user_id).child("quizzes").get().val()
+            if not user_quizzes:
+                user_quizzes = [quiz_id]
+                
+            else:
+                user_quizzes.append(quiz_id)
+
+            db.child("users").child(user_id).child("quizzes").set(user_quizzes)
+            print("quiz saved successfully")
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+            return jsonify({"Error": "An unexpected error occured"})
 
         return quiz_id
     
             
     except Exception as e:
-        print("error handling user_id")
+        print(f"error handling user_id. Error: {e}")
         return jsonify({"error": "An error occured during handling user_id "})
 
+def save_user_score(quiz_id, session, score):
+    if 'user_id' in session:
+            user_id = session['user_id']
+    else:
+        user_id = get_or_create_anonymous_user()
+    try:
+        # Prepare the score data
+        score_data = {
+            "quiz_id": quiz_id,
+            "score": score,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Fetch the user's existing scores for the quiz
+        user_scores = db.child("users").child(user_id).child("scores").child(quiz_id).get().val()
+        
+        if user_scores:
+            # If the user has already taken the quiz, update the score if the new score is higher
+            if score > user_scores.get('score', 0):
+                db.child("users").child(user_id).child("scores").child(quiz_id).update(score_data)
+                print(f"Updated score for user {user_id} for quiz {quiz_id}")
+            else:
+                print(f"New score is not higher. Score for user {user_id} for quiz {quiz_id} remains unchanged.")
+        else:
+            # Save the new score
+            db.child("users").child(user_id).child("scores").child(quiz_id).set(score_data)
+            print(f"Score saved successfully for user {user_id} and quiz {quiz_id}")
+    except Exception as e:
+        print(f"Error saving user score: {e}")
+        return jsonify({"error": "An error occurred while saving the user score"})

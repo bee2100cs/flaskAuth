@@ -1,43 +1,161 @@
+// Add a generic function for quiz type
+function addQuizFormListener(formId, submitFunction) {
+  const quizForm = document.getElementById(formId);
+  if (quizForm) {
+    quizForm.addEventListener ('submit', function(event) {
+      event.preventDefault();
+      submitFunction(); // call the specific function for this quiz
+    });
+  }
+}
 // Add event listerners for type of quiz
 document.addEventListener('DOMContentLoaded', function() {
-  let randomQuizForm = document.getElementById("random-quiz");
-  let customizedQuizForm = document.getElementById("custom-quiz");
-  let existingQuizForm = document.getElementById("existing-quiz");
-  let quizForm = document.getElementById('quiz-form')
+  addQuizFormListener("random-quiz", randomQuiz);
+  addQuizFormListener("custom-quiz", customQuiz);
+  addQuizFormListener("existing-quiz", existingQuiz);
+  addQuizFormListener('quiz-form', submitQuiz);
 
-  // Random quiz
-  if(randomQuizForm)
-  {
-    randomQuizForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-      randomQuiz();
-    });
+  const numberOfQuestions = localStorage.getItem('numberOfQuestions');
+  const quizType = localStorage.getItem('quizType');
+  const quiz_questions = JSON.parse(localStorage.getItem('quiz_questions'));
+  const courseForm = document.getElementById('courseForm');
+  const quizResultsPage = document.getElementById('quiz-results');
+  const finishQuizTrigger = document.getElementById('finish-quiz');
+
+  if (quizResultsPage) {
+    quizResults();
   }
-
-  // Custom quiz
-  if (customizedQuizForm) {
-    customizedQuizForm.addEventListener("submit", function(event) {
+  if (finishQuizTrigger) {
+    finishQuizTrigger.addEventListener('click', function(event) {
       event.preventDefault();
-      customQuiz();
-    });
-  }
-
-  // Existing quiz
-  if (existingQuizForm) {
-    existingQuizForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-      existingQuiz();
-    });
-  }
-
-  if (quizForm) {
-    quizForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-      quiz();
+      finishQuiz();
     })
   }
+
   
+  if (courseForm) {
+    if (numberOfQuestions && quiz_questions && quizType) {
+      console.log('Number of Questions:', numberOfQuestions);
+      console.log('Quiz Questions:', quiz_questions);
+      console.log("Quiz Type:", quizType);
+      populateQuiz(quiz_questions, quizType);
+      startTimer();
+    } else {
+      console.error('No quiz data found in localStorage');
+    } 
+  }
+
+  // Retry Quiz
+  let retryButton = document.getElementById('retry-quiz-btn');
+  if (retryButton) {
+    retryButton.addEventListener('click', function(event) {
+      event.preventDefault();
+      retryQuiz();
+    })
+  }
+
+  const retryQuizFlag = localStorage.getItem('retryQuiz');
+
+  if (retryQuizFlag === 'true') {
+    // Clear the retry flag
+    localStorage.removeItem('retryQuiz');
+
+    // Fetch the quiz questions and type from localStorage
+    const questions = JSON.parse(localStorage.getItem('quizQuestions'));
+    const quizType = localStorage.getItem('quizType');
+
+    // Ensure questions data is valid
+    if (questions && Array.isArray(questions)) {
+      // Clear any existing answers or state
+      const quizForm = document.getElementById('quiz-form');
+      if (quizForm) {
+        // Clear the quiz form and steps
+        const quizSteps = document.getElementById('quiz-steps');
+        if (quizSteps) {
+          quizSteps.innerHTML = '';
+        }
+        quizForm.innerHTML = '';
+
+        // Repopulate the quiz with the same questions
+        populateQuiz(questions, quizType);
+      }
+    }
+  }
+ 
 });
+
+let numberOfQuestions;
+let quiz_questions;
+let quizType;
+let timer;
+let startTime;
+let timerInterval;
+
+// Function to start or continue timer
+function startTimer() {
+  // Clear any existing timer data if starting a new quiz
+  localStorage.removeItem('quizStartTime');
+  
+  // Set the start time
+  startTime = new Date().getTime();
+  localStorage.setItem('quizStartTime', startTime);
+
+  // Clear any existing interval
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+
+  // Set timer to update every second
+  timerInterval = setInterval(updateTimerDisplay, 1000);
+}
+
+// Update timer display
+function updateTimerDisplay() {
+  const now = new Date().getTime();
+  const startTime = parseInt(localStorage.getItem('quizStartTime'));
+  const elapsed = now - startTime;
+  
+  const hours = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+  
+  document.getElementById('timer').innerText = 
+    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+// Function to stop the timer
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// Add event listener to reset timer when leaving the page
+window.addEventListener('beforeunload', function() {
+  stopTimer(); // Stop the timer
+});
+
+// Function to finish quiz and display elapsed time
+function submitAnswers() {
+  stopTimer(); // Stop the timer
+  
+  const endTime = new Date().getTime();
+  const startTime = parseInt(localStorage.getItem('quizStartTime'));
+  const totalTime = endTime - startTime;
+
+  const hours = Math.floor((totalTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((totalTime % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((totalTime % (1000 * 60)) / 1000);
+
+  const timeString = `${String(hours).padStart(2, '0')} hours ${String(minutes).padStart(2, '0')} minutes ${String(seconds).padStart(2, '0')} seconds`;
+   // Save the time string in localStorage
+   localStorage.setItem('quizCompletionTime', timeString);
+   
+  console.log(`Quiz completed in ${timeString}`);
+
+  // Clear the stored start time
+  localStorage.removeItem('quizStartTime');
+  localStorage.setItem('quizCompleted', 'true'); // Mark quiz as completed
+}
+
 
 // Quiz generation: Handle random Quiz
 function randomQuiz() {
@@ -49,7 +167,16 @@ function randomQuiz() {
   })
   .then(function(response) {
     if (response.data.redirect_url) {
+      data = response.data;
+      quiz_questions = data.quiz_questions;
+      quizType = "Random";
+
+      localStorage.setItem('numberOfQuestions', numberOfQuestions);
+      localStorage.setItem('quizType', quizType);
+      localStorage.setItem('quiz_questions', JSON.stringify(quiz_questions));
+     
       window.location.href = response.data.redirect_url;
+      
       
     } else {
       console.error("Error while creating quiz ", response.data.message);
@@ -58,18 +185,8 @@ function randomQuiz() {
   })
   .catch(function(error) {
     // Handle error response
-    if (error.response) {
-      // Server responded with a status other than 2xx
-      console.error('Error:', error.response.data.message);
-    } else if (error.request) {
-      // Request was made but no response was received
-      console.error('No response received:', error.request);
-    } else {
-      // Something happened in setting up the request
-      console.error('Error setting up request:', error.message);
-    }
-  });
-
+    console.log(error);
+  })
 }
 
 // Quiz generation: Handle custom Quiz
@@ -82,19 +199,27 @@ function customQuiz() {
   const quizCategory = selectCategory.value;
   const quizDifficulty = selectDifficulty.value;
   const numberOfQuestions = selectQuestionCount.value;
-  const quizType = selectType.value;
+  const answerType = selectType.value;
 
   axios.post('/api/quiz', {
     quiz_category: quizCategory,
     quiz_difficulty: quizDifficulty,
     question_count: numberOfQuestions,
-    quiz_type: quizType
+    quiz_type: answerType
   })
   .then(function(response) {
     if (response.data.redirect_url) {
+      data = response.data;
+      quiz_questions = data.quiz_questions;
+      quizType = "Custom";
 
-
+      localStorage.setItem('numberOfQuestions', numberOfQuestions);
+      localStorage.setItem('quizType', quizType);
+      localStorage.setItem('quiz_questions', JSON.stringify(quiz_questions));
+     
       window.location.href = response.data.redirect_url;
+      
+      
       
     } else {
       console.error("Error while creating quiz ", response.data.message);
@@ -118,18 +243,28 @@ function existingQuiz() {
   const quizCategory = selectCategory.value;
   const quizDifficulty = selectDifficulty.value;
   const numberOfQuestions = selectQuestionCount.value;
-  const quizType = selectType.value;
+  const answerType = selectType.value;
 
   axios.post('/api/quiz', {
     quiz_category: quizCategory,
     quiz_difficulty: quizDifficulty,
     question_count: numberOfQuestions,
-    quiz_type: quizType
+    quiz_type: answerType
   })
   .then(function(response) {
     if (response.data.redirect_url) {
+      data = response.data;
+      quiz_questions = data.quiz_questions;
+      quizType = "Pre-Saved";
+
+      localStorage.setItem('numberOfQuestions', numberOfQuestions);
+      localStorage.setItem('quizType', quizType);
+      localStorage.setItem('quiz_questions', JSON.stringify(quiz_questions));
+     
       window.location.href = response.data.redirect_url;
-      console.log(response.data);
+      
+      
+      
     } else {
       console.error("Error while creating quiz ", response.data.message);
     }
@@ -141,205 +276,229 @@ function existingQuiz() {
   })
 }
 
-// Handle Quiz
-function quiz() {
-  
+
+
+function populateQuiz(questions, quizType) {
+  const quizSteps = document.getElementById('quiz-steps');
+  const quizForm = document.getElementById('quiz-form');
+  const progressInfo = document.getElementById('quiz-progress-info');
+  const progressBar = document.getElementById('progress-bar');
+
+  //localStorage.setItem('quizCompleted', 'false');
+  // startTimer();
+  // Update quiz type in header
+  document.getElementById('quiz-type').innerText = quizType;
+
+  // Initialize progress bar
+  function updateProgress(index) {
+    const percentage = ((index + 1) / questions.length) * 100;
+    progressBar.style.width = `${percentage}%`;
+    progressBar.setAttribute('aria-valuenow', percentage);
+    progressInfo.innerText = `Question ${index + 1} out of ${questions.length}`;
+  }
+
+  questions.forEach((question, index) => {
+    // Step indicator
+    const stepDiv = document.createElement('div');
+    stepDiv.className = `step ${index === 0 ? 'active' : ''}`;
+    stepDiv.setAttribute('data-target', `#question-${index + 1}`);
+    quizSteps.appendChild(stepDiv);
+
+    // Question card
+    const questionDiv = document.createElement('div');
+    questionDiv.id = `question-${index + 1}`;
+    questionDiv.className = `bs-stepper-pane ${index === 0 ? 'active' : ''} stepper-block`;
+    
+
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'card mb-4';
+
+    const cardBodyDiv = document.createElement('div');
+    cardBodyDiv.className = 'card-body question-container';
+
+    // Question content
+    const questionTextDiv = document.createElement('div');
+    questionTextDiv.className = 'mt-5';
+    questionTextDiv.innerHTML = `
+      <span>Question ${index + 1}</span>
+      <h3 class="mb-3 mt-1">${question.question}</h3>
+    `;
+
+    // Answer options
+    const answersDiv = document.createElement('div');
+    answersDiv.className = 'list-group';
+    answersDiv.id = `${question.id}`;
+    answersDiv.dataset.questionId = question.id;
+    question.answers.forEach((answer, answerIndex) => {
+      const answerDiv = document.createElement('div');
+      answerDiv.className = 'list-group-item list-group-item-action';
+      answerDiv.innerHTML = `
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="question-${index + 1}" id="answerRadioOption${index + 1}-${answerIndex}" value="${answer}">
+          <label class="form-check-label stretched-link" for="answerRadioOption${index + 1}-${answerIndex}">
+            ${answer}
+          </label>
+        </div>
+      `;
+      answersDiv.appendChild(answerDiv);
+    });
+
+    // Append content to card body
+    cardBodyDiv.appendChild(questionTextDiv);
+    cardBodyDiv.appendChild(answersDiv);
+
+    // Append card to question div
+    cardDiv.appendChild(cardBodyDiv);
+
+    // Append card to question div
+    questionDiv.appendChild(cardDiv);
+
+    // Navigation buttons
+    const navDiv = document.createElement('div');
+    navDiv.className = 'mt-3 d-flex justify-content-between';
+    if (index > 0) {
+      navDiv.innerHTML += `
+        <button class="btn btn-secondary" type="button" onclick="showPreviousQuestion(${index + 1})">
+          <i class="fe fe-arrow-left"></i>
+          Previous
+        </button>
+      `;
+    }
+    
+    if (index < questions.length - 1) {
+      navDiv.innerHTML += `
+        <button class="btn btn-primary" type="button" onclick="showNextQuestion(${index + 1})">
+          Next
+          <i class="fe fe-arrow-right"></i>
+        </button>
+      `;
+    } else {
+      navDiv.innerHTML += `
+        <button type="submit" class="btn btn-primary" onclick="submitAnswers()">
+          Submit
+        </button>
+      `;
+    }
+    questionDiv.appendChild(navDiv);
+
+    // Append question div to form
+    quizForm.appendChild(questionDiv);
+
+    // Initialize progress for the first question
+    if (index === 0) {
+      updateProgress(index);
+    }
+  });
 }
 
-const questions = [
-    {
-      category: "Animals",
-      correct_answer: "False",
-      difficulty: "medium",
-      incorrect_answers: ["True"],
-      question: "The Ceratosaurus, a dinosaur known for having a horn on the top of its nose, is also known to be a descendant of the Tyrannosaurus Rex.",
-      type: "boolean"
-    },
-    {
-      category: "History",
-      correct_answer: "Navarre",
-      difficulty: "hard",
-      incorrect_answers: ["Galicia", "Granada", "Catalonia"],
-      question: "The coat of arms of the King of Spain contains the arms from the monarchs of Castille, Leon, Aragon and which other former Iberian kingdom?",
-      type: "multiple"
-    },
-    {
-      category: "Entertainment: Video Games",
-      correct_answer: "Ossan",
-      difficulty: "medium",
-      incorrect_answers: ["Jumpman", "Mr. Video", "Mario"],
-      question: "What name did \"Mario\", from \"Super Mario Brothers\", originally have?",
-      type: "multiple"
-    },
-    {
-      category: "Entertainment: Music",
-      correct_answer: "The Beatles (White Album)",
-      difficulty: "easy",
-      incorrect_answers: ["Rubber Soul", "Abbey Road", "Magical Mystery Tour"],
-      question: "Which Beatles album does NOT feature any of the band members on its cover?",
-      type: "multiple"
-    },
-    {
-      category: "Entertainment: Video Games",
-      correct_answer: "Piplup",
-      difficulty: "easy",
-      incorrect_answers: ["Totodile", "Oshawott", "Mudkip"],
-      question: "Which water-type Pokémon starter was introduced in the 4th generation of the series?",
-      type: "multiple"
-    },
-    {
-      category: "Entertainment: Board Games",
-      correct_answer: "True",
-      difficulty: "hard",
-      incorrect_answers: ["False"],
-      question: "The board game Go has more possible legal positions than the number of atoms in the visible universe.",
-      type: "boolean"
-    },
-    {
-      category: "Entertainment: Video Games",
-      correct_answer: "Lionel Messi",
-      difficulty: "medium",
-      incorrect_answers: ["Cristiano Ronaldo", "Wayne Rooney", "David Beckham"],
-      question: "Which football player is featured on the international cover version of the video game FIFA 16?",
-      type: "multiple"
-    },
-    {
-      category: "Entertainment: Video Games",
-      correct_answer: "Contraband",
-      difficulty: "easy",
-      incorrect_answers: ["Discontinued", "Diminshed", "Limited"],
-      question: "In Counter-Strike: Global Offensive, what's the rarity of discontinued skins called?",
-      type: "multiple"
-    },
-    {
-      category: "Science & Nature",
-      correct_answer: "4",
-      difficulty: "medium",
-      incorrect_answers: ["3", "5", "6"],
-      question: "In Chemistry, how many isomers does Butanol (C4H9OH) have?",
-      type: "multiple"
-    },
-    {
-      category: "Entertainment: Music",
-      correct_answer: "True",
-      difficulty: "easy",
-      incorrect_answers: ["False"],
-      question: "Scatman John's real name was John Paul Larkin.",
-      type: "boolean"
-    }
-  ];
+function showNextQuestion(currentIndex) {
+  document.getElementById(`question-${  currentIndex}`).classList.remove('active');
+  document.getElementById(`question-${currentIndex + 1}`).classList.add('active');
+  document.querySelector(`.step[data-target="#question-${currentIndex}"]`).classList.remove('active');
+  document.querySelector(`.step[data-target="#question-${currentIndex + 1}"]`).classList.add('active');
+  
+  // Update progress
+  updateProgress(currentIndex);
+}
 
+function showPreviousQuestion(currentIndex) {
+  document.getElementById(`question-${currentIndex}`).classList.remove('active');
+  document.getElementById(`question-${currentIndex - 1}`).classList.add('active');
+  document.querySelector(`.step[data-target="#question-${currentIndex}"]`).classList.remove('active');
+  document.querySelector(`.step[data-target="#question-${currentIndex - 1}"]`).classList.add('active');
+  
+  // Update progress
+  updateProgress(currentIndex - 2); // Current index minus one for zero-based indexing
+}
 
-  // let currentQuestionIndex = 0;
-  // let score = 0;
-  // const userAnswers = [];
-
-  // function shuffle(array) {
-  //   let currentIndex = array.length, randomIndex;
-  //   while (currentIndex != 0) {
-  //     randomIndex = Math.floor(Math.random() * currentIndex);
-  //     currentIndex--;
-  //     [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-  //   }
-  //   return array;
-  // }
-
-  // function loadQuestion(index) {
-  //   const question = questions[index];
-  //   document.getElementById('question-title').textContent = `Question ${index + 1}`;
-  //   document.getElementById('question-text').textContent = question.question;
-  //   const answersDiv = document.getElementById('answers');
-  //   answersDiv.innerHTML = '';
-
-  //   const allAnswers = [...question.incorrect_answers, question.correct_answer];
-  //   if (question.type === "multiple") {
-  //     shuffle(allAnswers);
-  //   } else if (question.type === "boolean") {
-  //     shuffle(allAnswers);
-  //   }
-
-  //   allAnswers.forEach((answer) => {
-  //     const label = document.createElement('label');
-  //     label.classList.add('list-group-item');
-  //     label.innerHTML = `<input type="radio" name="answer" value="${answer}"> ${answer}`;
-  //     answersDiv.appendChild(label);
-  //   });
-
-  //   if (userAnswers[index] !== undefined) {
-  //     document.querySelector(`input[name="answer"][value="${userAnswers[index]}"]`).checked = true;
-  //   }
-  // }
-
-  // function showResult() {
-  //   document.getElementById('quiz-container').classList.add('d-none');
-  //   document.getElementById('result-container').classList.remove('d-none');
-  //   document.getElementById('score-text').textContent = `Your score: ${score}/${questions.length}`;
-  //   if (userAnswers.length === questions.length) {
-  //     document.getElementById('view-answers-btn').style.display = 'block';
-  //   }
-  // }
-
-  // document.getElementById('next-btn').addEventListener('click', () => {
-  //   const selectedAnswer = document.querySelector('input[name="answer"]:checked');
-  //   if (selectedAnswer !== null) {
-  //     if (selectedAnswer.value === questions[currentQuestionIndex].correct_answer) {
-  //       score++;
-  //     }
-  //     userAnswers[currentQuestionIndex] = selectedAnswer.value;
-  //   }
-
-  //   if (currentQuestionIndex < questions.length - 1) {
-  //     currentQuestionIndex++;
-  //     loadQuestion(currentQuestionIndex);
-  //     document.getElementById('prev-btn').style.display = 'block';
-  //   } else {
-  //     showResult();
-  //   }
-  // });
-
-  // document.getElementById('prev-btn').addEventListener('click', () => {
-  //   if (currentQuestionIndex > 0) {
-  //     currentQuestionIndex--;
-  //     loadQuestion(currentQuestionIndex);
-  //     if (currentQuestionIndex === 0) {
-  //       document.getElementById('prev-btn').style.display = 'none';
-  //     }
-  //   }
-  // });
-
-  // document.getElementById('retry-btn').addEventListener('click', () => {
-  //   currentQuestionIndex = 0;
-  //   score = 0;
-  //   userAnswers.length = 0;
-  //   document.getElementById('quiz-container').classList.remove('d-none');
-  //   document.getElementById('result-container').classList.add('d-none');
-  //   loadQuestion(currentQuestionIndex);
-  //   document.getElementById('prev-btn').style.display = 'none';
-  //   document.getElementById('next-btn').style.display = 'block';
-  //   document.getElementById('view-answers-btn').style.display = 'none';
-  // });
-
-  // document.getElementById('view-answers-btn').addEventListener('click', () => {
-  //   let resultHTML = '<div class="card-body"><h5 class="card-title">Quiz Answers</h5>';
-  //   questions.forEach((question, i) => {
-  //     resultHTML += `<h5>Question ${i + 1}</h5><p>${question.question}</p>`;
-  //     const allAnswers = [...question.incorrect_answers, question.correct_answer];
-  //     shuffle(allAnswers);
-  //     allAnswers.forEach(answer => {
-  //       const correctClass = question.correct_answer == answer ? 'text-success' : '';
-  //       const userClass = userAnswers[i] == answer ? 'font-weight-bold' : '';
-  //       if (question.correct_answer === answer) {
-  //         resultHTML += `<p class="${correctClass}">${answer} <span class="text-muted">(Correct)</span></p>`;
-  //       } else {
-  //         resultHTML += `<p class="${userClass}">${answer}</p>`;
-  //       }
-  //     });
-  //   });
-  //   resultHTML += '</div>';
-  //   document.getElementById('result-container').innerHTML = resultHTML;
-  // });
-
-  // // Initialize the quiz
-  // loadQuestion(currentQuestionIndex);
+function updateProgress(index) {
+  const percentage = ((index + 1) / document.querySelectorAll('.step').length) * 100;
+  document.getElementById('progress-bar').style.width = `${percentage}%`;
+  document.getElementById('progress-bar').setAttribute('aria-valuenow', percentage);
+  document.getElementById('quiz-progress-info').innerText = `Question ${index + 1} out of ${document.querySelectorAll('.step').length}`;
+}
 
  
+function submitQuiz() {
+  
+  // Submit quiz logic here
+  const answers = {};
+ 
+  // Collect all selected answers
+  document.querySelectorAll('input[type="radio"]:checked').forEach((input) => {
+    // Extract question ID from the name attribute
+    const answersDiv = input.closest('.list-group');
+    const questionId = answersDiv.dataset.questionId;
+    answers[questionId] = input.value;
+  });
+  // Send answer to backend for processing
+  axios.post('/quiz', { answers: answers })
+    .then(response => {
+      // Handle successful response
+      console.log('Quiz submitted successfully:', response.data);
+      // Redirect or display a success message
+      data = response.data
+      score = data.percentage_score
+      localStorage.setItem("score", score)
+      window.location.href = '/results';
+    })
+    .catch(error => {
+      // Handle error response
+      console.error('Error submitting quiz:', error);
+      // Display an error message
+    });
+}
+function quizResults() {
+  const quizTime = localStorage.getItem('quizCompletionTime');
+  const quizScore = localStorage.getItem('score');
+
+   // Ensure these values are not null before inserting them into the HTML
+  if (quizTime && quizScore) {
+    // Render the quiz completion time
+    const quizTimeElement = document.getElementById('quiz-time');
+    quizTimeElement.innerText = `Quiz completion time: ${quizTime}`;
+
+    // Render the quiz score
+    const scoreElement = document.querySelector('.text-dark');
+    scoreElement.innerText = `${quizScore}% (${quizScore} points)`;
+
+    const scoreCircle = document.getElementById('score-circle');
+    scoreCircle.style.setProperty('--progress', quizScore);
+
+    const scoreText = document.getElementById('score-text');
+    scoreText.textContent = `${quizScore}%`;
+  }
+}
+
+function finishQuiz() {
+  const score = localStorage.getItem('score');
+
+
+  localStorage.removeItem('quiz_questions');
+  localStorage.removeItem('numberOfQuestions');
+  localStorage.removeItem('quizType');
+  localStorage.removeItem('score');
+  localStorage.removeItem('quizCompletionTime');
+
+  axios.post('/save-quiz', {score: score})
+  .then(function(response){
+    if (response.data.redirect_url) {
+      window.location.href = response.data.redirect_url;
+    } else {
+      // Handle case where redirect URL is not provided
+      console.error('Redirect URL not provided');
+    }
+  })
+  .catch(function(error) {
+    // Handle error in the request
+    console.error('Error finishing quiz:', error);
+  });
+}
+
+function retryQuiz() {
+   // Set a flag in localStorage to indicate the quiz should be retried
+  localStorage.setItem('retryQuiz', 'true');
+
+   // Redirect to the quiz page
+   window.location.href = '/quiz';
+}
