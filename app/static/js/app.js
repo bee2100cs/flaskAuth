@@ -194,7 +194,7 @@ function customQuiz() {
   const selectCategory = document.getElementById('category');
   const selectDifficulty = document.getElementById('difficulty');
   const selectQuestionCount = document.getElementById('question-count');
-  const selectType = document.getElementById('quiz-type');
+  const selectType = document.getElementById('answer-type');
 
   const quizCategory = selectCategory.value;
   const quizDifficulty = selectDifficulty.value;
@@ -205,7 +205,7 @@ function customQuiz() {
     quiz_category: quizCategory,
     quiz_difficulty: quizDifficulty,
     question_count: numberOfQuestions,
-    quiz_type: answerType
+    answer_type: answerType
   })
   .then(function(response) {
     if (response.data.redirect_url) {
@@ -362,6 +362,10 @@ function populateQuiz(questions, quizType) {
           <i class="fe fe-arrow-left"></i>
           Previous
         </button>
+      `;
+    } else {
+      navDiv.innerHTML += `
+        <div></div>
       `;
     }
     

@@ -13,7 +13,8 @@ from .utils.helper import (generate_question_id,
                            get_key_by_value, 
                            add_questions_to_db,
                            save_quiz_to_db,
-                           save_user_score)
+                           save_user_score,
+                           normalize_text)
 
 # Global variables
 session_token = None
@@ -52,13 +53,14 @@ def create_quiz():
         fetch_session_token()
         
     data = request.get_json()
-    number_of_questions = data.get('question_count', 10)
+    number_of_questions = data.get('question_count', 5)
     category = data.get('quiz_category', None)
     difficulty = data.get('quiz_difficulty', None)
-    quiz_type = data.get('quiz_type', None)
+    answer_type = data.get('answer_type', None)
 
     # Get category ID from firebase DB
     # Get category data
+    
     category_data = db.child("quiz").child('categories').child('trivia_api').get().val()
     category_id = get_key_by_value(category_data, category)
 
@@ -66,14 +68,16 @@ def create_quiz():
 
     api_url += f'amount={number_of_questions}'
 
-    if category:
+    if category_id is not None:
         api_url += f'&category={category_id}'
     if difficulty in ['easy', 'medium', 'hard']:
         api_url += f'&difficulty={difficulty}'
-    if quiz_type in ['multipe', 'boolean']:
-        api_url += f'&type={quiz_type}'
+    if answer_type in ['multiple', 'boolean']:
+        api_url += f'&type={answer_type}'
 
     try:
+        print(f"Category:{category_id}, difficulty: {difficulty}, answer_type: {answer_type}")
+        print(f"api_url: {api_url}")
         quiz_data = fetch_data_from_api(api_url)
         response_code = quiz_data.get("response_code")
         if response_code == 0:
@@ -179,14 +183,25 @@ def quiz_callback():
 
     # Create a dictionary for quick lookup of correct answers by ID
     correct_answers = {q['id']: q['correct_answer'] for q in quiz_questions}
+    review_data = []
     #print("correct answer:", correct_answers)
     for question in quiz_questions:
         question_id = question['id']
         correct_answer = correct_answers.get(question_id)
         user_answer = user_answers.get(question_id)
 
+        # Track the review data
+        review_data.append({
+            'question': normalize_text(question['question']),
+            'correct_answer': normalize_text(correct_answer),
+            'user_answer': normalize_text(user_answer),
+            'is_correct': user_answer == correct_answer
+        })
+
         if user_answer == correct_answer:
             score += 1
+    session['review_data'] = review_data
+    print(review_data)
     
     # Calculate percentage score
     percentage_score = round((score / total_questions) * 100)
@@ -195,14 +210,14 @@ def quiz_callback():
 
 @main.route("/results", methods=['POST', 'GET'])
 def results():
+    review_data = session['review_data']
     
-    return render_template("results.html")
+    return render_template("results.html", review_data=review_data)
     
 @main.route('/save-quiz', methods=['POST','GET'])
 def save_quiz():
 
     try:
-        # Assume 'quiz_questions' is stored in session
         quiz_questions = session.get('quiz_questions')
         score = request.json.get('score')  # Get score from the request
 

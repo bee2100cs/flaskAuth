@@ -4,7 +4,8 @@ from .. import db
 import uuid
 from flask import jsonify
 from datetime import datetime, timezone
-
+import unicodedata
+import html
 
 # Generate session token from Trivia API
 #  to keep track of questions the API has already retrieved.
@@ -41,8 +42,13 @@ def get_key_by_value(data_dict, target_value):
 # so that the same question will always generate the same unique ID
 # ensuring that no duplicate questions are added to the database
 def generate_question_id(question_text):
-    return hashlib.sha256(question_text.encode('utf-8')).hexdigest()
+    full_question_Id = hashlib.sha256(question_text.encode('utf-8')).hexdigest()
+    trancated_question_id = full_question_Id[:13]
+    return trancated_question_id
 
+
+def normalize_text(text):
+    return unicodedata.normalize('NFKD', html.unescape(text).strip().lower())
 
 # Add generated questions to our db
 def add_question_to_db(question):
@@ -70,7 +76,9 @@ def add_questions_to_db(questions):
 
 # Create anonymous user
 def generate_user_id(username):
-    return hashlib.sha256(username.encode('utf-8')).hexdigest()
+    full_user_Id = hashlib.sha256(username.encode('utf-8')).hexdigest()
+    trancated_user_id = full_user_Id[:28]
+    return trancated_user_id
 
 def get_or_create_anonymous_user():
     anonymous_username = 'anonymous'
@@ -100,7 +108,10 @@ def save_quiz_to_db(session, quiz_questions):
         
         try:
             # Generate a unique quiz ID
-            quiz_id = str(uuid.uuid4())
+            quiz_id_raw = str(uuid.uuid4())
+            hashed_id = hashlib.sha256(quiz_id_raw.encode('utf-8')).hexdigest()
+            quiz_id_truncated = hashed_id[:8]
+            quiz_id = quiz_id=f"quiz_{quiz_id_truncated}"
             print(f"Generated unique quiz_id {quiz_id}")
         except Exception as e:
             print("error generating quiz_id")
@@ -114,13 +125,13 @@ def save_quiz_to_db(session, quiz_questions):
         # use sets to avoid data duplication
         difficulties = set()
         categories = set()
-        types = set()
+        question_types = set()
         
         for question in quiz_questions:
             # Get question types, categories, and difficulties
             difficulties.add(question.get('difficulty'))
             categories.add(question.get('category'))
-            types.add(question.get('type'))
+            question_types.add(question.get('type'))
 
         def determine_value(values_set):
             if len(values_set) == 1:
@@ -132,14 +143,20 @@ def save_quiz_to_db(session, quiz_questions):
             
         quiz_category = determine_value(categories)
         quiz_difficulty = determine_value(difficulties)
-        quiz_type = determine_value(types)
-
-        print(f"Quiz category: {quiz_category}, quiz difficulty: {quiz_difficulty}, quiz type: {quiz_type}")
+        quiz_question_type = determine_value(question_types)
+        
+        # Determine the quiz type based on conditions
+        if quiz_category != 'random' or quiz_difficulty != 'random' or quiz_question_type != 'random':
+            quiz_type = 'custom'
+        else:
+            quiz_type = 'random'
+        print(f"Quiz category: {quiz_category}, quiz difficulty: {quiz_difficulty}, quiz question type: {quiz_question_type}, quiz type: {quiz_type}")
 
         # prepare quiz data
         quiz_data = {
             "user_id": user_id,
             'quiz_category': quiz_category,
+            'quiz_question_type' : quiz_question_type,
             'quiz_type' : quiz_type,
             'quiz_difficulty': quiz_difficulty,
             'question_count': number_of_questions,

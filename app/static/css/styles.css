@@ -93,6 +93,11 @@ body {
     font-size: 2em;
     fill: #000;
     text-anchor: middle;
-    dominant-baseline: middle;
   }
   
+  .correct-answer {
+    color: green;
+}
+.incorrect-answer {
+    color: red;
+}

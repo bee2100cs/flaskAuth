@@ -164,3 +164,4 @@ notes.txt
 dummy/
 .vscode/
 pseudo.txt
+app/templates/quiz-backup.html
