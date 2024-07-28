@@ -238,3 +238,49 @@ def save_quiz():
     except Exception as e:
         print(f"Error finishing quiz: {e}")
         return jsonify({"error": "Failed to finish quiz"}), 500
+
+# Handle the pending data before redirecting to login
+@main.route('/save-pending-quiz', methods=['POST'])
+def save_pending_quiz():
+    try:
+        score = request.json.get('score')
+        quiz_questions = session.get('quiz_questions')
+        if not quiz_questions:
+            return jsonify({"error": "No quiz data to save"}), 400
+
+        session['pending_quiz_data'] = {
+            'quiz_questions': quiz_questions,
+            'score': score
+        }
+        session['next_url'] = url_for('main.handle_pending_quiz')
+        return jsonify({"redirect_url": url_for('authentication.login')})
+    except Exception as e:
+        print(f"Error saving pending quiz data: {e}")
+        return jsonify({"error": "Failed to save pending quiz data"}), 500
+
+# Route to handle pending quiz data after login
+@main.route('/handle-pending-quiz', methods=['GET'])
+def handle_pending_quiz():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"error": "User not logged in"}), 401
+
+        pending_quiz_data = session.get('pending_quiz_data')
+        if not pending_quiz_data:
+            return jsonify({"error": "No pending quiz data"}), 400
+
+        quiz_questions = pending_quiz_data['quiz_questions']
+        score = pending_quiz_data['score']
+
+        quiz_id = save_quiz_to_db(session, quiz_questions)
+        save_user_score(quiz_id, session, score)
+
+        # Clear pending data from the session
+        session.pop('pending_quiz_data', None)
+
+        return redirect(url_for('main.index'))
+    except Exception as e:
+        print(f"Error handling pending quiz data: {e}")
+        return jsonify({"error": "Failed to handle pending quiz data"}), 500
+

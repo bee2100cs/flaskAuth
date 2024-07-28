@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const courseForm = document.getElementById('courseForm');
   const quizResultsPage = document.getElementById('quiz-results');
   const finishQuizTrigger = document.getElementById('finish-quiz');
+  const loginToSave= document.getElementById("login-to-save");
 
   if (quizResultsPage) {
     quizResults();
@@ -29,6 +30,12 @@ document.addEventListener('DOMContentLoaded', function() {
     finishQuizTrigger.addEventListener('click', function(event) {
       event.preventDefault();
       finishQuiz();
+    })
+  }
+  if (loginToSave) {
+    loginToSave.addEventListener('click', function(event) {
+      event.preventDefault()
+      savePendingQuizDataAndRedirect();
     })
   }
 
@@ -505,4 +512,27 @@ function retryQuiz() {
 
    // Redirect to the quiz page
    window.location.href = '/quiz';
+}
+
+// Handle pending data if user chooses to login
+function savePendingQuizDataAndRedirect() {
+  const score = localStorage.getItem('score');
+
+  localStorage.removeItem('quiz_questions');
+  localStorage.removeItem('numberOfQuestions');
+  localStorage.removeItem('quizType');
+  localStorage.removeItem('score');
+  localStorage.removeItem('quizCompletionTime');
+
+  axios.post('/save-pending-quiz', { score: score })
+      .then(response => {
+          if (response.data.redirect_url) {
+              window.location.href = response.data.redirect_url;
+          } else {
+              console.error('Error saving pending quiz data');
+          }
+      })
+      .catch(error => {
+          console.error('Error saving pending quiz data:', error);
+      });
 }
