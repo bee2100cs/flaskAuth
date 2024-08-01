@@ -6,6 +6,7 @@ from flask import jsonify
 from datetime import datetime, timezone
 import unicodedata
 import html
+import random
 
 # Generate session token from Trivia API
 #  to keep track of questions the API has already retrieved.
@@ -150,15 +151,16 @@ def save_quiz_to_db(session, quiz_questions):
             quiz_type = 'custom'
         else:
             quiz_type = 'random'
-        print(f"Quiz category: {quiz_category}, quiz difficulty: {quiz_difficulty}, quiz question type: {quiz_question_type}, quiz type: {quiz_type}")
 
+        quiz_title = f"{quiz_type} {quiz_id}"
         # prepare quiz data
         quiz_data = {
             "user_id": user_id,
-            'quiz_category': quiz_category,
-            'quiz_question_type' : quiz_question_type,
+            "quiz_title": quiz_title,
+            'category': quiz_category,
+            'answer_type' : quiz_question_type,
             'quiz_type' : quiz_type,
-            'quiz_difficulty': quiz_difficulty,
+            'difficulty': quiz_difficulty,
             'question_count': number_of_questions,
             "questions": question_ids
         }
@@ -205,10 +207,10 @@ def save_user_score(quiz_id, session, score):
             "score": score,
             "timestamp": datetime.now(timezone.utc).isoformat()
         }
-        
+        all_time_score = 0
         # Fetch the user's existing scores for the quiz
         user_scores = db.child("users").child(user_id).child("scores").child(quiz_id).get().val()
-        
+        all_time_score = db.child('users').child(user_id).child('scores').child("all_time_score").get().val()
         if user_scores:
             # If the user has already taken the quiz, update the score if the new score is higher
             if score > user_scores.get('score', 0):
@@ -220,6 +222,70 @@ def save_user_score(quiz_id, session, score):
             # Save the new score
             db.child("users").child(user_id).child("scores").child(quiz_id).set(score_data)
             print(f"Score saved successfully for user {user_id} and quiz {quiz_id}")
+
+        if all_time_score:
+            # Add current score to all_time_score
+            all_time_score = int(all_time_score) + int(score)
+        else:
+            # Add new all_time_score
+            all_time_score = int(score)
+        db.child('users').child(user_id).child('scores').child('all_time_score').set(all_time_score)
     except Exception as e:
         print(f"Error saving user score: {e}")
         return jsonify({"error": "An error occurred while saving the user score"})
+    
+
+# Quiz search function
+def search_quizzes(db, quiz_category='random', quiz_question_type='random', quiz_difficulty='random'):
+    try:
+        quizzes_ref = db.child("quiz").child("saved_quizzes").get()
+        matching_quizzes = []
+
+        for quiz_data in quizzes_ref.each():
+            quiz_info = quiz_data.val()
+            
+            if (quiz_category == 'random' or quiz_info['category'] == quiz_category) and \
+                (quiz_question_type == 'random' or quiz_info['answer_type'] == quiz_question_type) and \
+                (quiz_difficulty == 'random' or quiz_info['difficulty'] == quiz_difficulty):
+                matching_quizzes.append({
+                    'quiz_id': quiz_data.key(),
+                    'quiz_data': quiz_info
+                })
+        
+        return matching_quizzes
+
+    except Exception as e:
+        print(f"Error searching quizzes: {e}")
+        return None
+
+# Get quiz question IDs
+def get_quiz_question_ids(quiz_id):
+    question_ids = db.child('quiz').child('saved_quizzes').child(quiz_id).child('questions').get().val()
+    return question_ids
+# Get featured quizzes
+def get_quiz_data_by_id(db, question_ids):
+    questions = []
+    for question_id in question_ids:
+        question_data = db.child('quiz').child('questions').child(question_id).get().val()
+        id = question_id
+        question = question_data['question']
+        answers = question_data['answers']
+        correct_answer = question_data['correct_answer']
+
+        questions.append({
+            'id': id,
+            'question': question,
+            'answers': answers,
+            'correct_answer': correct_answer
+        })
+
+    #print('theseare the questions',questions)
+    return questions
+
+def questions_without_correct_answers(questions):
+    
+    for question in questions:
+        if 'correct_answer' in question:
+            del question['correct_answer']
+
+    return questions

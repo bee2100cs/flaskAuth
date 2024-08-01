@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 from . import db
 import random
 import threading
+import copy
 from .utils.helper import (generate_question_id, 
                            fetch_data_from_api, 
                            fetch_session_token, 
@@ -14,11 +15,15 @@ from .utils.helper import (generate_question_id,
                            add_questions_to_db,
                            save_quiz_to_db,
                            save_user_score,
-                           normalize_text)
+                           normalize_text,
+                           search_quizzes,
+                           get_quiz_data_by_id,
+                           questions_without_correct_answers,
+                           get_quiz_question_ids
+                           )
 
 # Global variables
 session_token = None
-
 
 @main.route('/')
 def index():
@@ -39,8 +44,9 @@ def custom_quiz():
 
 @main.route("/existing-quiz")
 def existing_quiz():
-
-    return render_template('existing-quiz.html', session_user_data=g.user_data)
+     # Get categories
+    categories = db.child("quiz").child("categories").child("trivia_api").get().val()
+    return render_template('existing-quiz.html', session_user_data=g.user_data, categories=categories)
 
 
 
@@ -90,6 +96,13 @@ def create_quiz():
             for question in quiz_questions:
                 question_id = generate_question_id(question['question'])
 
+                # Data to send to front-end
+                answers = question['incorrect_answers'] + [question['correct_answer']]
+
+                random.shuffle(answers)
+
+                if question['type'] == 'boolean':
+                    answers = ['True', 'False']
                 # Data to save in database
                 questions_with_id.append({
                     'id': question_id,
@@ -97,24 +110,15 @@ def create_quiz():
                     'difficulty': question['difficulty'],
                     'category': question['category'],
                     'question': question['question'],
-                    'incorrect_answers': question['incorrect_answers'],
+                    'answers': answers,
                     'correct_answer': question['correct_answer']
                 })
 
-                # Data to send to front-end
-                answers = question['incorrect_answers'] + [question['correct_answer']]
-
-                if question['type'] == 'boolean':
-                    answers = ['True', 'False']
                 questions_only.append({
                     'id': question_id,
                     'question': question['question'],
                     'answers': answers
                 })
-
-            # Shuffle the answers for each question
-            for q in questions_only:
-                random.shuffle(q['answers'])
 
             # Store questions with ids in session for answer validation and sending to db
             session["quiz_questions"] = questions_with_id
@@ -159,19 +163,74 @@ def create_quiz():
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
+# Route to search existing quiz data
+@main.route('/search-quizzes', methods=['POST','GET'])
+def search_quizzes_route():
+    data = request.json
+    quiz_category = data.get('quiz_category', 'random')
+    answer_type = data.get('answer_type', 'random')
+    quiz_difficulty = data.get('quiz_difficulty', 'random')
+
+    quizzes = search_quizzes(db, quiz_category, answer_type, quiz_difficulty)
+    
+    if quizzes is not None:
+        session_quizzes_data = []
+        for quiz in quizzes:
+            session_quizzes_data.append(quiz)
+            user_id = quiz['quiz_data']['user_id']
+            user_data = db.child('users').child(user_id).get().val()
+            username = user_data['username']
+            quiz['username'] = username
+
+            del quiz['quiz_data']['questions']
+            
+
+        session['quizzes'] = quizzes
+        return jsonify({"quizzes": quizzes}), 200
+    else:
+        return jsonify({"error": "An error occurred while searching for quizzes"}), 500
+
+@main.route("/get-existing", methods=['POST'])
+def get_existing():
+    try:
+        quiz_id = request.json['quiz_id']
+        question_ids = get_quiz_question_ids(quiz_id)
+
+        # Get questions from db
+        quiz_question_data = get_quiz_data_by_id(db, question_ids)
+        
+        session['quiz_questions'] = copy.deepcopy(quiz_question_data)
+
+        # Questions without answers for frontend
+        questions_only = questions_without_correct_answers(copy.deepcopy(quiz_question_data))
+        question_count = len(questions_only)
+        session['total_questions'] = question_count
+
+        quizzes = session.get('quizzes', [])
+        for quiz in quizzes:
+            if quiz['quiz_id'] == quiz_id:
+                quiz_type = quiz['quiz_data'].get('quiz_type')
+
+        return jsonify({
+            'message': 'Questions sent to front-end',
+            'quiz_questions': questions_only,
+            'question_count': question_count,
+            'quiz_type': quiz_type}), 200
+    except Exception as e:
+        return jsonify({"error": "Failed to fetch quiz data"})
+
+
 @main.route("/quiz")
 def quiz():
-    if 'questions' in session:
-        questions = session['questions']
-        total_questions = session['total_questions']
-        return render_template("quiz.html", session_user_data=g.user_data, questions=questions, total_questions= total_questions)
-   
+      
+    return render_template("quiz.html", session_user_data=g.user_data)
 
 @main.route("/quiz", methods=["POST", "GET"])
 def quiz_callback():
     
     if 'quiz_questions' in session:
         quiz_questions = session.get('quiz_questions')
+        print("session quiz uestions",quiz_questions)
         total_questions = int(session.get("total_questions"))
     else:
         return({"messsage": "No questions found in session"})
@@ -180,15 +239,14 @@ def quiz_callback():
     user_answers= request.json.get('answers')
     print('user answers:', user_answers)
     score = 0
-
-    # Create a dictionary for quick lookup of correct answers by ID
-    correct_answers = {q['id']: q['correct_answer'] for q in quiz_questions}
     review_data = []
+
     #print("correct answer:", correct_answers)
     for question in quiz_questions:
         question_id = question['id']
-        correct_answer = correct_answers.get(question_id)
+        correct_answer = question['correct_answer']
         user_answer = user_answers.get(question_id)
+        print(F'question_id{question_id}, correct naswer{correct_answer}, user-answer{user_answer}')
 
         # Track the review data
         review_data.append({
@@ -231,7 +289,6 @@ def save_quiz():
             session.pop('quiz_questions', None)
             session.pop('numberOfQuestions', None)
 
-
             return jsonify({"redirect_url": url_for("main.index"), "message": "Quiz saved successfully"})
         else:
             return jsonify({"error": "Failed to save quiz"}), 500
@@ -261,6 +318,7 @@ def save_pending_quiz():
 # Route to handle pending quiz data after login
 @main.route('/handle-pending-quiz', methods=['GET'])
 def handle_pending_quiz():
+    print("search function called")
     try:
         user_id = session.get('user_id')
         if not user_id:

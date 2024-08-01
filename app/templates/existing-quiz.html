@@ -18,11 +18,12 @@
                         <p class="text-start">Category</p>
                     </div>
                     <div class="col-sm">
-                        <select class="form-select" aria-label="Default select example">
-                            <option selected>Category</option>
-                            <option value="10">Science</option>
-                            <option value="20">Entertainment</option>
-                          </select>
+                        <select class="form-select" aria-label="Default select example" id="category">
+                            <option selected value="">Category</option>
+                            {% for category_name, category_id in categories.items() %}
+                                <option value="{{ category_name }}">{{ category_name }}</option>
+                            {% endfor %}
+                        </select>
         
                     </div>
                 </div>
@@ -31,9 +32,8 @@
                         <p class="text-start">Difficulty Level</p>
                     </div>
                     <div class="col-sm">
-                        <select class="form-select" aria-label="Default select example">
-                            <option selected>Difficulty</option>
-                            <option value="">Any</option>
+                        <select class="form-select" aria-label="Default select example" id="difficulty">
+                            <option selected value =''>Difficulty</option>
                             <option value="easy">Easy</option>
                             <option value="medium">Medium</option>
                             <option value="hard">Hard</option>
@@ -46,7 +46,7 @@
                         <p class="text-start">Type</p>
                     </div>
                     <div class="col-sm">
-                        <select class="form-select" aria-label="Default select example" id="quiz-type">
+                        <select class="form-select" aria-label="Default select example" id="answer-type">
                             <option selected value="">Type</option>
                             <option value="multiple">multiple</option>
                             <option value="boolean">True/False</option>

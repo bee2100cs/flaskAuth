@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const quizResultsPage = document.getElementById('quiz-results');
   const finishQuizTrigger = document.getElementById('finish-quiz');
   const loginToSave= document.getElementById("login-to-save");
+  const resultsDiv = document.getElementById('quiz-search-results');
 
   if (quizResultsPage) {
     quizResults();
@@ -30,15 +31,24 @@ document.addEventListener('DOMContentLoaded', function() {
     finishQuizTrigger.addEventListener('click', function(event) {
       event.preventDefault();
       finishQuiz();
-    })
+    });
   }
   if (loginToSave) {
     loginToSave.addEventListener('click', function(event) {
-      event.preventDefault()
+      event.preventDefault();
       savePendingQuizDataAndRedirect();
-    })
+    });
   }
-
+  
+  if (resultsDiv) {
+    resultsDiv.addEventListener('click', function(event) {
+      event.preventDefault();
+      if (event.target && event.target.classList.contains('render-existing-quiz')) {
+          const quizId = event.target.getAttribute('id');
+          renderExistingQuiz(quizId);
+      }
+    });
+  }
   
   if (courseForm) {
     if (numberOfQuestions && quiz_questions && quizType) {
@@ -174,9 +184,9 @@ function randomQuiz() {
   })
   .then(function(response) {
     if (response.data.redirect_url) {
-      data = response.data;
-      quiz_questions = data.quiz_questions;
-      quizType = "Random";
+      const data = response.data;
+      const quiz_questions = data.quiz_questions;
+      const quizType = "Random";
 
       localStorage.setItem('numberOfQuestions', numberOfQuestions);
       localStorage.setItem('quizType', quizType);
@@ -216,9 +226,9 @@ function customQuiz() {
   })
   .then(function(response) {
     if (response.data.redirect_url) {
-      data = response.data;
-      quiz_questions = data.quiz_questions;
-      quizType = "Custom";
+      const data = response.data;
+      const quiz_questions = data.quiz_questions;
+      const quizType = "Custom";
 
       localStorage.setItem('numberOfQuestions', numberOfQuestions);
       localStorage.setItem('quizType', quizType);
@@ -244,37 +254,108 @@ function customQuiz() {
 function existingQuiz() {
   const selectCategory = document.getElementById('category');
   const selectDifficulty = document.getElementById('difficulty');
-  const selectQuestionCount = document.getElementById('question-count');
-  const selectType = document.getElementById('quiz-type');
+  const selectType = document.getElementById('answer-type');
 
-  const quizCategory = selectCategory.value;
-  const quizDifficulty = selectDifficulty.value;
-  const numberOfQuestions = selectQuestionCount.value;
-  const answerType = selectType.value;
+  const quizCategory = selectCategory ? selectCategory.value || 'random' : 'random';
+  const quizDifficulty = selectDifficulty ? selectDifficulty.value || 'random' : 'random';
+  const answerType = selectType ? selectType.value || 'random' : 'random';
 
-  axios.post('/api/quiz', {
+  axios.post('/search-quizzes', {
     quiz_category: quizCategory,
     quiz_difficulty: quizDifficulty,
-    question_count: numberOfQuestions,
-    quiz_type: answerType
+    answer_type: answerType
   })
   .then(function(response) {
-    if (response.data.redirect_url) {
-      data = response.data;
-      quiz_questions = data.quiz_questions;
-      quizType = "Pre-Saved";
+    if (response.data.quizzes) {
+      const quizzes = response.data.quizzes;    
+      const resultsDiv = document.getElementById('quiz-search-results');
+      resultsDiv.innerHtml = '';
 
-      localStorage.setItem('numberOfQuestions', numberOfQuestions);
-      localStorage.setItem('quizType', quizType);
-      localStorage.setItem('quiz_questions', JSON.stringify(quiz_questions));
-     
-      window.location.href = response.data.redirect_url;
-      
-      
-      
+      if (quizzes.length > 0) {
+        quizzes.forEach(quiz => {
+            // Create the main card element
+           
+            const card = document.createElement('div');
+            card.className = 'card mb-4 shadow-sm';
+                
+            const cardBody = document.createElement('div');
+            cardBody.className = 'card-body';
+            
+            const titleCreatorContainer = document.createElement('div');
+            titleCreatorContainer.className = 'd-flex justify-content-between align-items-center';
+
+            const quizTitle = document.createElement('h5');
+            quizTitle.className = 'card-title';
+            quizTitle.innerHTML = `<a href='#' class='text-dark text-decoration-none render-existing-quiz' id='${quiz.quiz_id}'>${quiz.quiz_data.quiz_title}</a>`;
+
+            const quizCreator = document.createElement('p');
+            quizCreator.className = 'card-subtitle mb-2 text-muted fs-6';
+            quizCreator.innerHTML = `Creator:<span clas='text-primary> ${quiz.username}<\span>`;
+
+            titleCreatorContainer.appendChild(quizTitle);
+            titleCreatorContainer.appendChild(quizCreator);
+
+            const quizParams = document.createElement('div');
+            quizParams.className = 'd-flex flex-wrap gap-3 mt-3';
+    
+            const category = document.createElement('p');
+            category.className = 'fs-6 mb-0';
+            category.innerHTML = `Category: <span class='text-dark'>${quiz.quiz_data.category}</span>`;
+
+    
+            const difficulty = document.createElement('p');
+            difficulty.className = 'fs-6 mb-0';
+            difficulty.innerHTML = `Difficulty: <span class='text-dark'>${quiz.quiz_data.difficulty}</span>`;
+    
+            const questionCount = document.createElement('p');
+            questionCount.className = 'fs-6 mb-0';
+            questionCount.innerHTML = `Questions: <span class='text-dark'>${quiz.quiz_data.question_count}</span>`;
+    
+            const answerType = document.createElement('p');
+            answerType.className = 'fs-6 mb-0';
+            answerType.innerHTML = `Answer Type: <span class='text-dark'>${quiz.quiz_data.answer_type}</span>`;
+
+    
+            const quizType = document.createElement('p');
+            quizType.className = 'fs-6 mb-0';
+            quizType.innerHTML = `Type: <span class='text-dark'>${quiz.quiz_data.quiz_type}</span>`;
+    
+            // Append elements to card body
+            cardBody.appendChild(titleCreatorContainer);
+            cardBody.appendChild(quizParams);
+    
+            quizParams.appendChild(category);
+            quizParams.appendChild(difficulty);
+            quizParams.appendChild(questionCount);
+            quizParams.appendChild(answerType);
+            quizParams.appendChild(quizType);
+    
+            card.appendChild(cardBody);
+    
+            // Create a horizontal line after each quiz
+            const hr = document.createElement('hr');
+            hr.className = 'my-4';
+    
+            // Append the card and the horizontal line to the resultsDiv
+            resultsDiv.appendChild(card);
+            resultsDiv.appendChild(hr);
+        });
     } else {
-      console.error("Error while creating quiz ", response.data.message);
+      console.log("No results matched your search querry. Try again or try our feature quizzes");
+      resultsDiv.innerHtml = '';
+      const emptyList = document.createElement('div');
+      emptyList.className = 'd-flex justify-content-between align-items-center';
+      
+      const emptyListMessage = document.createElement('p');
+      emptyListMessage.className="pt-5"
+      emptyListMessage.innerText = ` Ooops!!!!!🕵️‍♂️
+      Your search query turned up empty! Maybe the quiz fairies are on vacation? 🧚‍♀️
+      Try tweaking your search terms or check out our fabulous featured quizzes instead! 🎉`;
+
+      emptyList.appendChild(emptyListMessage);
+      resultsDiv.appendChild(emptyList)
     }
+    } 
 
   })
   .catch(function(error) {
@@ -283,7 +364,47 @@ function existingQuiz() {
   })
 }
 
+// function getQuizData(quizzes, targetQuizId) {
+//   if (!Array.isArray(quizzes)) {
+//       console.error('The quizzes parameter is not an array.');
+//       return null;
+//   }
+//   const quiz = quizzes.find(q => q.quiz_id === targetQuizId);
+//   return quiz ? quiz.quiz_data : null;
+// }
 
+// Render selected quiz
+function renderExistingQuiz(quizId) {
+
+  axios.post('/get-existing', {
+    'quiz_id': quizId
+  })
+  .then(function(response) {
+    console.log(response.data.message);
+    const quiz_questions  = response.data.quiz_questions;
+    const numberOfQuestions = response.data.question_count;
+    const quizType = response.data.quiz_type;
+
+     console.log('Setting localStorage items:');
+    console.log('numberOfQuestions:', numberOfQuestions);
+    console.log('quizType:', quizType);
+    console.log('quiz_questions:', quiz_questions);
+
+    localStorage.setItem('numberOfQuestions', numberOfQuestions);
+    localStorage.setItem('quizType', quizType);
+    localStorage.setItem('quiz_questions', JSON.stringify(quiz_questions));
+
+    localStorage.removeItem('quizzes');
+
+    window.location.href = '/quiz';
+    
+  }) 
+  .catch(function(error) {
+    console.log(error)
+  })
+
+  
+}
 
 function populateQuiz(questions, quizType) {
   const quizSteps = document.getElementById('quiz-steps');
