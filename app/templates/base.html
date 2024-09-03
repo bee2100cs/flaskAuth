@@ -109,9 +109,12 @@
                                         </li>
                     </ul>
                       <!-- Navbar header -->
+                       
                     <span class="navbar-header">Account Settings</span>
+                    
                     <ul class="list-unstyled ms-n2 mb-0">
                         <!-- Nav item -->
+                        {% if session_user_data %}
                       <li class="nav-item">
                         <a class="nav-link" href="/edit_profile"><i class="fe fe-settings nav-icon"></i>Edit Profile</a>
                       </li>
@@ -138,6 +141,12 @@
                       <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('authentication.logout') }}"><i class="fe fe-power nav-icon"></i>Sign Out</a>
                       </li>
+                      {% else %}
+                        <li>
+                          <a class="nav-link" href="{{ url_for('authentication.login') }}"><i class="fe fe-power nav-icon"></i>Sign In</a>
+                          <a class="nav-link" href="{{ url_for('authentication.signup') }}"><i class="fe fe-power nav-icon"></i>Sign Up</a>
+                        </li>
+                      {% endif %}
                     </ul>
                   </div>
                 </div>

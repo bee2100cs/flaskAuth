@@ -6,6 +6,7 @@
 ## Requirements
 Python 3.xx
 configured firebase project
+running redis-server
 
 ##Instuctions
 ### Configure Firebase
@@ -16,7 +17,7 @@ go to https://console.firebase.google.com/
 
 
 On add firebase SDK step, copy 
-apiKey;
+apiKey:
 authDomain:
 projectId:
 storageBucket:
@@ -41,4 +42,9 @@ save the .env file in the root folder of the app
 
 # Features
 
+
+clone auth submodule
+go to auth folder then:
+git submodule init
+git submodule update
 

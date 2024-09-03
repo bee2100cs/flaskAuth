@@ -267,7 +267,8 @@ function existingQuiz() {
   })
   .then(function(response) {
     if (response.data.quizzes) {
-      const quizzes = response.data.quizzes;    
+      const quizzes = response.data.quizzes;  
+      console.log(quizzes)  
       const resultsDiv = document.getElementById('quiz-search-results');
       resultsDiv.innerHtml = '';
 
@@ -290,7 +291,7 @@ function existingQuiz() {
 
             const quizCreator = document.createElement('p');
             quizCreator.className = 'card-subtitle mb-2 text-muted fs-6';
-            quizCreator.innerHTML = `Creator:<span clas='text-primary> ${quiz.username}<\span>`;
+            quizCreator.innerHTML = `Creator: <span clas='text-primary'> ${quiz.username}</span>`;
 
             titleCreatorContainer.appendChild(quizTitle);
             titleCreatorContainer.appendChild(quizCreator);
