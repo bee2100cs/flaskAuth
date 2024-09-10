@@ -185,7 +185,7 @@ def profile(username):
     personal_info_fields = [field for field in personal_info_fields if field[1] is not None]
     job_info_fields = [field for field in job_info_fields if field[1] is not None]
 
-    return render_template('profile.html', 
+    return render_template('user_profile.html', 
                             session_user_data=session_user_data, 
                             user = username_data,
                             personal_info_fields=personal_info_fields, 

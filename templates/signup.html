@@ -4,130 +4,71 @@
 
 <div class="container-fluid d-flex">
     <div class="col-lg-12 col-md-8 mx-auto">
-        <div >
-           
-              
-              <section class="vh-100 bg-image"
-  style="background-image: url('https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp');">
-  <div class="mask d-flex align-items-center h-100 gradient-custom-3">
-    <div class="container h-100">
-      <div class="row d-flex justify-content-center align-items-center h-100">
-        <div class="col-12 col-md-9 col-lg-7 col-xl-6">
-          <div class="card" style="border-radius: 15px;">
-            <div class="card-body p-5">
-              <h2 class="text-uppercase text-center mb-5">Create an account</h2>
+        <div >     
+        <section class="vh-100 bg-image"
+          style="background-image: url('https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp');">
+          <div class="mask d-flex align-items-center h-100 gradient-custom-3">
+            <div class="container h-100">
+              <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+                  <div class="card" style="border-radius: 15px;">
+                    <div class="card-body p-5">
+                      <h2 class="text-uppercase text-center mb-5">Create an account</h2>
 
-              <form class="validate-form" method="POST" id="signup-form">
+                      <form class="validate-form" method="POST" id="signup-form">
 
-                <!-- <div data-mdb-input-init class="form-outline mb-4">
-                  <input type="text" id="form3Example1cg" class="form-control form-control-lg" />
-                  <label class="form-label" for="form3Example1cg">Your Name</label>
-                </div> -->
-                <div class="text-center p-t-12" id="emailExists">
-                    <div></div>
+                        <!-- <div data-mdb-input-init class="form-outline mb-4">
+                          <input type="text" id="form3Example1cg" class="form-control form-control-lg" />
+                          <label class="form-label" for="form3Example1cg">Your Name</label>
+                        </div> -->
+                        <div class="text-center p-t-12" id="emailExists">
+                            <div></div>
+                        </div>
+                        <div data-mdb-input-init class="form-outline mb-4" data-validate = "Valid email is required: ex@abc.xyz">
+                          <input type="email" id="signup-email" class="form-control form-control-lg" />
+                          <label class="form-label" for="signup-email">Your Email</label>
+                        </div>
+
+                        <div data-mdb-input-init class="form-outline mb-4" data-validate = "Password is required">
+                          <input type="password" id="signup-password" class="form-control form-control-lg" />
+                          <label class="form-label" for="signup-password">Password</label>
+                        </div>
+
+                        <div data-mdb-input-init class="form-outline mb-4">
+                          <input type="password" id="signup-password-repeat" class="form-control form-control-lg" />
+                          <label class="form-label" for="signup-password-repeat">Repeat your password</label>
+                        </div>
+
+                        <div class="form-check d-flex justify-content-center mb-5">
+                          <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3cg" />
+                          <label class="form-check-label" for="form2Example3g">
+                            I agree all statements in <a href="#!" class="text-body"><u>Terms of service</u></a>
+                          </label>
+                        </div>
+
+                        <div class="d-flex justify-content-center">
+                            <button  type="submit" data-mdb-button-init
+                                data-mdb-ripple-init class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
+                                Register
+                            </button>
+                        </div>
+
+                        <p class="text-center text-muted mt-5 mb-0">Have already an account? <a href="{{ url_for('authentication.login') }}"
+                            class="fw-bold text-body"><u>Login here</u></a></p>
+                        <p class="text-center text-muted mt-5 mb-0">Continue as a <a href="{{ url_for('main.index') }}"
+                          class="fw-bold text-body"><u>Guest</u></a></p>
+
+                      </form>
+
+                    </div>
+                  </div>
                 </div>
-                <div data-mdb-input-init class="form-outline mb-4" data-validate = "Valid email is required: ex@abc.xyz">
-                  <input type="email" id="signup-email" class="form-control form-control-lg" />
-                  <label class="form-label" for="signup-email">Your Email</label>
-                </div>
-
-                <div data-mdb-input-init class="form-outline mb-4" data-validate = "Password is required">
-                  <input type="password" id="signup-password" class="form-control form-control-lg" />
-                  <label class="form-label" for="signup-password">Password</label>
-                </div>
-
-                <div data-mdb-input-init class="form-outline mb-4">
-                  <input type="password" id="signup-password-repeat" class="form-control form-control-lg" />
-                  <label class="form-label" for="signup-password-repeat">Repeat your password</label>
-                </div>
-
-                <div class="form-check d-flex justify-content-center mb-5">
-                  <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3cg" />
-                  <label class="form-check-label" for="form2Example3g">
-                    I agree all statements in <a href="#!" class="text-body"><u>Terms of service</u></a>
-                  </label>
-                </div>
-
-                <div class="d-flex justify-content-center">
-                    <button  type="submit" data-mdb-button-init
-                        data-mdb-ripple-init class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
-                        Register
-                    </button>
-                </div>
-
-                <p class="text-center text-muted mt-5 mb-0">Have already an account? <a href="{{ url_for('authentication.login') }}"
-                    class="fw-bold text-body"><u>Login here</u></a></p>
-
-              </form>
-
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+        </section>
         </div>
     </div>
 </div>
-
-    <!-- <div class="limiter">
-		<div class="container-login100">
-			<div class="wrap-login100">
-				<div class="login100-pic js-tilt" data-tilt>
-					<img src="../static/images/img-01.png" alt="IMG">
-				</div>
-				<form class="login100-form validate-form" method="POST" id="signup-form">
-                    <span class="login100-form-title">
-                        Create Account
-                    </span>
-
-                    <div class="text-center p-t-12" id="emailExists">
-                        <div></div>
-                    </div>
-                    <br>
-					<div">
-                        <div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
-                            <input class="input100" type="email" name="email" id="signup-email" name="email" placeholder="Email" autocomplete="on">
-                            <span class="focus-input100"></span>
-                            <span class="symbol-input100">
-                                <i class="fa fa-envelope" aria-hidden="true"></i>
-                            </span>
-                        </div>
-                
-                        <div class="wrap-input100 validate-input" data-validate = "Password is required">
-                            <input class="input100" type="password" id="signup-password" name="password" placeholder="Password">
-                            <span class="focus-input100"></span>
-                            <span class="symbol-input100">
-                                <i class="fa fa-lock" aria-hidden="true"></i>
-                            </span>
-                        </div>
-                        
-                        <div class="container-login100-form-btn">
-                            <button class="login100-form-btn" type="submit">
-                                Sign Up
-                            </button>
-                        </div>
-                        <div class="text-center p-t-50">
-                            <a class="txt2" href="{{ url_for('authentication.login') }}">
-                                Sign In
-                                <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
-                            </a>
-                        </div>
-                        <div class="text-center p-t-20">
-                            <a class="txt2" href="{{ url_for('main.index') }}">
-                                Home
-                                <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
-                            </a>
-                            
-                        </div>
-                    </div>
-				</form>
-			</div>
-		</div>
-	</div>
-
-</body>
-</html> -->
 
 {% endblock %}
