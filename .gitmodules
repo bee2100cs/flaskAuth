@@ -1,3 +1,4 @@
 [submodule "app/auth"]
 	path = app/auth
 	url = git@github.com:bee2100cs/flaskAuth.git
+	branch = najua
