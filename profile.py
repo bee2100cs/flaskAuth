@@ -1,9 +1,10 @@
-from flask import Blueprint, session, render_template, request, redirect, url_for, jsonify
+from flask import Blueprint, session, render_template, request, redirect, url_for, jsonify, flash
 from .config import ApplicationConfig
 import pyrebase
 from .authentication import login_required
 from werkzeug.utils import secure_filename
 import os
+from ..main.utils.helper import  user_quizzes, calculate_quiz_stats
 
 
 bp = Blueprint("profile", __name__)
@@ -128,6 +129,36 @@ def onboarding_callback():
         # Redirect to login if not logged in
         return redirect(url_for('authentication.login')) 
     
+def my_quizzes(user_id):
+    user_scores = db.child("users").child(user_id).child("scores").get().val()
+    quizzes = db.child("users").child(user_id).child("quizzes").get().val()
+
+    user_quiz_data = user_quizzes(db, user_id, quizzes)
+    quiz_data = []
+
+    for quiz in user_quiz_data:
+        for quiz_id, quiz_info in quiz.items():
+            quiz_category = quiz_info.get("category")
+            quiz_difficulty = quiz_info.get("difficulty")
+            quiz_title = quiz_info.get("quiz_title")
+            quiz_answer_type = quiz_info.get("answer_type")
+            quiz_type = quiz_info.get("quiz_type")
+            question_count = quiz_info.get("question_count")
+            score = quiz_info.get("score")
+
+            quiz_data.append({
+                quiz_id: {
+                    "category": quiz_category,
+                    "difficulty": quiz_difficulty,
+                    "title": quiz_title,
+                    "answer_type": quiz_answer_type,
+                    "type": quiz_type,
+                    "question_count": question_count,
+                    "score": score
+                }
+            })
+    
+    return quiz_data
 
 @bp.route("/<username>")
 def profile(username):
@@ -140,16 +171,42 @@ def profile(username):
         session_user_data = db.child("users").child(user_id).get().val()
         print(session_user_data.get('username'))
 
+        quiz_data = my_quizzes(user_id)
+        print(quiz_data)
+
     # Fetch user data from Firebase using the username
-    username_data = db.child('users').order_by_child('username').equal_to(username).get().val()
-    if username_data:
+    if username.lower() != "anonymous":
+        username_data = db.child('users').order_by_child('username').equal_to(username).get().val()
+        if username_data:
+            user_id = list(username_data.keys())[0]  # This is the user_id
             username_data = list(username_data.values())[0]
+
+            # Fetch quizzes if user_id is found
+            if user_id:
+                quiz_data = my_quizzes(user_id)
+                
+                user_score_data = db.child('users').child(user_id).child('scores').get().val()
+                all_time_score = user_score_data.get('all_time_score')
+                quiz_count, average_score = calculate_quiz_stats(user_score_data)
+
+                # user created quizzes
+                user_quizzes = db.child("users").child(user_id).child("quizzes").get().val()
+                quizzes_created = len(user_quizzes)
+                quiz_stats = {
+                        'quiz_count': quiz_count,
+                        'average_score': average_score,
+                        'all_time_score': all_time_score,
+                        'quizzes_created': quizzes_created
+                    }
 
     # If no user data is found, return a 404 error
     if not username_data:
-        return "User not found", 404
-    
-    
+        flash("User not found. Redirecting to the homepage.", "error")  # Flash the error message
+        return redirect(url_for('main.index'))  # Redirect to the main.index route
+        
+    if not username_data or not quiz_data:
+        return redirect(url_for('main.index'))
+
     # Safe access to 'professional_info dictionary
     professional_info = username_data.get('professional_info', {})
     socials_data = username_data.get('socials', {})
@@ -190,7 +247,10 @@ def profile(username):
                             user = username_data,
                             personal_info_fields=personal_info_fields, 
                             job_info_fields = job_info_fields,
-                            socials = socials)
+                            socials = socials,
+                            quiz_data= quiz_data,
+                            quiz_stats = quiz_stats
+                            )
 
         
 @bp.route("/settings")
