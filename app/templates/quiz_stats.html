@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container my-5">
+    <div class="row text-center">
+      <!-- Page Title -->
+      <div class="col-12 mb-4">
+        <h2 class="fw-bold">Your Quiz Stats</h2>
+        <p class="text-muted">Check your performance across all quizzes</p>
+      </div>
+  
+      <!-- Stats Card 1: Number of Quizzes Taken -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <i class="bi bi-list-check display-4 text-primary mb-3"></i>
+            <h4 class="card-title">Quizzes Taken</h4>
+            <p class="display-6 fw-bold"> {{ quiz_stats.quiz_count }}</p>
+            <p class="text-muted">Total quizzes you've attempted</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Card 1: Number of Quizzes Created -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <i class="bi bi-list-check display-4 text-primary mb-3"></i>
+            <h4 class="card-title">Quizzes By Me</h4>
+            <p class="display-6 fw-bold"> {{ quiz_stats.quizzes_created }}</p>
+            <p class="text-muted">Total quizzes you've created</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Stats Card 2: All-Time Score -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <i class="bi bi-trophy display-4 text-success mb-3"></i>
+            <h4 class="card-title">All-Time Score</h4>
+            <p class="display-6 fw-bold"> {{ quiz_stats.all_time_score }} </p>
+            <p class="text-muted">Combined score across all quizzes</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Stats Card 3: Average Score -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <i class="bi bi-bar-chart-line display-4 text-warning mb-3"></i>
+            <h4 class="card-title">Average Score</h4>
+            <p class="display-6 fw-bold">{{ quiz_stats.average_score }} %</p>
+            <p class="text-muted">Your average score on quizzes</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+{% endblock %}

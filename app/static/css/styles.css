@@ -1,5 +1,5 @@
 html, body {
-    height: 100vh;
+    height: 100%;
     margin: 0;
     
     /* display: flex; */
@@ -12,6 +12,18 @@ body {
     /* background-repeat: repeat-y; */
     overflow: auto;
 }
+
+/* #main {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+} */
+
+.card.flex-grow-1 {
+  overflow-y: auto; /* Add scrolling for content within the card */
+}
+
 * {
     box-sizing: border-box;
   }

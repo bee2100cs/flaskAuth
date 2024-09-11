@@ -82,3 +82,38 @@
     </div>
 
 {% endblock %}
+
+<!-- Single Bootstrap Card -->
+<div class="col-md-4 mb-4">
+    <div class="card h-100">
+        <div class="card-body">
+            <!-- Quiz Title -->
+            <h5 class="card-title">{{ details.title }}</h5>
+            <!-- Quiz Category -->
+            <p class="card-text">
+                <strong>Category:</strong> {{ details.category }}
+            </p>
+            <!-- Quiz Difficulty -->
+            <p class="card-text">
+                <strong>Difficulty:</strong> {{ details.difficulty }}
+            </p>
+            <!-- Quiz Answer Type -->
+            <p class="card-text">
+                <strong>Answer Type:</strong> {{ details.answer_type }}
+            </p>
+            <!-- Quiz Type -->
+            <p class="card-text">
+                <strong>Type:</strong> {{ details.type }}
+            </p>
+            <!-- Number of Questions -->
+            <p class="card-text">
+                <strong>Questions:</strong> {{ details.question_count }}
+            </p>
+            <!-- My Score -->
+            <p class="card-text">
+                <strong>My Score:</strong> {{ details.score }}
+            </p>
+        </div>
+
+    </div>
+</div>

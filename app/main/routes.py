@@ -19,7 +19,9 @@ from .utils.helper import (generate_question_id,
                            search_quizzes,
                            get_quiz_data_by_id,
                            questions_without_correct_answers,
-                           get_quiz_question_ids
+                           get_quiz_question_ids,
+                           user_quizzes,
+                           calculate_quiz_stats
                            )
 
 # Global variables
@@ -194,6 +196,7 @@ def search_quizzes_route():
 def get_existing():
     try:
         quiz_id = request.json['quiz_id']
+        
         question_ids = get_quiz_question_ids(quiz_id)
 
         # Get questions from db
@@ -205,6 +208,9 @@ def get_existing():
         questions_only = questions_without_correct_answers(copy.deepcopy(quiz_question_data))
         question_count = len(questions_only)
         session['total_questions'] = question_count
+        session['quiz_id'] = quiz_id
+        saved_quiz_id = session.get("quiz_id")
+        print(saved_quiz_id)
 
         quizzes = session.get('quizzes', [])
         for quiz in quizzes:
@@ -252,8 +258,8 @@ def quiz_callback():
         review_data.append({
             'question': normalize_text(question['question']),
             'correct_answer': normalize_text(correct_answer),
-            'user_answer': normalize_text(user_answer),
-            'is_correct': user_answer == correct_answer
+            'user_answer': normalize_text(user_answer) if user_answer else None,
+            'is_correct': user_answer == correct_answer if user_answer else False
         })
 
         if user_answer == correct_answer:
@@ -270,28 +276,34 @@ def quiz_callback():
 def results():
     review_data = session['review_data']
     
-    return render_template("results.html", review_data=review_data)
+    return render_template("results.html", review_data=review_data, session_user_data=g.user_data)
     
 @main.route('/save-quiz', methods=['POST','GET'])
 def save_quiz():
 
     try:
         quiz_questions = session.get('quiz_questions')
+        quiz_id = session.get("quiz_id")
+        user_id = session.get("user_id")
         score = request.json.get('score')  # Get score from the request
 
-        # Save quiz and get quiz_id
-        quiz_id = save_quiz_to_db(session, quiz_questions)
+        # If quiz_id not in session, save quiz and get quiz_id
+        print("heres the quiz_id", quiz_id)
+        if not quiz_id:
+            quiz_id = save_quiz_to_db(session, quiz_questions)
+            session['quiz_id'] = quiz_id
         
-        if quiz_id:
+        if quiz_id and user_id:
             save_user_score(quiz_id, session, score)
             
             # Clear session data
             session.pop('quiz_questions', None)
             session.pop('numberOfQuestions', None)
+            session.pop('quiz_id', None)
 
             return jsonify({"redirect_url": url_for("main.index"), "message": "Quiz saved successfully"})
         else:
-            return jsonify({"error": "Failed to save quiz"}), 500
+            return jsonify({"redirect_url": url_for("main.index"), "message": "Quiz saved successfully for anonymous"})
     except Exception as e:
         print(f"Error finishing quiz: {e}")
         return jsonify({"error": "Failed to finish quiz"}), 500
@@ -342,3 +354,67 @@ def handle_pending_quiz():
         print(f"Error handling pending quiz data: {e}")
         return jsonify({"error": "Failed to handle pending quiz data"}), 500
 
+
+@main.route('/my_quizzes')
+def my_quizzes():
+    if 'user_id' in session:
+       
+        user_id = session['user_id']
+        user_scores = db.child("users").child(user_id).child("scores").get().val()
+        quizzes = db.child("users").child(user_id).child("quizzes").get().val()
+
+        user_quiz_data = user_quizzes(db, user_id, quizzes)
+        quiz_data = []
+        
+        for quiz in user_quiz_data:
+            for quiz_id, quiz_info in quiz.items():
+                quiz_category = quiz_info.get("category")
+                quiz_difficulty = quiz_info.get("difficulty")
+                quiz_title = quiz_info.get("quiz_title")
+                quiz_answer_type = quiz_info.get("answer_type")
+                quiz_type = quiz_info.get("quiz_type")
+                question_count = quiz_info.get("question_count")
+                score = quiz_info.get("score")
+
+                quiz_data.append(
+                    {quiz_id: {
+                        "category": quiz_category,
+                        "difficulty": quiz_difficulty,
+                        "title": quiz_title,
+                        "answer_type": quiz_answer_type,
+                        "type": quiz_type,
+                        "question_count": question_count,
+                        "score": score
+                }})
+
+        return render_template("my_quizzes.html",
+                               quiz_data=quiz_data, 
+                                session_user_data=g.user_data)
+    
+    else:
+        return redirect(url_for('main.index'))
+    
+
+@main.route('/quiz_stats')
+def quiz_stats():
+    if 'user_id' in session:
+        user_id = session.get("user_id")
+        user_score_data = db.child('users').child(user_id).child('scores').get().val()
+        all_time_score = user_score_data.get('all_time_score')
+        quiz_count, average_score = calculate_quiz_stats(user_score_data)
+
+        # user created quizzes
+        user_quizzes = db.child("users").child(user_id).child("quizzes").get().val()
+        quizzes_created = len(user_quizzes)
+        quiz_stats = {
+                'quiz_count': quiz_count,
+                'average_score': average_score,
+                'all_time_score': all_time_score,
+                'quizzes_created': quizzes_created
+            }
+
+        return render_template('quiz_stats.html',
+                               quiz_stats= quiz_stats,
+                           session_user_data=g.user_data)
+    else:
+        return redirect(url_for('main.index'))

@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card-body ">
+<div>
+    <div class="user-profile">
+            <div class="container h-100">
+              <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-md-12 col-xl-6">
+          
+                  <div class="card" style="border-radius: 15px;">
+                    <div class="card-body text-center">
+                      <div class="mt-3 mb-4">
+                        
+                          <img src="{{ user.profile_pic_url }}" alt="avatar"
+                            d-circle img-fluid" style="width: 150px; height: 150px;" />
+                      </div>
+                      <h4 class="mb-2"><a class="my-3 py-2" href="{{ url_for('profile.profile', username=user.username) }}"><h5>{{ user.username }}</h5></a></h4>
+                      <p class="text-muted mb-1">{{ user.professional_info.profession }} </p>
+                      <p class="text-muted mb-4">{{ user.address }} </p>
+                      <div class="mb-4 pb-2">
+                        <a href="https://facebook.com/{{ user.socials.facebook }}" target="_blank">
+                          <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary btn-floating">
+                            <i class="fab fa-facebook-f fa-lg"></i>
+                          </button>
+                        </a>
+                        <a href="https:///x.com/{{ user.socials.twitter}}" target="_blank">
+                          <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary btn-floating">
+                            <i class="fab fa-twitter fa-lg"></i>
+                          </button>
+                        </a>
+                        <a href="https://instagram.com/{{ user.socials.instagram }}" target="_blank">
+                          <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary btn-floating">
+                            <i class="fab fa-instagram fa-lg"></i>
+                          </button>
+                        </a>
+                        <a href="https://github.com/{{ user.socials.github }}" target="_blank">
+                          <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary btn-floating">
+                            <i class="fab fa-github fa-lg"></i>
+                          </button>
+                        </a>
+                        
+                      </div>
+                      {% if user.username != session_user_data.username %}
+                      <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-rounded btn-lg">
+                        Message now
+                      </button>
+                      <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-rounded btn-lg">
+                        Follow
+                      </button>
+                      {% endif %}
+                      <div class="d-flex justify-content-between text-center mt-5 mb-2">
+                        <div>
+                          <p class="mb-2 h5">{{ quiz_stats.quizzes_created }}</p>
+                          <p class="text-muted mb-0">Quizzes Created</p>
+                        </div>
+                        <div class="px-3">
+                          <p class="mb-2 h5">{{ quiz_stats.all_time_score }}</p>
+                          <p class="text-muted mb-0">All Time Score</p>
+                        </div>
+                        <div>
+                          <p class="mb-2 h5">{{ quiz_stats.average_score }} %</p>
+                          <p class="text-muted mb-0">Average Quiz Score</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+          
+                </div>
+                <div class="col-md-12 col-xl-6">
+                  <div class=" d-flex flex-column"> <!-- Make parent div take full height -->
+                      <div class="col-lg-12 d-flex flex-column justify-content-between">
+              
+                          {% if personal_info_fields %}
+                          <div class="card mb-4 accordion sticky-top" style="top: 0;">
+                              <div class="card-header" id="personalInfoId">
+                                  <a class="btn btn-link" data-toggle="collapse" data-target="#personalInfo" href="#personalInfo" role="button" aria-expanded="false" aria-controls="personalInfo">
+                                      Personal Information
+                                  </a>
+                              </div>
+                              <div id="personalInfo" class="collapse show" aria-labelledby="personalInfo" data-parent="#accordion">
+                                  <div class="card-body">
+                                      {% for label, value in personal_info_fields %}
+                                      {% if value %}
+                                      <div class="row">
+                                          <div class="col-sm-3">
+                                              <p class="mb-0">{{ label }}</p>
+                                          </div>
+                                          <div class="col-sm-9">
+                                              <p class="text-muted mb-0">{{ value }}</p>
+                                          </div>
+                                      </div>
+                                      <hr>
+                                      {% endif %}
+                                      {% endfor %}
+                                  </div>
+                              </div>
+                          </div>
+                          {% else %}
+                          <p>No personal information available.</p>
+                          {% endif %}
+              
+                          <!-- Center Job Information Vertically -->
+                          <div class="flex-grow-1 d-flex flex-column justify-content-center">
+                              {% if job_info_fields %}
+                              <div class="card mb-4 accordion">
+                                  <div class="card-header" id="jobInfoId">
+                                      <a class="btn btn-link" data-toggle="collapse" data-target="#jobInfo" href="#jobInfo" role="button" aria-expanded="false" aria-controls="jobInfo">
+                                          Job Information
+                                      </a>
+                                  </div>
+                                  <div id="jobInfo" class="collapse" aria-labelledby="jobInfo" data-parent="#accordion">
+                                      <div class="card-body">
+                                          {% for label, value in job_info_fields %}
+                                          {% if value %}
+                                          <div class="row">
+                                              <div class="col-sm-3">
+                                                  <p class="mb-0">{{ label }}</p>
+                                              </div>
+                                              <div class="col-sm-9">
+                                                  <p class="text-muted mb-0">{{ value }}</p>
+                                              </div>
+                                          </div>
+                                          <hr>
+                                          {% endif %}
+                                          {% endfor %}
+                                      </div>
+                                  </div>
+                              </div>
+                              {% else %}
+                              <p>No job information available.</p>
+                              {% endif %}
+                          </div>
+              
+                          <!-- Additional Sections -->
+                          {% if session_user_data %}
+                          {% if job_info_fields %}
+                          <div class="card mb-4 accordion">
+                              <div class="card-header" id="bookmarkId">
+                                  <a class="btn btn-link" data-toggle="collapse" data-target="#bookmarks" href="#bookmarks" role="button" aria-expanded="false" aria-controls="bookmarks">
+                                      Bookmarks
+                                  </a>
+                              </div>
+                              <div id="bookmarks" class="collapse" aria-labelledby="bookmarks" data-parent="#accordion">
+                                  <div class="card-body">
+                                      {% for label, value in job_info_fields %}
+                                      {% if value and value.strip() != '' %}
+                                      <div class="row">
+                                          <div class="col-sm-3">
+                                              <p class="mb-0">{{ label }}</p>
+                                          </div>
+                                          <div class="col-sm-9">
+                                              <p class="text-muted mb-0">{{ value }}</p>
+                                          </div>
+                                      </div>
+                                      {% endif %}
+                                      <hr>
+                                      {% endfor %}
+                                  </div>
+                              </div>
+                          </div>
+                          {% else %}
+                          <p>No Bookmarks available.</p>
+                          {% endif %}
+                          {% endif %}
+                      </div>
+                  </div>
+              </div>
+              
+              </div>
+              <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-md-12 col-xl-12 p-5">
+                  <div>
+                    <h3>These are the quizzes created by {{ user.username }}</h3>
+                  </div>
+                  <div id="quiz-search-results">
+                    <div class="row">
+                        <!-- Loop through quiz data -->
+                        {% for quiz in quiz_data %}
+                            {% for quiz_id, details in quiz.items() %}
+                               <div class="card mb-4 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center" >
+                                        <h5 class="card-title" >
+                                            <a class="text-dark text-decoration-none render-existing-quiz" id = "{{quiz_id }}" href="#">{{details.title}}</a>
+                                        </h5>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-3 mt-3">
+                                        {% if details.category != "random" %}
+                                        <p class="fs-6 mb-0">
+                                            Category: <span>{{ details.category }}</span>
+                                        </p>
+                                        {% endif %}
+                                    
+                                        {% if details.difficulty != "random" %}
+                                        <p class="fs-6 mb-0">
+                                            Difficulty: <span>{{ details.difficulty }}</span>
+                                        </p>
+                                        {% endif %}
+                                    
+                                        {% if details.answer_type != "random" %}
+                                        <p class="fs-6 mb-0">
+                                            Answer Type: <span>{{ details.answer_type }}</span>
+                                        </p>
+                                        {% endif %}
+                                        
+                                        <p class="fs-6 mb-0">
+                                            Type: <span>{{ details.type }}</span>
+                                        </p>
+                                        
+                                
+                                        {% if details.question_count != "random" %}
+                                        <p class="fs-6 mb-0">
+                                            Questions: <span>{{ details.question_count }}</span>
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                    
+                                </div>
+                               </div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+                </div>
+              </div>
+              
+              
+            </div>
+    </div>
+</div>
+</div>
+
+
+{% endblock %}

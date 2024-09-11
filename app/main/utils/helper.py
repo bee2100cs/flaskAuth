@@ -98,112 +98,112 @@ def save_quiz_to_db(session, quiz_questions):
     if not quiz_questions:
         print("No quiz data to save")
         return
+    
     # Check if user is logged in or is anonymous
-    try:
-        if 'user_id' in session:
-            user_id = session['user_id']
-            print(f"Logged in user ID: {user_id}")
-        else:
-            user_id = get_or_create_anonymous_user()
-            print(f"Anonymous user ID: {user_id}")
-        
+    quiz_id = session.get("quiz_id")
+    if not quiz_id:
         try:
-            # Generate a unique quiz ID
-            quiz_id_raw = str(uuid.uuid4())
-            hashed_id = hashlib.sha256(quiz_id_raw.encode('utf-8')).hexdigest()
-            quiz_id_truncated = hashed_id[:8]
-            quiz_id = quiz_id=f"quiz_{quiz_id_truncated}"
-            print(f"Generated unique quiz_id {quiz_id}")
-        except Exception as e:
-            print("error generating quiz_id")
-            jsonify({"error": " an error occured when creating quiz_id"})
-
-        # Extract question IDs
-        question_ids = [question['id'] for question in quiz_questions]
-        number_of_questions = len(question_ids)
-
-        # Get other quiz parameters
-        # use sets to avoid data duplication
-        difficulties = set()
-        categories = set()
-        question_types = set()
-        
-        for question in quiz_questions:
-            # Get question types, categories, and difficulties
-            difficulties.add(question.get('difficulty'))
-            categories.add(question.get('category'))
-            question_types.add(question.get('type'))
-
-        def determine_value(values_set):
-            if len(values_set) == 1:
-                return next(iter(values_set))
-            elif len (values_set) > 1:
-                return 'random'
+            if 'user_id' in session:
+                user_id = session['user_id']
+                print(f"Logged in user ID: {user_id}")
             else:
-                return None
+                user_id = get_or_create_anonymous_user()
+                print(f"Anonymous user ID: {user_id}")
             
-        quiz_category = determine_value(categories)
-        quiz_difficulty = determine_value(difficulties)
-        quiz_question_type = determine_value(question_types)
-        
-        # Determine the quiz type based on conditions
-        if quiz_category != 'random' or quiz_difficulty != 'random' or quiz_question_type != 'random':
-            quiz_type = 'custom'
-        else:
-            quiz_type = 'random'
+            try:
+                # Generate a unique quiz ID
+                quiz_id_raw = str(uuid.uuid4())
+                hashed_id = hashlib.sha256(quiz_id_raw.encode('utf-8')).hexdigest()
+                quiz_id_truncated = hashed_id[:8]
+                quiz_id = quiz_id=f"quiz_{quiz_id_truncated}"
+                print(f"Generated unique quiz_id {quiz_id}")
+            except Exception as e:
+                print("error generating quiz_id")
+                jsonify({"error": " an error occured when creating quiz_id"})
 
-        quiz_title = f"{quiz_type} {quiz_id}"
-        # prepare quiz data
-        quiz_data = {
-            "user_id": user_id,
-            "quiz_title": quiz_title,
-            'category': quiz_category,
-            'answer_type' : quiz_question_type,
-            'quiz_type' : quiz_type,
-            'difficulty': quiz_difficulty,
-            'question_count': number_of_questions,
-            "questions": question_ids
-        }
-        # Save quiz to db
-        try:
-            db.child("quiz").child("saved_quizzes").child(quiz_id).set(quiz_data)
+            # Extract question IDs
+            question_ids = [question['id'] for question in quiz_questions]
+            number_of_questions = len(question_ids)
 
-            print(f"Quiz saved with ID {quiz_id} fo user {user_id}")
-        except Exception as e:
-            print(f"Error saving quiz: {e}")
-            return jsonify({"error": "An error occured while saving the quiz"})
-        
-        # Append quiz ID to list of quizzes by user on db
-        try:
-            user_quizzes = db.child("users").child(user_id).child("quizzes").get().val()
-            if not user_quizzes:
-                user_quizzes = [quiz_id]
+            # Get other quiz parameters
+            # use sets to avoid data duplication
+            difficulties = set()
+            categories = set()
+            question_types = set()
+            
+            for question in quiz_questions:
+                # Get question types, categories, and difficulties
+                difficulties.add(question.get('difficulty'))
+                categories.add(question.get('category'))
+                question_types.add(question.get('type'))
+
+            def determine_value(values_set):
+                if len(values_set) == 1:
+                    return next(iter(values_set))
+                elif len (values_set) > 1:
+                    return 'random'
+                else:
+                    return None
                 
+            quiz_category = determine_value(categories)
+            quiz_difficulty = determine_value(difficulties)
+            quiz_question_type = determine_value(question_types)
+            
+            # Determine the quiz type based on conditions
+            if quiz_category != 'random' or quiz_difficulty != 'random' or quiz_question_type != 'random':
+                quiz_type = 'custom'
             else:
-                user_quizzes.append(quiz_id)
+                quiz_type = 'random'
 
-            db.child("users").child(user_id).child("quizzes").set(user_quizzes)
-            print("quiz saved successfully")
-        except Exception as e:
-            print(f"Unexpected error: {e}")
-            return jsonify({"Error": "An unexpected error occured"})
+            quiz_title = f"{quiz_type} {quiz_id}"
+            # prepare quiz data
+            quiz_data = {
+                "user_id": user_id,
+                "quiz_title": quiz_title,
+                'category': quiz_category,
+                'answer_type' : quiz_question_type,
+                'quiz_type' : quiz_type,
+                'difficulty': quiz_difficulty,
+                'question_count': number_of_questions,
+                "questions": question_ids
+            }
+            # Save quiz to db
+            try:
+                db.child("quiz").child("saved_quizzes").child(quiz_id).set(quiz_data)
 
-        return quiz_id
+                print(f"Quiz saved with ID {quiz_id} fo user {user_id}")
+            except Exception as e:
+                print(f"Error saving quiz: {e}")
+                return jsonify({"error": "An error occured while saving the quiz"})
+            
+            # Append quiz ID to list of quizzes by user on db
+            try:
+                user_quizzes = db.child("users").child(user_id).child("quizzes").get().val()
+                if not user_quizzes:
+                    user_quizzes = [quiz_id]
+                    
+                else:
+                    user_quizzes.append(quiz_id)
+
+                db.child("users").child(user_id).child("quizzes").set(user_quizzes)
+                print("quiz saved successfully")
+            except Exception as e:
+                print(f"Unexpected error: {e}")
+                return jsonify({"Error": "An unexpected error occured"})
+
+            return quiz_id
     
             
-    except Exception as e:
-        print(f"error handling user_id. Error: {e}")
-        return jsonify({"error": "An error occured during handling user_id "})
+        except Exception as e:
+            print(f"error handling user_id. Error: {e}")
+            return jsonify({"error": "An error occured during handling user_id "})
 
 def save_user_score(quiz_id, session, score):
     if 'user_id' in session:
-            user_id = session['user_id']
-    else:
-        user_id = get_or_create_anonymous_user()
+        user_id = session['user_id']
     try:
         # Prepare the score data
         score_data = {
-            "quiz_id": quiz_id,
             "score": score,
             "timestamp": datetime.now(timezone.utc).isoformat()
         }
@@ -213,7 +213,7 @@ def save_user_score(quiz_id, session, score):
         all_time_score = db.child('users').child(user_id).child('scores').child("all_time_score").get().val()
         if user_scores:
             # If the user has already taken the quiz, update the score if the new score is higher
-            if score > user_scores.get('score', 0):
+            if int(score) > int(user_scores.get('score', 0)):
                 db.child("users").child(user_id).child("scores").child(quiz_id).update(score_data)
                 print(f"Updated score for user {user_id} for quiz {quiz_id}")
             else:
@@ -223,13 +223,13 @@ def save_user_score(quiz_id, session, score):
             db.child("users").child(user_id).child("scores").child(quiz_id).set(score_data)
             print(f"Score saved successfully for user {user_id} and quiz {quiz_id}")
 
-        if all_time_score:
-            # Add current score to all_time_score
-            all_time_score = int(all_time_score) + int(score)
-        else:
-            # Add new all_time_score
-            all_time_score = int(score)
-        db.child('users').child(user_id).child('scores').child('all_time_score').set(all_time_score)
+            if all_time_score:
+                # Add current score to all_time_score
+                all_time_score = int(all_time_score) + int(score)
+            else:
+                # Add new all_time_score
+                all_time_score = score
+            db.child('users').child(user_id).child('scores').child('all_time_score').set(all_time_score)
     except Exception as e:
         print(f"Error saving user score: {e}")
         return jsonify({"error": "An error occurred while saving the user score"})
@@ -253,10 +253,28 @@ def search_quizzes(db, quiz_category='random', quiz_question_type='random', quiz
                 })
         
         return matching_quizzes
-
+            
     except Exception as e:
         print(f"Error searching quizzes: {e}")
         return None
+
+def user_quizzes(db, user_id, quizzes):
+    try:
+        user_quizzes = []
+        for quiz_id in quizzes:
+            quiz_data = db.child("quiz").child("saved_quizzes").child(quiz_id).get().val()
+            quiz_score = db.child("users").child(user_id).child("scores").child(quiz_id).child("score").get().val()
+            
+            if quiz_data:  # Ensure that quiz_data exists
+                quiz_data['score'] = quiz_score if quiz_score else 0
+
+                user_quizzes.append({quiz_id: quiz_data})
+            
+
+        return user_quizzes
+
+    except Exception as e:
+        print("error grabbing quiz data")
 
 # Get quiz question IDs
 def get_quiz_question_ids(quiz_id):
@@ -289,3 +307,22 @@ def questions_without_correct_answers(questions):
             del question['correct_answer']
 
     return questions
+
+# User quiz stats
+def calculate_quiz_stats(data):
+    quiz_count = 0
+    all_time_score = data.get("all_time_score")
+
+    for key, value in data.items():
+        if key != 'all_time_score':
+            score = int(value['score'])
+            quiz_count += 1
+    
+    #  Calculate the average score if there are any quizzes
+    if quiz_count > 0:
+        average_score = round(all_time_score / quiz_count)
+    else:
+        average_score = 0
+
+    return quiz_count, average_score
+

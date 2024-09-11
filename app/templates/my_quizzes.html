@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card-body p-5">
+    <div>
+
+        <h3>My Quiz Collection</h3>
+        <hr>
+        <div id="quiz-search-results">
+            <div class="row">
+                <!-- Loop through quiz data -->
+                {% for quiz in quiz_data %}
+                    {% for quiz_id, details in quiz.items() %}
+                       <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center" >
+                                <h5 class="card-title" >
+                                    <a class="text-dark text-decoration-none render-existing-quiz" id = "{{quiz_id }}" href="#">{{details.title}}</a>
+                                </h5>
+                            </div>
+                            <div class="d-flex flex-wrap gap-3 mt-3">
+                                {% if details.category != "random" %}
+                                <p class="fs-6 mb-0">
+                                    Category: <span>{{ details.category }}</span>
+                                </p>
+                                {% endif %}
+                            
+                                {% if details.difficulty != "random" %}
+                                <p class="fs-6 mb-0">
+                                    Difficulty: <span>{{ details.difficulty }}</span>
+                                </p>
+                                {% endif %}
+                            
+                                {% if details.answer_type != "random" %}
+                                <p class="fs-6 mb-0">
+                                    Answer Type: <span>{{ details.answer_type }}</span>
+                                </p>
+                                {% endif %}
+                                
+                                <p class="fs-6 mb-0">
+                                    Type: <span>{{ details.type }}</span>
+                                </p>
+                                
+                        
+                                {% if details.question_count != "random" %}
+                                <p class="fs-6 mb-0">
+                                    Questions: <span>{{ details.question_count }}</span>
+                                </p>
+                                {% endif %}
+                            
+                                {% if details.score != "random" %}
+                                <p class="fs-6 mb-0">
+                                    Score: <span>{{ details.score }}</span>%
+                                </p>
+                                {% endif %}
+                            </div>
+                            
+                        </div>
+                       </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}
+ 

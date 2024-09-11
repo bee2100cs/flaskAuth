@@ -14,9 +14,7 @@
 </head>
 <body>
 
-  <div class="sticky-top container">
-    {% include("navigation.html") %}
-    </div>
+  
 
     <div class="container">
 
@@ -52,7 +50,7 @@
                     </svg>
                   </a>
                   </h2>
-                  <p class=" mb-0 d-block">@{{ session_user_data.username }}</p>
+                  <a class=" mb-0 d-block" href="{{ url_for('profile.profile', username=session_user_data.username) }}">@{{ session_user_data.username }}</a>
                 </div>
                 </div>
                 {% else %}
@@ -75,10 +73,12 @@
                   </div>
                   </div>
                 {% endif %}
+                {% if session_user_data %}
                 <div>
-                <a href="/setings" class="btn btn-primary btn-sm d-none d-md-block">Account
+                <a href="/edit-profile" class="btn btn-primary btn-sm d-none d-md-block">Account
                   Setting</a>
                 </div>
+                {% endif %}
               </div>
               </div>
             </div>
@@ -105,8 +105,16 @@
                       </li> -->
                                           <!-- Nav item -->
                         <li class="nav-item active ">
-                                            <a class="nav-link" href="/"><i class="fe fe-help-circle nav-icon"></i>My Quiz Attempt</a>
-                                        </li>
+                          <a class="nav-link" href="/"><i class="fe fe-help-circle nav-icon"></i>Take A Quiz</a>
+                        </li>
+                        {% if session_user_data %}
+                        <li class="nav-item active ">
+                          <a class="nav-link" href="/my_quizzes"><i class="fe fe-help-circle nav-icon"></i>My Quiz Collection</a>
+                        </li>
+                        <li class="nav-item active ">
+                          <a class="nav-link" href="/quiz_stats"><i class="fe fe-help-circle nav-icon"></i>My Quiz Stats</a>
+                        </li>
+                        {% endif %}
                     </ul>
                       <!-- Navbar header -->
                        
@@ -153,9 +161,9 @@
               </nav>
             </div>
             <!-- playground -->
-            <div class="col-lg-9 col-md-8 col-12">
+            <div class="col-lg-9 col-md-8 col-12 d-flex flex-column" style="height: 100vh;">
               <!-- Card-->
-              <div class="card border-0">
+              <div class="card border-0 flex-grow-1">
                 {% block content %} {% endblock content %}
               </div>
             </div>
@@ -170,5 +178,11 @@
   </div>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/onboarding.js') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
 </body>
 </html

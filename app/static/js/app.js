@@ -17,7 +17,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const numberOfQuestions = localStorage.getItem('numberOfQuestions');
   const quizType = localStorage.getItem('quizType');
-  const quiz_questions = JSON.parse(localStorage.getItem('quiz_questions'));
+
+  const quiz_questions_raw = localStorage.getItem('quiz_questions');
+  let quiz_questions = [];
+  if (quiz_questions_raw) {
+    try {
+      quiz_questions = Json.Parse(quiz_questions_raw)
+    } catch(e) {
+      //console.error("Error parsing quiz_questions from local storage", e);
+      quiz_questions = [];
+    }
+  }
+
   const courseForm = document.getElementById('courseForm');
   const quizResultsPage = document.getElementById('quiz-results');
   const finishQuizTrigger = document.getElementById('finish-quiz');
@@ -291,7 +302,7 @@ function existingQuiz() {
 
             const quizCreator = document.createElement('p');
             quizCreator.className = 'card-subtitle mb-2 text-muted fs-6';
-            quizCreator.innerHTML = `Creator: <span clas='text-primary'> ${quiz.username}</span>`;
+            quizCreator.innerHTML = `Creator: <a href="/${quiz.username}" class='text-primary'> ${quiz.username}</a>`;
 
             titleCreatorContainer.appendChild(quizTitle);
             titleCreatorContainer.appendChild(quizCreator);
@@ -317,9 +328,9 @@ function existingQuiz() {
             answerType.innerHTML = `Answer Type: <span class='text-dark'>${quiz.quiz_data.answer_type}</span>`;
 
     
-            const quizType = document.createElement('p');
-            quizType.className = 'fs-6 mb-0';
-            quizType.innerHTML = `Type: <span class='text-dark'>${quiz.quiz_data.quiz_type}</span>`;
+            // const quizType = document.createElement('p');
+            // quizType.className = 'fs-6 mb-0';
+            // quizType.innerHTML = `Type: <span class='text-dark'>${quiz.quiz_data.quiz_type}</span>`;
     
             // Append elements to card body
             cardBody.appendChild(titleCreatorContainer);
@@ -329,7 +340,7 @@ function existingQuiz() {
             quizParams.appendChild(difficulty);
             quizParams.appendChild(questionCount);
             quizParams.appendChild(answerType);
-            quizParams.appendChild(quizType);
+            // quizParams.appendChild(quizType);
     
             card.appendChild(cardBody);
     
@@ -386,7 +397,7 @@ function renderExistingQuiz(quizId) {
     const numberOfQuestions = response.data.question_count;
     const quizType = response.data.quiz_type;
 
-     console.log('Setting localStorage items:');
+    console.log('Setting localStorage items:');
     console.log('numberOfQuestions:', numberOfQuestions);
     console.log('quizType:', quizType);
     console.log('quiz_questions:', quiz_questions);

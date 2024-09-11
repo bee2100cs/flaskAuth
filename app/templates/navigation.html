@@ -22,6 +22,7 @@
         <button class="btn btn-outline-success" type="submit">Search</button>
       </form>
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        {% if session_user_data %}
         <li class="nav-item">
           <a class="nav-link" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Bookmarks">
           <i class="fa d-inline fa-lg fa-bookmark-o"></i> Bookmarks
@@ -33,6 +34,7 @@
             <span class="badge bg-danger">0</span>
           </a>
         </li>
+        {% endif %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             {% if session_user_data %}
