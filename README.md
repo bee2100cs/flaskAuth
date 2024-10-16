@@ -54,18 +54,18 @@ Add this block to realtime database rules to enable search by username:
 ```
 
 ### Installation
-Clone the repo
+1. Clone the repo
 ```sh
 git clone git@github.com:bee2100cs/najua.git
 ```
 
-Activate virtual environment then install flask packages:  
+2. Activate virtual environment then install flask packages:  
 ```sh
 pip install -r requirements.txt
 ```
 
-clone auth submodule  
-Najua uses an auth submodule stred in a different repository that needs to be cloned into the main repo
+3. clone auth submodule  
+Najua uses an auth submodule stored in a different repository that needs to be cloned into the main repo
 
 ```sh
 git submodule init  
@@ -73,7 +73,7 @@ git submodule update --remote --recursive
 ```
 Change git remote url to avoid accidental pushes to base project
 ```sh
-git remote set-url origin github_username/repo_name
+git remote set-url origin bee2100cs/flaskAuth
 git remote -v # confirm the changes
 ```
 
