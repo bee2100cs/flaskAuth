@@ -73,7 +73,7 @@ git submodule update --remote --recursive
 ```
 Change git remote url to avoid accidental pushes to base project
 ```sh
-git remote set-url origin bee2100cs/flaskAuth
+git remote set-url origin git@github.com:bee2100cs/flaskAuth.git
 git remote -v # confirm the changes
 ```
 
