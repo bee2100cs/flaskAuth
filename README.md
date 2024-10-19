@@ -36,13 +36,15 @@ Build authentication (email & password), realtime database, and Storage
 
 On add firebase SDK step, copy the values for:  
 ```sh
-apiKey:  
-authDomain:  
-projectId:  
-storageBucket:  
-messagingSenderId:  
-appId:  
-measurementId:  
+# firebase config
+apiKey=
+authDomain=
+projectId=
+storageBucket=
+messagingSenderId=
+appId=
+measurementId=
+database_url= 
 ```
 Add these values to the .env file in the root folder of the app(.env.example is provided)  
 
