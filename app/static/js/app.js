@@ -1,4 +1,4 @@
-// Add a generic function for quiz type
+// A generic function for quiz type
 function addQuizFormListener(formId, submitFunction) {
   const quizForm = document.getElementById(formId);
   if (quizForm) {
@@ -8,7 +8,7 @@ function addQuizFormListener(formId, submitFunction) {
     });
   }
 }
-// Add event listerners for type of quiz
+// Event listerners for type of quiz
 document.addEventListener('DOMContentLoaded', function() {
   addQuizFormListener("random-quiz", randomQuiz);
   addQuizFormListener("custom-quiz", customQuiz);
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let quiz_questions = [];
   if (quiz_questions_raw) {
     try {
-      quiz_questions = Json.Parse(quiz_questions_raw)
+      quiz_questions = JSON.parse(quiz_questions_raw)
     } catch(e) {
       //console.error("Error parsing quiz_questions from local storage", e);
       quiz_questions = [];
@@ -375,15 +375,6 @@ function existingQuiz() {
     console.log(error);
   })
 }
-
-// function getQuizData(quizzes, targetQuizId) {
-//   if (!Array.isArray(quizzes)) {
-//       console.error('The quizzes parameter is not an array.');
-//       return null;
-//   }
-//   const quiz = quizzes.find(q => q.quiz_id === targetQuizId);
-//   return quiz ? quiz.quiz_data : null;
-// }
 
 // Render selected quiz
 function renderExistingQuiz(quizId) {
