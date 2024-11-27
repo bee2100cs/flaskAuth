@@ -1,233 +1,79 @@
 {% extends "auth-base.html" %}
 {% block content %}
-
-  
-<div id="content-dashboard" class="ga-block ga-p-spacious ga-text-center">
-  <img src="https://www.dropbox.com/s/j3kbb8apuw3jqfp/lms_dashboard.png?raw=1" alt="">
-</div>
-
-
-<div id="content" class="ga-block ga-p-regular">
-  <div class="ga-row">
-    <div class="ga-col ga-col-md-8 ga-col-md-centered">
-      <header class="ga-m-spacious ga-m-top-none">
-        <div class="ga-m-bottom-md ga-text-center"><span class="ga-icon ga-icon-ga-logo-color ga-icon-lg" aria-hidden></span></div>
-        <h1 class="ga-type-display ga-m-bottom-md ga-text-center">Welcome</h1>
-        <p class="ga-type-body ga-m-bottom-sm ga-text-center">Complete these steps to get started.</p>
-      </header>
-		
-		
-
-      <div class="ga-row">
-      <form class="onboarding-form" method="POST" id="onboarding" enctype="multipart/form-data">
-        <div class="ga-col ga-col-md-10 ga-col-md-centered">
-          <div class="ga-row ga-m-bottom-x-lg wrap">
-            <div class="ga-col ga-col-md-2"><div class="state-icon">1</div></div>
-            <div class="ga-col ga-col-md-10 wrap__inner">
-              <h2 class="ga-type-paragraph-header ga-m-bottom-lg">Terms of Service</h2>
-              <div class="ga-form-group">
-                <label class="ga-label">Country of Residence</label>
-                <select class="ga-select select-country select2-selects" id="countrySelect">
-                  <option disabled selected>Select one</option>
-                  {% for country in countries %}
-                    <option> {{ country }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="ga-form-group">
-                <label class="ga-label ga-label-normal">
-                  <input class="ga-checkbox" type="checkbox" />I agree to the <a class="ga-link" href="#">Terms of Service</a> and <a class="ga-link" href="#">Privacy Policy</a>
-                </label>
-              </div>
-              <div class="ga-form-group ga-m-top-lg">
-                <div class="click">
-                  <button type="button" name="button" class="ga-btn ga-btn-secondary ga-btn-xs btn-first" disabled>Continue</button>
-                </div>
-              </div>
-            </div>
-          </div>
-		  
-		  
-		  
-		  
-		  <!-- /end 1 -->
-
-
-
-          <div class="ga-row wrap" id="unhidePersonal">
-            <div class="ga-col ga-col-md-2"><div class="state-icon">2</div></div>
-            <div class="ga-col ga-col-md-10 wrap__inner">
-              <h2 class="ga-type-paragraph-header ga-m-bottom-lg">Personal Info</h2>
-              <p class="subtitle">Help us to understand our user base.<br><br>This information is strictly confidential and never shared. 
-                  You may add or remove it from your profile at any time.</p>
-          <div class="ga-row">
-				<div class="ga-col ga-col-md-6">
-						<div class="ga-form-group">
-						  
-							<label class="ga-label">Name</label>
-						  
-						
-								<input class="ga-input" type="text" id="name" placeholder="Enter First And Last Name" required>
-						
-						</div>
-          </div>
-          <div class="ga-col ga-col-md-6">
-						<div class="ga-form-group">
-						  
-							<label class="ga-label">Username</label>
-						  
-						  <div class="text-center p-t-12 d-none" id="usernameExists"> </div>
-								<input class="ga-input" id="username" type="text" placeholder="Select A Username" required>
-							  
-						</div>
-            </div>
-						
-            <div class="ga-col ga-col-md-6">
-              <div class="ga-form-group">
-                
-                <label class="ga-label">DOB</label>
-                  <input class="ga-input" type="date" id="dob" name="Date of Birth" value="2018-07-22" min="1900-01-01" max="2025-12-31" />
-                  
-              </div>
-            </div>
-            <div class="ga-col ga-col-md-6">
-              <div class="ga-form-group">
-                <label class="ga-label">Gender</label>
-                <select class="ga-select" id="gender">
-                  <option disabled selected></option>
-                  <option>Prefer not to say</option>
-                  <option>Female</option>
-                  <option>Male</option>
-                  <option>Trans* / non-binary</option>
-                </select>
-              </div>
-            </div>
-            </div>
-              <hr>
-              <div class="ga-row">
-                <div class="ga-col ga-col-md-12">
-                  <div class="ga-form-group">
-                    <label class="ga-label">Ethnicity (select all that apply)</label>
-                  </div>
-                </div>
-                <div class="ga-col ga-col-md-6">
-                  <div class="ga-form-group">
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Prefer not to say" />Prefer not to say</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Aborigine / Torres Straight Islander" />Aborigine / Torres Straight Islander</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="African American / Black" />African American / Black</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="East Asian" />East Asian</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Latin American" />Latin American</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Middle Eastern" />Middle Eastern</label>
-                  </div>
-                </div>
-                <div class="ga-col ga-col-md-6">
-                  <div class="ga-form-group">
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Native American" />Native American</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Pacific Islander" />Pacific Islander</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="South Asian" />South Asian</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Southeast Asian" />Southeast Asian</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="White" />White</label>
-                    <label class="ga-label ga-label-normal"><input class="ga-checkbox ga-checkbox-sm" type="checkbox" name="ethnicity" value="Other" />Other</label>
-                  </div>
-                </div>
-              </div>
-              <div class="ga-form-group ga-m-top-lg">
-<!--                <p class="ga-m-bottom-sm legal">All answers are confidential and only used in aggregate.</p>
--->
-                <div class="click">
-                  <button type="button" name="button" class="ga-btn ga-btn-secondary ga-btn-xs" id="doneButton" disabled>Done</button>
-                </div>
-              </div>
-            </div>
-          </div> 		  
-		  <!-- /end 2 -->
-
-          <div class="ga-row ga-m-bottom-x-lg wrap">
-            <div class="ga-col ga-col-md-2"><div class="state-icon">3</div></div>
-            <div class="ga-col ga-col-md-10 wrap__inner">
-              <h2 class="ga-type-paragraph-header ga-m-bottom-lg">Professional Info</h2>
-              <p class="subtitle">This information helps us make recommendations based on what people like you have enjoyed.</p>
-
-              <div class="ga-row">
-                <div class="ga-col ga-col-md-6">
-                  <div class="ga-form-group">
-                    <label class="ga-label">Job Industry</label>
-                    <select class="ga-select" id="industry" >
-                      <option disabled selected></option>
-                      {% for industry in industry%}
-                        <option>{{ industry }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-                <div class="ga-col ga-col-md-6">
-                  <div class="ga-form-group">
-                    <label class="ga-label">Profession</label>
-                    <select class="ga-select" id="profession">
-                      <option disabled selected></option>
-                      {% for profession in professions %}
-                        <option>{{ profession }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="ga-row">
-                <div class="ga-col ga-col-md-6">
-                  <div class="ga-form-group">
-                    <label class="ga-label">Job Seniority</label>
-                    <select class="ga-select" id="seniority" >
-                      <option disabled selected></option>
-                      {% for seniority in seniority %}
-                        <option>{{ seniority }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-                <div class="ga-col ga-col-md-6">
-                  <div class="ga-form-group">
-                    <label class="ga-label">Salary Range</label>
-                    <select class="ga-select" id="salary" >
-                      <option disabled selected></option>
-                      {% for salary in salary %}
-                        <option>{{ salary }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="ga-row">
-                <div class="ga-col ga-col-md-6">
-                  <div class="ga-form-group">
-                    <label class="ga-label">Education Level</label>
-                    <select class="ga-select" id="education" >
-                      <option disabled selected></option>
-                      {% for education in education %}
-                      <option>{{ education }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="ga-form-group ga-m-top-lg">
-<!--                <p class="ga-m-bottom-sm legal">All answers are confidential and only used in aggregate.</p>
--->
-                <div class="click">
-                  <button type="submit" name="button" class="ga-btn ga-btn-secondary ga-btn-xs">Continue</button>
-                </div>
-              </div>
-            </div>
-          </div> 
-		  
-		  <!-- /end 3 -->
-
-        </div>
-      </form>
-      </div> <!-- /main row -->
+<div class="onboarding-container">
+  <div class="page page-1" data-page="1">
+    <div class="page-content">
+      <h1>Hello. Welcome To Najua</h1>
+      <h3>Complete these steps to get started.</h3>
+      <p>You may add or remove this information from your profile at any time.</p>
+      <button id="nextButton1">Next <i class="fas fa-arrow-right"></i></button>
     </div>
   </div>
+
+  <form class="onboarding-form" method="POST" id="onboarding" novalidate>
+    <div class="page page-2 hidden" data-page="2">
+      <div class="page-content">
+        <h1>What's Your Name?</h1>
+        <div class="input-group">
+          <input type="text" id="name" name="name" placeholder="Enter First And Last Name" required />
+          <button type="button" class="small" id="nextButtonName">
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page page-3 hidden" data-page="3">
+      <div class="page-content">
+        <h1>What's Your Preferred Username?</h1>
+        <div id="usernameExists" class="text-center p-t-12 d-none"></div>
+        <div class="input-group">
+          <input id="username" name="username" type="text" placeholder="Select A Username" required />
+          <button type="button" class="small" id="nextButtonUsername">
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page page-4 hidden" data-page="4">
+      <div class="page-content">
+        <h1>What's Your Date of Birth?</h1>
+        <div class="input-group">
+          <input type="date" id="dob" name="dob" value="2000-01-01" min="1900-01-01" max="2025-12-31" required />
+          <button type="button" class="small" id="nextButtonDob">
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page page-5 hidden" data-page="5">
+      <div class="page-content">
+        <h1>What's Your Country of Residence?</h1>
+        <div class="input-group">
+          <select class="" id="countrySelect">
+            <option disabled selected>Select one</option>
+            {% for country in countries %}
+              <option> {{ country }}</option>
+            {% endfor %}
+          </select>
+            <button type="button" class="small" id="nextButtonCountry">
+              <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page page-6 hidden" data-page="6">
+      <div class="page-content">
+        <h1>Let's get started!</h1>
+        <button id="doneButton" type="submit" disabled>
+          Go!
+          <i class="fas fa-rocket"></i>
+        </button>
+      </div>
+    </div>
+  </form>
 </div>
-  
-
-
 {% endblock %}

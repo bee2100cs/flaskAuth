@@ -35,29 +35,23 @@ def index():
 def onboarding():
 
     user_id = session['user_id']
-    user_data = db.child('users').child(user_id).get().val()
+    if not user_id:
+        return redirect(url_for('main.index'))
+    user_data = db.child('users').child(user_id).get().val() or {}
 
     # Fetch user data from Firebase
-    user_data = db.child('users').child(user_id).get().val()
-    professions = db.child("data").child("profession_data").child("professions").get().val()
-    industries = db.child("data").child("profession_data").child("industries").get().val()
-    education = db.child("data").child("profession_data").child("education").get().val()
-    seniority = db.child("data").child("profession_data").child("seniority").get().val()
-    salary = db.child("data").child("profession_data").child("salary range").get().val()
-    countries_raw = db.child("data").child("countries").get().val()
-    countries = dict(sorted(countries_raw.items(), key=lambda item: item[1]))
-    countries = sorted(countries.values())
+    user_data = db.child('users').child(user_id).get().val() or {}
+    countries_raw = db.child("data").child("countries").get().val() or {}
+    
+    # Process countries safely
+    countries = dict(sorted(countries_raw.items(), key=lambda item: item[1])) if countries_raw else {}
+    countries = sorted(countries.values()) if countries else []
 
     return render_template('onboarding.html', 
                            session_user_data=user_data,
                            user_id=user_id,
                            user_data=user_data,
-                           countries=countries,
-                           industry=industries,
-                           education=education,
-                           seniority=seniority,
-                           salary=salary,
-                           professions=professions
+                           countries=countries
                            )
 
 
@@ -87,92 +81,82 @@ def validate_username():
 
 @bp.route("/onboarding", methods=['POST','GET'])
 def onboarding_callback():
-    
+    print("Received data:", request.json)
     if 'user' in session and 'user_id' in session:
         user_id = session['user_id']
 
         # User data from Onboarding form
         username = request.json['username'].lower()
+        print("Username: ", username)
         name = request.json['name']
+        print("Name: ", name)
         country = request.json['country']
         dob = request.json['dob']
-        gender = request.json['gender']
-        ethnicity = request.json['ethnicity']
-        industry = request.json["industry"]
-        profession = request.json["profession"]
-        seniority = request.json["seniority"]
-        salary = request.json["salary"]
-        education = request.json["education"]
         
-        # dictionary for professional info:
-        professional_info = {
-        "industry": industry,
-        "profession": profession,
-        "seniority": seniority,
-        "salary": salary,
-        "education": education
-        }
         #Update user data in Firebase Database
         db.child('users').child(user_id).update({
             "username": username,
             'name': name,
             'country':country,
-            'dob':dob, 
-            'gender':gender,
-            'ethnicity':ethnicity,
-            "professional_info":professional_info,
+            'dob':dob,
             'first_login_done': True
             })
 
-        return jsonify({'message': 'Onboarding completed', 'redirect_url':url_for('profile.profile')})
+        return jsonify({'message': 'Onboarding completed', 'redirect_url':url_for('profile.profile', username=username)})
     else:
         # Redirect to login if not logged in
         return redirect(url_for('authentication.login')) 
     
 def my_quizzes(user_id):
-    user_scores = db.child("users").child(user_id).child("scores").get().val()
-    quizzes = db.child("users").child(user_id).child("quizzes").get().val()
+    try:
+        quizzes = db.child("users").child(user_id).child("quizzes").get().val()
 
-    user_quiz_data = user_quizzes(db, user_id, quizzes)
-    quiz_data = []
+        user_quiz_data = user_quizzes(db, user_id, quizzes)
+        quiz_data = []
 
-    for quiz in user_quiz_data:
-        for quiz_id, quiz_info in quiz.items():
-            quiz_category = quiz_info.get("category")
-            quiz_difficulty = quiz_info.get("difficulty")
-            quiz_title = quiz_info.get("quiz_title")
-            quiz_answer_type = quiz_info.get("answer_type")
-            quiz_type = quiz_info.get("quiz_type")
-            question_count = quiz_info.get("question_count")
-            score = quiz_info.get("score")
+        for quiz in user_quiz_data:
+            for quiz_id, quiz_info in quiz.items():
+                quiz_category = quiz_info.get("category")
+                quiz_difficulty = quiz_info.get("difficulty")
+                quiz_title = quiz_info.get("quiz_title")
+                quiz_answer_type = quiz_info.get("answer_type")
+                quiz_type = quiz_info.get("quiz_type")
+                question_count = quiz_info.get("question_count")
+                score = quiz_info.get("score")
 
-            quiz_data.append({
-                quiz_id: {
-                    "category": quiz_category,
-                    "difficulty": quiz_difficulty,
-                    "title": quiz_title,
-                    "answer_type": quiz_answer_type,
-                    "type": quiz_type,
-                    "question_count": question_count,
-                    "score": score
-                }
-            })
-    
-    return quiz_data
+                quiz_data.append({
+                    quiz_id: {
+                        "category": quiz_category,
+                        "difficulty": quiz_difficulty,
+                        "title": quiz_title,
+                        "answer_type": quiz_answer_type,
+                        "type": quiz_type,
+                        "question_count": question_count,
+                        "score": score
+                    }
+                })
+        
+        return quiz_data
+    except Exception as e:
+        print(e)
 
 @bp.route("/<username>")
 def profile(username):
     session_user_data = None
     username_data = None
+    quiz_data = {}
 
     if 'user' in session and 'user_id' in session:
 
         user_id = session['user_id']
-        session_user_data = db.child("users").child(user_id).get().val()
+        session_user_data = db.child("users").child(user_id).get().val() or {}
         print(session_user_data.get('username'))
-
-        quiz_data = my_quizzes(user_id)
-        print(quiz_data)
+        
+        try:
+            quiz_data = my_quizzes(user_id) or {}
+            print(quiz_data)
+        except Exception as e:
+            print(e)
 
     # Fetch user data from Firebase using the username
     if username.lower() != "anonymous":
@@ -183,15 +167,15 @@ def profile(username):
 
             # Fetch quizzes if user_id is found
             if user_id:
-                quiz_data = my_quizzes(user_id)
+                quiz_data = my_quizzes(user_id) or {}
                 
-                user_score_data = db.child('users').child(user_id).child('scores').get().val()
-                all_time_score = user_score_data.get('all_time_score')
+                user_score_data = db.child('users').child(user_id).child('scores').get().val() or {}
+                all_time_score = user_score_data.get('all_time_score') or 0
                 quiz_count, average_score = calculate_quiz_stats(user_score_data)
 
                 # user created quizzes
-                user_quizzes = db.child("users").child(user_id).child("quizzes").get().val()
-                quizzes_created = len(user_quizzes)
+                user_quizzes = db.child("users").child(user_id).child("quizzes").get().val() or {}
+                quizzes_created = len(user_quizzes) or 0
                 quiz_stats = {
                         'quiz_count': quiz_count,
                         'average_score': average_score,
