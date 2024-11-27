@@ -21,7 +21,8 @@ from .utils.helper import (generate_question_id,
                            questions_without_correct_answers,
                            get_quiz_question_ids,
                            user_quizzes,
-                           calculate_quiz_stats
+                           calculate_quiz_stats,
+                           quizzes_by_other_users
                            )
 
 # Global variables
@@ -358,54 +359,75 @@ def handle_pending_quiz():
 @main.route('/my_quizzes')
 def my_quizzes():
     if 'user_id' in session:
-       
         user_id = session['user_id']
-        user_scores = db.child("users").child(user_id).child("scores").get().val()
-        quizzes = db.child("users").child(user_id).child("quizzes").get().val()
+        # Retrieve user scores and quizzes safely
+        user_scores = db.child("users").child(user_id).child("scores").get().val() or {}
+        quizzes = db.child("users").child(user_id).child("quizzes").get().val() or {}
 
-        user_quiz_data = user_quizzes(db, user_id, quizzes)
+        # Quizzes by user
+        user_quiz_data = user_quizzes(db, user_id, quizzes) or []
+        # Extract quiz IDs created by the user
+        user_quiz_ids = [quiz_id for quiz in user_quiz_data for quiz_id in quiz.keys()] if user_quiz_data else []
+
+        # Quizzes taken by user, created by other users
+        quizzes_by_others = quizzes_by_other_users(user_scores, user_quiz_ids) or []
+
         quiz_data = []
+        quiz_data_by_others = []
         
+        # Process quizzes created by the user
         for quiz in user_quiz_data:
             for quiz_id, quiz_info in quiz.items():
-                quiz_category = quiz_info.get("category")
-                quiz_difficulty = quiz_info.get("difficulty")
-                quiz_title = quiz_info.get("quiz_title")
-                quiz_answer_type = quiz_info.get("answer_type")
-                quiz_type = quiz_info.get("quiz_type")
-                question_count = quiz_info.get("question_count")
-                score = quiz_info.get("score")
-
                 quiz_data.append(
                     {quiz_id: {
-                        "category": quiz_category,
-                        "difficulty": quiz_difficulty,
-                        "title": quiz_title,
-                        "answer_type": quiz_answer_type,
-                        "type": quiz_type,
-                        "question_count": question_count,
-                        "score": score
-                }})
+                        "category": quiz_info.get("category"),
+                        "difficulty": quiz_info.get("difficulty"),
+                        "title": quiz_info.get("quiz_title"),
+                        "answer_type": quiz_info.get("answer_type"),
+                        "type": quiz_info.get("quiz_type"),
+                        "question_count": quiz_info.get("question_count"),
+                        "score": quiz_info.get("score")
+                    }}
+                )
+        
+        # Process quizzes created by others
+        for quiz in quizzes_by_others:
+            for quiz_id, quiz_info in quiz.items():
+                quiz_data_by_others.append(
+                    {quiz_id: {
+                        "category": quiz_info.get("category"),
+                        "difficulty": quiz_info.get("difficulty"),
+                        "title": quiz_info.get("quiz_title"),
+                        "answer_type": quiz_info.get("answer_type"),
+                        "type": quiz_info.get("quiz_type"),
+                        "question_count": quiz_info.get("question_count"),
+                        "score": quiz_info.get("score"),
+                        "username": quiz_info.get("username")
+                    }}
+                )
 
-        return render_template("my_quizzes.html",
-                               quiz_data=quiz_data, 
-                                session_user_data=g.user_data)
-    
+        return render_template(
+            "my_quizzes.html",
+            quiz_data=quiz_data,
+            quiz_data_by_others=quiz_data_by_others,
+            session_user_data=g.user_data
+        )
     else:
         return redirect(url_for('main.index'))
+
     
 
 @main.route('/quiz_stats')
 def quiz_stats():
     if 'user_id' in session:
         user_id = session.get("user_id")
-        user_score_data = db.child('users').child(user_id).child('scores').get().val()
-        all_time_score = user_score_data.get('all_time_score')
+        user_score_data = db.child('users').child(user_id).child('scores').get().val() or {}
+        all_time_score = user_score_data.get('all_time_score') or 0
         quiz_count, average_score = calculate_quiz_stats(user_score_data)
 
         # user created quizzes
-        user_quizzes = db.child("users").child(user_id).child("quizzes").get().val()
-        quizzes_created = len(user_quizzes)
+        user_quizzes = db.child("users").child(user_id).child("quizzes").get().val() or {}
+        quizzes_created = len(user_quizzes) or 0
         quiz_stats = {
                 'quiz_count': quiz_count,
                 'average_score': average_score,

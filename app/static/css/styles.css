@@ -19,6 +19,10 @@ body {
   display: flex;
   flex-direction: column;
 } */
+* {
+	transition: 0.5s all ease;
+	box-sizing: border-box;
+}
 
 .card.flex-grow-1 {
   overflow-y: auto; /* Add scrolling for content within the card */
@@ -136,3 +140,97 @@ body {
     -ms-transition: all 0.4s ease-out 0s;
     -o-transition: all 0.4s ease-out 0s;
     transition: all 0.4s ease-out 0s; }
+
+/* Onboarding Styles */
+.onboarding-container {
+  font-family: "tt-nooks", serif;
+  font-weight: 900;
+  font-style: normal;
+  background: #72a3a5;
+  margin: 0;
+  height: 100vh;
+  user-select: none;
+}
+
+.onboarding-container * {
+  transition: 0.5s all ease;
+  box-sizing: border-box;
+}
+
+.onboarding-container h1 {
+  margin: 0;
+  color: #edf0e9;
+  font-size: 5rem;
+}
+.onboarding-container h3 {
+  margin: 0;
+  color: #edf0e9;
+  font-size: 3rem;
+}
+
+.onboarding-container .page {
+  height: 100vh;
+  width: 100vw;
+  display: grid;
+  place-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.page-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5rem;
+}
+
+.onboarding-container .hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.onboarding-container button {
+  background: #e4f8ce;
+  border: none;
+  border-radius: 9px;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.onboarding-container button i {
+  margin-left: 6px;
+}
+
+.onboarding-container button:hover i {
+  margin-left: 10px;
+}
+
+.onboarding-container button.small {
+  border-radius: 0 9px 9px 0;
+}
+
+.onboarding-container input {
+  background: #fff;
+  border: none;
+  border-radius: 9px 0 0 9px;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+}
+
+.onboarding-container input:hover {	
+  border: solid 1px #b9e276;
+}
+
+.input-group {
+  justify-content: center;
+}
+.input-group input {
+  margin-right: 1.5rem;
+}
+
+.onboarding-container input:focus-within {
+  border: dashed 1px #b9e276;
+  outline: transparent;
+}

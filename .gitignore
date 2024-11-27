@@ -165,3 +165,4 @@ dummy/
 .vscode/
 pseudo.txt
 app/templates/quiz-backup.html
+/myenv

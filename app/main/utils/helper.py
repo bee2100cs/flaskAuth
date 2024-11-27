@@ -260,7 +260,13 @@ def search_quizzes(db, quiz_category='random', quiz_question_type='random', quiz
 
 def user_quizzes(db, user_id, quizzes):
     try:
+
+        # Ensure quizzes is a valid iterable, defaulting to an empty list
+        if quizzes is None:
+            return []
+        
         user_quizzes = []
+        # Loop thorugh quizzes created by user
         for quiz_id in quizzes:
             quiz_data = db.child("quiz").child("saved_quizzes").child(quiz_id).get().val()
             quiz_score = db.child("users").child(user_id).child("scores").child(quiz_id).child("score").get().val()
@@ -274,8 +280,9 @@ def user_quizzes(db, user_id, quizzes):
         return user_quizzes
 
     except Exception as e:
-        print("error grabbing quiz data")
-
+        print(f"Error in user_quiz: {e}")
+        return user_quizzes
+    
 # Get quiz question IDs
 def get_quiz_question_ids(quiz_id):
     question_ids = db.child('quiz').child('saved_quizzes').child(quiz_id).child('questions').get().val()
@@ -311,7 +318,7 @@ def questions_without_correct_answers(questions):
 # User quiz stats
 def calculate_quiz_stats(data):
     quiz_count = 0
-    all_time_score = data.get("all_time_score")
+    all_time_score = int(data.get("all_time_score"))
 
     for key, value in data.items():
         if key != 'all_time_score':
@@ -325,4 +332,40 @@ def calculate_quiz_stats(data):
         average_score = 0
 
     return quiz_count, average_score
+
+# Get other quizzes not created by user but taken by user
+def quizzes_by_other_users(user_scores, user_quiz_ids):
+    quizzes_by_others = []
+
+    try:
+        if not user_scores:
+            print("No user scores found.")
+            return quizzes_by_others  # Return an empty list if no scores
+        
+        for quiz_id, value in user_scores.items():
+            if quiz_id == 'all_time_score' or quiz_id in user_quiz_ids:
+                continue
+
+            quiz_score = int(value['score'])
+            quiz_id = quiz_id
+            quiz_data = db.child("quiz").child("saved_quizzes").child(quiz_id).get().val()
+            if quiz_data:  # Ensure that quiz_data exists
+                user_id = quiz_data['user_id']
+                user_data = db.child('users').child(user_id).get().val()
+                username = user_data['username']
+                print("username is: ", username)
+                quiz_data['score'] = quiz_score if quiz_score else 0
+                quiz_data['username'] = username
+                quizzes_by_others.append(
+                    {quiz_id: quiz_data}
+                )
+            else:
+                print(f"Quiz data for quiz_id {quiz_id} does not exist.")
+
+        return quizzes_by_others
+    except Exception as e:
+        print(f"Error in quizzes_by_other_users: {e}")
+        return quizzes_by_others
+
+    
 

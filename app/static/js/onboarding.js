@@ -1,161 +1,158 @@
-$(function() {
-  let $step1 = $('.wrap').eq(0);
-  let $step2 = $('.wrap').eq(1);
-  let $step3 = $('.wrap').eq(2);
-  let $content = $('#content');
-  let $thanks = $('#content-thanks');
-  let $dashboard = $('#content-dashboard');
-  let countrySelected = false;
-  
-  // select2 hook
-  $('.select2-selects').select2();
 
-  function setFirstBtn() {
-    let  $checks = $step1.find('.ga-checkbox');
-    if (countrySelected && $step1.find('.ga-checkbox:checked').length == $checks.length) {
-       $step1.find('.btn-first').prop('disabled', false);
-    } else {
-      $step1.find('.btn-first').prop('disabled', true);
+document.addEventListener("DOMContentLoaded", function () {
+
+  const onboardingForm = document.getElementById("onboarding");
+
+  if (onboardingForm) {
+    const nameInput = document.getElementById("name");
+    const usernameInput = document.getElementById("username");
+    const usernameExists = document.getElementById("usernameExists");
+    const nextButton1 = document.getElementById("nextButton1");
+    const nextButtonName = document.getElementById("nextButtonName");
+    const nextButtonUsername = document.getElementById("nextButtonUsername");
+    const nextButtonDob = document.getElementById("nextButtonDob");
+    const nextButtonCountry = document.getElementById("nextButtonCountry");
+    let currentPage = 1;
+
+    // Add event listeners only if the elements exist
+    if (nextButton1) nextButton1.addEventListener("click", nextPage);
+    if (nextButtonName) nextButtonName.addEventListener("click", () => validateAndProceed("name"));
+    if (nextButtonUsername) nextButtonUsername.addEventListener("click", () => validateAndProceed("username"));
+    if (nextButtonDob) nextButtonDob.addEventListener("click", nextPage);
+    if (nextButtonCountry) nextButtonCountry.addEventListener("click", nextPage);
+    if (nameInput) nameInput.addEventListener("input", checkInputs);
+    if (usernameInput) {
+      usernameInput.addEventListener("input", () => {
+        validateUsername(usernameInput.value.trim(), checkInputs);
+      });
     }
+
+
+// Validate fields and navigate
+function validateAndProceed(fieldId) {
+  const input = document.getElementById(fieldId);
+  const value = input.value.trim();
+
+  if (fieldId === "name" && !value) {
+    alert("Please provide your name.");
+    return;
   }
 
-  // enable on select change
-  $step1.find('.select-country').change(function(e) {
-    countrySelected = true
-    setFirstBtn()
-  });
+  if (fieldId === "username") {
+    validateUsername(value, (isValid) => {
+      if (isValid) {
+        nextPage();
+      } else {
+        alert("Username already exists. Please choose a different one.");
+      }
+    });
+    return;
+  }
 
-  $step1.find('.ga-checkbox').eq(0).change(function(e) {
-    setFirstBtn()
-  });
+  nextPage();
+}
 
-  $step1.find('.ga-checkbox').eq(1).change(function(e) {
-    setFirstBtn()
-  });
 
-  // hide all
-  $('.wrap').addClass('hidden');
+function validateUsername(username, callback) {
+  if (!username) {
+    usernameExists.textContent = "Username is required.";
+    usernameExists.classList.remove("d-none");
+    usernameExists.style.color = "red";
+    callback(false);
+    return;
+  }
 
-  // open first
-  $step1.removeClass('hidden');
+  axios.post("/validate_username", { username: username })
+    .then((response) => {
+      if (response.data.exists) {
+        usernameExists.textContent = "Username already exists.";
+        usernameExists.classList.remove("d-none");
+        usernameExists.style.color = "red";
+        callback(false);
+      } else {
+        usernameExists.textContent = "";
+        usernameExists.classList.add("d-none");
+        callback(true);
+      }
+    })
+    .catch((error) => {
+      console.error("Error validating username:", error);
+      usernameExists.textContent = "An error occurred. Try again.";
+      usernameExists.classList.remove("d-none");
+      usernameExists.style.color = "red";
+      callback(false);
+    });
+}
 
-  // on step 1 button continue
-  $step1.find('.click').click(function(e) {
-    $step1.addClass('hidden');
-    $step2.removeClass('hidden');
+// Proceed to the next page
+function nextPage() {
+  const currentElement = document.querySelector(`[data-page="${currentPage}"]`);
+  if (currentElement) currentElement.classList.add("hidden");
 
-    // check off
-    $step1.addClass('complete').find('.state-icon').text('');
-  });
+  currentPage++;
 
-  // on step 2 button continue
-  $step2.find('.click').click(function(e) {
-    $step2.addClass('hidden');
-    $step3.removeClass('hidden');
+  const nextElement = document.querySelector(`[data-page="${currentPage}"]`);
+  if (nextElement) nextElement.classList.remove("hidden");
+}
 
-    // check off
-    $step2.addClass('complete').find('.state-icon').text('');
-  });
+// Enable/disable the final button based on inputs
+function checkInputs() {
+  if (nameInput.value.trim() && !usernameExists.textContent && usernameInput.value.trim()) {
+    doneButton.disabled = false;
+  } else {
+    doneButton.disabled = true;
+  }
+}
+
+// Form submission
+onboardingForm.addEventListener("submit", (event) => {
+  if (!onboardingForm.checkValidity()) {
+    event.preventDefault();
+    alert("Please complete all required fields.");
+  } else {
+    console.log("Form is valid, submitting...");
+    event.preventDefault();
+    onboarding();
+  }
+});
+
+} 
+// else {
+//   console.log("Onboarding script loaded, but this is not the onboarding page.");
+//}
 
 });
 
-// Form submission
-document.addEventListener('DOMContentLoaded', function() {
-// Add event listener to the form submission
-  const onboardingForm = document.getElementById('onboarding');
-  // Event listener to enable/disbale 'Done button based on name and username
-  const nameInput = document.getElementById('name');
-  const usernameInput = document.getElementById('username');
-  const doneButton = document.getElementById('doneButton');
-  
-  // Function to check if user has provided name and username
-  function checkInput() {
-    if (nameInput.value.trim() !== '' && usernameInput.value.trim() !=='') {
-      doneButton.disabled = false;
-    } else {
-      doneButton.disabled = true;
-    }
-  }
-
-  // Function to validate username for update form
-  function validateUsername_update(username, callback) {
-    // const username = usernameInput.value.trim().toLowerCase();
-    if (username !== '') {
-      axios.post('/validate_username', {username: username})
-      .then(function (response) {
-        if (response.data.exists) {
-          
-          // Username already exists
-          usernameExists.textContent = "Username exists.";
-          usernameExists.classList.remove('d-none');
-          usernameExists.style.display =  'block';
-          
-          // format message
-          usernameExists.style.color = 'red'; 
-          usernameExists.style.fontWeight = 'bold'; 
-          usernameExists.style.fontSize = '1.2em'; 
-          if (doneButton) {
-            doneButton.disabled = true;
-          }
-
-          callback(false);
-          
-        } else {
-          // Username is available
-          usernameExists.textContent = "";
-          usernameExists.classList.add('d-none');
-          callback(true); // Username is valid, submit data
-
-          // Recheck if done button should be enabled
-          if (document.getElementById('onboarding')) {
-            checkInput();
-          }
-          
-        }
-      })
-      .catch(function (error) {
-        // Handle specific username validation errors
-        console.error("Error during username validation", error);
-
-        // Clear any previous sucess messages and hide them
-        usernameExists.textContent = "";
-        usernameExists.classList.add('d-none');
-      });
-    } else {
-      // Handle cases where username is empty
-      usernameExists.textContent = "";
-      usernameExists.classList.add("d-none");
-      if (doneButton) {
-        doneButton.disabled = true;
-      }
-      callback(false);
-    }
-  }
-  
- // Function to validate username
- function validateUsername() {
-  const username = usernameInput.value.trim().toLowerCase();
+// Function to validate username for update form
+function validateUsername_update(username, callback) {
+  // const username = usernameInput.value.trim().toLowerCase();
   if (username !== '') {
-    axios.post('/validate_username', {username:username})
+    axios.post('/validate_username', {username: username})
     .then(function (response) {
       if (response.data.exists) {
-
+        
         // Username already exists
         usernameExists.textContent = "Username exists.";
         usernameExists.classList.remove('d-none');
-
+        usernameExists.style.display =  'block';
+        
         // format message
         usernameExists.style.color = 'red'; 
         usernameExists.style.fontWeight = 'bold'; 
         usernameExists.style.fontSize = '1.2em'; 
-
-        doneButton.disabled = true;
+        callback(false);
+        
       } else {
         // Username is available
         usernameExists.textContent = "";
         usernameExists.classList.add('d-none');
+        callback(true); // Username is valid, submit data
+
         // Recheck if done button should be enabled
-        checkInput();
+        if (document.getElementById('onboarding')) {
+          checkInput();
+        }
+        
       }
     })
     .catch(function (error) {
@@ -170,32 +167,96 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle cases where username is empty
     usernameExists.textContent = "";
     usernameExists.classList.add("d-none");
-    doneButton.disabled = true;
+    if (doneButton) {
+      doneButton.disabled = true;
+    }
+    callback(false);
   }
 }
 
-  // Validate form and call onboarding function
-  if (onboardingForm) {
-      nameInput.addEventListener('input', checkInput);
-      usernameInput.addEventListener('input', validateUsername);
+// // Form submission
+// document.addEventListener('DOMContentLoaded', function() {
+// // Add event listener to the form submission
+//   const onboardingForm = document.getElementById('onboarding');
+//   // Event listener to enable/disbale 'Done button based on name and username
+//   const nameInput = document.getElementById('name');
+//   const usernameInput = document.getElementById('username');
+//   const doneButton = document.getElementById('doneButton');
+  
+//   // Function to check if user has provided name and username
+//   function checkInput() {
+//     if (nameInput.value.trim() !== '' && usernameInput.value.trim() !=='') {
+//       doneButton.disabled = false;
+//     } else {
+//       doneButton.disabled = true;
+//     }
+//   }
 
-      onboardingForm.addEventListener('submit', function(event) {
+  
+//  // Function to validate username
+//  function validateUsername() {
+//   const username = usernameInput.value.trim().toLowerCase();
+//   if (username !== '') {
+//     axios.post('/validate_username', {username:username})
+//     .then(function (response) {
+//       if (response.data.exists) {
 
-        // Check form validity
-        if (!onboardingForm.checkValidity()) {
-            console.log("Form is not valid");
-        } else {
-          // Prevent default form submission behavior
-          event.preventDefault(); 
-          // Form is valid, proceed with submission 
-          console.log("Form is valid.")
-          // Call onboarding function when form is submitted
-          onboarding();  
-        }   
-    });
-  }
+//         // Username already exists
+//         usernameExists.textContent = "Username exists.";
+//         usernameExists.classList.remove('d-none');
 
-  // Profile picture upload
+//         // format message
+//         usernameExists.style.color = 'red'; 
+//         usernameExists.style.fontWeight = 'bold'; 
+//         usernameExists.style.fontSize = '1.2em'; 
+
+//       } else {
+//         // Username is available
+//         usernameExists.textContent = "";
+//         usernameExists.classList.add('d-none');
+//         // Recheck if done button should be enabled
+//         checkInput();
+//       }
+//     })
+//     .catch(function (error) {
+//       // Handle specific username validation errors
+//       console.error("Error during username validation", error);
+
+//       // Clear any previous sucess messages and hide them
+//       usernameExists.textContent = "";
+//       usernameExists.classList.add('d-none');
+//     });
+//   } else {
+//     // Handle cases where username is empty
+//     usernameExists.textContent = "";
+//     usernameExists.classList.add("d-none");
+//     doneButton.disabled = true;
+//   }
+// }
+
+//   // Validate form and call onboarding function
+//   if (onboardingForm) {
+//       nameInput.addEventListener('input', checkInput);
+//       usernameInput.addEventListener('input', validateUsername);
+
+//       onboardingForm.addEventListener('submit', function(event) {
+
+//         // Check form validity
+//         if (!onboardingForm.checkValidity()) {
+//             console.log("Form is not valid");
+//         } else {
+//           // Prevent default form submission behavior
+//           event.preventDefault(); 
+//           // Form is valid, proceed with submission 
+//           console.log("Form is valid.")
+//           // Call onboarding function when form is submitted
+//           onboarding();  
+//         }   
+//     });
+//   }
+// });
+
+// Profile picture upload
     // Upload button for profile picture
     const uploadForm = document.getElementById('uploadForm')
     if (uploadForm) {
@@ -490,10 +551,6 @@ function updateProfile(field,
   });
 }
 
-
-
-});
-
 // Onboarding
 function onboarding() {
   // Code to fetch personal info
@@ -501,30 +558,26 @@ function onboarding() {
   const name = document.getElementById('name').value;
   const country = document.getElementById("countrySelect").value;
   const dob = document.getElementById('dob').value;
-  const gender = document.getElementById('gender').value;
-  const ethnicity = Array.from(document.querySelectorAll('input[name="ethnicity"]:checked')).map(checkbox => checkbox.value);
-
-  // Proffesional info
-  const industry = document.getElementById('industry').value;
-  const profession = document.getElementById("profession").value;
-  const seniority = document.getElementById('seniority').value;
-  const salary = document.getElementById("salary").value;
-  const education = document.getElementById("education").value;
   
-  // Submit form
-  if (username && name && country) {
-    axios.post('/onboarding', {
+  const formData = {
       username: username,
       name:name,
       country:country,
-      dob:dob,
-      gender:gender,
-      ethnicity:ethnicity,
-      industry:industry,
-      profession:profession,
-      seniority:seniority,
-      salary: salary,
-      education: education
+      dob:dob
+  };
+  const formDataJsonString = JSON.stringify(formData);
+  try {
+    const parsedData = JSON.parse(formDataJsonString);
+    console.log("Valid JSON:", parsedData);
+  } catch (error) {
+    console.error("Invalid JSON:", error);
+  }
+  // Submit form
+  if (username && name && country) {
+    axios.post('/onboarding', formDataJsonString, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
     .then(function(response) {
       // Perform the redirect
@@ -540,5 +593,7 @@ function onboarding() {
     .catch(function (error) {
       console.error("Error during onboarding", error);
     });
+  } else {
+    console.error("Missing required fields");
   }
 }

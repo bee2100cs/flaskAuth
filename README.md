@@ -16,11 +16,6 @@ Najua means I know in my native swahili. A perfect name for this quiz app that l
 
 ### Prerequisites
 * virtual environment
-To create a virtual environment, run:
-    ```bash
-    python3 -m venv myenv
-    ```
-
 * Python3
 
 
